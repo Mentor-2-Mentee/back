@@ -6,6 +6,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { LiveRoomsModule } from "./live-rooms/live-rooms.module";
 import { LiveRoom } from "./live-rooms/entities/live-room.entity";
+import { LiveChatModule } from './live-chat/live-chat.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { LiveRoom } from "./live-rooms/entities/live-room.entity";
         synchronize: true, //production에서는 쓰지말것
       }),
     }),
+    LiveChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
