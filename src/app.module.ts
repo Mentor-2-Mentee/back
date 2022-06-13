@@ -8,7 +8,9 @@ import { LiveRoomsModule } from "./live-rooms/live-rooms.module";
 import { LiveRoom } from "./live-rooms/entities/live-room.entity";
 import { LiveChatModule } from "./live-chat/live-chat.module";
 import { ClientsModule, Transport } from "@nestjs/microservices";
-import { AuthorizeModule } from './authorize/authorize.module';
+import { AuthorizeModule } from "./authorize/authorize.module";
+import { AuthModule } from "./auth/auth.module";
+import { UsersModule } from "./users/users.module";
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { AuthorizeModule } from './authorize/authorize.module';
         password: configService.get<string>("DATABASE_PASSWORD"),
         database: `liveroom`,
         entities: [LiveRoom],
-        synchronize: true, //production에서는 쓰지말것
+        synchronize: true, //production에서는 쓰지말것 db가 서버와동기화되어버림
       }),
     }),
     ClientsModule.registerAsync([
@@ -45,6 +47,8 @@ import { AuthorizeModule } from './authorize/authorize.module';
     ]),
     LiveChatModule,
     AuthorizeModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
