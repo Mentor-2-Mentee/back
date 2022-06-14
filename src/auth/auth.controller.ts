@@ -29,6 +29,6 @@ export class AuthController {
   @Get("redirect")
   @UseGuards(AuthGuard("kakao"))
   async kakaoLoginCallBack(@Req() req) {
-    return this.authService.kakaoLogin(req);
+    return this.authService.getKakaoAccessToken(req);
   }
 }

@@ -6,9 +6,11 @@ import {
   Redirect,
   Req,
   Request,
+  Res,
   UseGuards,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { Response } from "express";
 import { AppService } from "./app.service";
 import { AuthService } from "./auth/auth.service";
 import { JwtAuthGuard } from "./auth/jwt/jwt-auth.guard";
@@ -35,16 +37,19 @@ export class AppController {
   }
 
   @Get("auth/kakao")
-  @Header("Access-Control-Allow-Origin", "*")
   @UseGuards(AuthGuard("kakao"))
   async kakaoAuth(@Req() req) {}
 
   @Get("oauth")
-  @UseGuards(AuthGuard("kakao"))
-  kakaoAuthRedirect(@Req() req) {
-    return this.authService.kakaoLogin(req);
+  @Redirect("http://localhost:3801", 301)
+  findAll(@Res({ passthrough: true }) response: Response) {
+    response.cookie("testkey", "testvalue");
   }
 
+  // @UseGuards(AuthGuard("kakao"))
+  // kakaoAuthRedirect(@Req() req) {
+  //   return this.authService.getKakaoAccessToken(req);
+  // }
   @Get()
   getHello(): string {
     return this.appService.getHello();

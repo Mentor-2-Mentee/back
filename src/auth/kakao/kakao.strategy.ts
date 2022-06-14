@@ -14,6 +14,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
   }
 
   async validate(accessToken, refreshToken, profile, done) {
+    console.log("최초 profile", profile);
     const profileJson = profile._json;
     const kakaoAccount = profileJson.kakao_account;
     const payload: UserKakaoDto = {
@@ -24,6 +25,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
           ? kakaoAccount.email
           : null,
     };
+    console.log("사용자 로그인정보", payload);
 
     done(null, payload);
   }
