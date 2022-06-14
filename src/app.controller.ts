@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Request, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Header,
+  Post,
+  Redirect,
+  Req,
+  Request,
+  UseGuards,
+} from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { AppService } from "./app.service";
 import { AuthService } from "./auth/auth.service";
-import { JwtAuthGuard } from "./auth/jwt-auth.guard";
-import { LocalAuthGuard } from "./auth/local-auth.guard"; // 로컬 인증과정을 바로 노출하면 좋지않으므로 한번 감싸준다
+import { JwtAuthGuard } from "./auth/jwt/jwt-auth.guard";
+import { LocalAuthGuard } from "./auth/local/local-auth.guard"; // 로컬 인증과정을 바로 노출하면 좋지않으므로 한번 감싸준다
 
 @Controller()
 export class AppController {
@@ -23,6 +32,17 @@ export class AppController {
   @Get("profile")
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @Get("auth/kakao")
+  @Header("Access-Control-Allow-Origin", "*")
+  @UseGuards(AuthGuard("kakao"))
+  async kakaoAuth(@Req() req) {}
+
+  @Get("oauth")
+  @UseGuards(AuthGuard("kakao"))
+  kakaoAuthRedirect(@Req() req) {
+    return this.authService.kakaoLogin(req);
   }
 
   @Get()

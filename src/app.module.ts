@@ -8,13 +8,15 @@ import { LiveRoomsModule } from "./live-rooms/live-rooms.module";
 import { LiveRoom } from "./live-rooms/entities/live-room.entity";
 import { LiveChatModule } from "./live-chat/live-chat.module";
 import { ClientsModule, Transport } from "@nestjs/microservices";
-import { AuthorizeModule } from "./authorize/authorize.module";
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
+import configuration from "./config/configuration";
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      load: [configuration],
+    }),
     LiveRoomsModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -46,7 +48,6 @@ import { UsersModule } from "./users/users.module";
       },
     ]),
     LiveChatModule,
-    AuthorizeModule,
     AuthModule,
     UsersModule,
   ],

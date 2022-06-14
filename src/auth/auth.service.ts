@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "src/users/users.service";
+import { UserKakaoDto } from "./kakao/dto/user.kakao.dto";
 
 @Injectable()
 export class AuthService {
@@ -26,6 +27,17 @@ export class AuthService {
     const payload = { username: user.username, sub: user.userId };
     return {
       access_token: this.jwtService.sign(payload),
+    };
+  }
+
+  async kakaoLogin(req) {
+    console.log("auth service req", req);
+    if (!req.user) {
+      return "no user from kakao";
+    }
+    return {
+      message: "user info from kakao",
+      user: req.user,
     };
   }
 }

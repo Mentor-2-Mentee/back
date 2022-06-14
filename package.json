@@ -32,6 +32,7 @@
     "@nestjs/platform-socket.io": "^8.4.6",
     "@nestjs/typeorm": "^8.0.4",
     "@nestjs/websockets": "^8.4.6",
+    "@types/passport-kakao": "^0.2.1",
     "mysql2": "^2.3.3",
     "passport": "^0.5.3",
     "passport-jwt": "^4.0.0",
