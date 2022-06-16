@@ -1,20 +1,24 @@
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
 import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import configuration from "../../config/configuration";
+import { UserKakaoDto } from "../kakao/dto/user.kakao.dto";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private configService: ConfigService) {
+  constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>("JWT_SECRET"), //이것도 사실 적용 안된거임 undifined로 적용됐을듯
+      secretOrKey: configuration().jwtSecret,
     });
   }
 
+  //jwt토큰 해싱한 payload를 가져와서 반환한다
   async validate(payload: any) {
-    console.log("토큰검증", payload);
-    return { userId: payload.sub, username: payload.username };
+    return {
+      userId: payload.userId,
+      username: payload.username,
+    };
   }
 }

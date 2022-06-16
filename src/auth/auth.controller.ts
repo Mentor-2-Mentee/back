@@ -22,13 +22,11 @@ export class AuthController {
 
   @Get()
   @UseGuards(AuthGuard("kakao"))
-  async kakaoLogin() {
+  async kakaoLogin(@Req() req) {
     return HttpStatus.OK;
   }
 
   @Get("redirect")
   @UseGuards(AuthGuard("kakao"))
-  async kakaoLoginCallBack(@Req() req) {
-    return this.authService.getKakaoAccessToken(req);
-  }
+  async kakaoLoginCallBack(@Req() req) {}
 }
