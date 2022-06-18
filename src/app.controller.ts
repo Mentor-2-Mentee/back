@@ -47,6 +47,12 @@ export class AppController {
       req.user,
       "REFRESH"
     );
+    console.log(
+      "return access/refresh cookies",
+      accessToken,
+      "|",
+      refreshToken
+    );
     response.cookie("accessToken", accessToken);
     response.cookie("refreshToken", refreshToken);
     return { url: this.configService.get<string>("AUTH_CALLBACK_URL") };
