@@ -9,6 +9,6 @@ RUN npm run build
 FROM node:10-alpine
 WORKDIR /app
 COPY --from=builder /app ./
-EXPOSE ${API_SERVER_PORT}
+EXPOSE 80
 
 CMD ["npm", "run", "start:prod"]
