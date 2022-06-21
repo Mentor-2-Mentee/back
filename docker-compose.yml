@@ -1,0 +1,43 @@
+version: "3.7"
+
+services:
+  m2m_service_traefik:
+    image: "traefik:v2.6"
+    container_name: "traefik"
+    command:
+      - "--api"
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--api.debug=true"
+      - "--providers.docker=true"
+        #- "--log.level=DEBUG"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--providers.docker.exposedbydefault=false"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=${EMAIL_ADDRESS}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  m2m_service_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "m2m_service_api"
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.m2m_service_api.rule=Host(`${API_SERVER_BASE_URL}`)"
+      - "traefik.http.routers.m2m_service_api.entrypoints=websecure"
+      - "traefik.http.routers.m2m_service_api.tls.certresolver=myresolver"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.redirs.entrypoints=web"
+      - "traefik.http.routers.redirs.middlewares=redirect-to-https"
