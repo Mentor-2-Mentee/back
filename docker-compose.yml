@@ -1,9 +1,37 @@
 version: "3.7"
 
 services:
+  mariadb:
+    image: mariadb:10.8
+    restart: always
+    environment:
+      - ${MYSQL_ROOT_PASSWORD}=${MARIADB_ENV_VALUE}
+    volumes:
+      - ${MARIADB_VOLUMES_PATH}
+    ports:
+      - "${MARIADB_PORT}:${MARIADB_PORT}"
+
+  redis:
+    image: redis:alpine
+    restart: always
+    command: redis-server --port ${REDIS_PORT}
+    container_name: m2m_redis
+    hostname: m2m_redis
+    deploy:
+      resources:
+        limits:
+          cpus: "${REDIS_CPUS}"
+          memory: ${REDIS_MEMORY}
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+
   m2m_service_traefik:
     image: "traefik:v2.6"
     container_name: "traefik"
+    restart: always
     command:
       - "--api"
       - "--api.dashboard=true"
@@ -16,7 +44,7 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.myresolver.acme.email=${EMAIL_ADDRESS}"
+      - "--certificatesresolvers.myresolver.acme.email=ruderud0055@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
@@ -31,10 +59,10 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: "m2m_service_api"
-
+    restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.m2m_service_api.rule=Host(`${API_SERVER_BASE_URL}`)"
+      - "traefik.http.routers.m2m_service_api.rule=Host(`api.rudbeckiaz.com`)"
       - "traefik.http.routers.m2m_service_api.entrypoints=websecure"
       - "traefik.http.routers.m2m_service_api.tls.certresolver=myresolver"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
