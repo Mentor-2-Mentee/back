@@ -5,7 +5,7 @@ services:
     image: mariadb:10.8
     restart: always
     environment:
-      - ${MYSQL_ROOT_PASSWORD}=${MARIADB_ENV_VALUE}
+      - ${MARIADB_ENV_KEY}=${MARIADB_ENV_VALUE}
     volumes:
       - ${MARIADB_VOLUMES_PATH}
     ports:
@@ -44,7 +44,7 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.myresolver.acme.email=ruderud0055@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.email=${EMAIL_ADDRESS}"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
@@ -62,7 +62,7 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.m2m_service_api.rule=Host(`api.rudbeckiaz.com`)"
+      - "traefik.http.routers.m2m_service_api.rule=Host(`${API_SERVER_BASE_URL}`)"
       - "traefik.http.routers.m2m_service_api.entrypoints=websecure"
       - "traefik.http.routers.m2m_service_api.tls.certresolver=myresolver"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
