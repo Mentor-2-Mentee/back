@@ -41,6 +41,8 @@ services:
         #- "--log.level=DEBUG"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--entryPoints.ws.address=:8081"
+      - "--entryPoints.wss.address=:8083"
       - "--providers.docker.exposedbydefault=false"
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"

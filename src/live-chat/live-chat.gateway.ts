@@ -12,7 +12,7 @@ import { Server } from "http";
 import { Logger } from "@nestjs/common";
 import { Socket } from "dgram";
 
-@WebSocketGateway(443, { namespace: "live-chat", transports: ["websocket"] })
+@WebSocketGateway(8081, { namespace: "live-chat", transports: ["websocket"] })
 export class LiveChatGateway {
   constructor(private readonly liveChatService: LiveChatService) {}
 
