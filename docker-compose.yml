@@ -67,16 +67,16 @@ services:
       - "traefik.http.routers.m2m_service_api.rule=Host(`${API_SERVER_BASE_URL}`)"
       - "traefik.http.routers.m2m_service_api.entrypoints=websecure"
       - "traefik.http.routers.m2m_service_api.tls.certresolver=myresolver"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https, wss"
       #https
       - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
       - "traefik.http.routers.redirs.entrypoints=web"
       - "traefik.http.routers.redirs.middlewares=redirect-to-https"
-      # ws
-      - "traefik.http.routers.ws-service-ws.rule=Host(`${API_SERVER_BASE_URL}`)"
-      - "traefik.http.routers.ws-service-ws.entrypoints=ws"
-      # wss
-      - "traefik.http.routers.ws-service-wss.rule=Host(`${API_SERVER_BASE_URL}`)"
-      - "traefik.http.routers.ws-service-wss.entrypoints=wss"
-      - "traefik.http.routers.ws-service-wss.tls=true"
-      - "traefik.http.routers.ws-service-wss.tls.certresolver=dns"
+      # # ws
+      # - "traefik.http.routers.ws-service-ws.rule=Host(`${API_SERVER_BASE_URL}`)"
+      # - "traefik.http.routers.ws-service-ws.entrypoints=ws"
+      # # wss
+      # - "traefik.http.routers.ws-service-wss.rule=Host(`${API_SERVER_BASE_URL}`)"
+      # - "traefik.http.routers.ws-service-wss.entrypoints=wss"
+      # - "traefik.http.routers.ws-service-wss.tls=true"
+      # - "traefik.http.routers.ws-service-wss.tls.certresolver=dns"
