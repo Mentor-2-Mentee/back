@@ -52,6 +52,8 @@ services:
       - "80:80"
       - "443:443"
       - "8080:8080"
+      - "8081:8081"
+      - "8083:8083"
     volumes:
       - "${TRAEFIK_LETSSENCRYPT_VOLUEMES}:/letsencrypt"
       - "${DOCKER_SOCK}:/var/run/docker.sock:ro"
@@ -69,14 +71,15 @@ services:
       - "traefik.http.routers.m2m_service_api.tls.certresolver=myresolver"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https, wss"
       #https
-      - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
-      - "traefik.http.routers.redirs.entrypoints=web"
-      - "traefik.http.routers.redirs.middlewares=redirect-to-https"
-      # # ws
-      # - "traefik.http.routers.ws-service-ws.rule=Host(`${API_SERVER_BASE_URL}`)"
-      # - "traefik.http.routers.ws-service-ws.entrypoints=ws"
-      # # wss
-      # - "traefik.http.routers.ws-service-wss.rule=Host(`${API_SERVER_BASE_URL}`)"
-      # - "traefik.http.routers.ws-service-wss.entrypoints=wss"
-      # - "traefik.http.routers.ws-service-wss.tls=true"
-      # - "traefik.http.routers.ws-service-wss.tls.certresolver=dns"
+      - "traefik.http.routers.m2m_service_api.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.m2m_service_api.entrypoints=web"
+      - "traefik.http.routers.m2m_service_api.middlewares=redirect-to-https"
+      # ws
+      - "traefik.ws.routers.m2m_service_api.rule=Host(`${API_SERVER_BASE_URL}`)"
+      - "traefik.ws.routers.m2m_service_api.entrypoints=ws"
+      # wss
+      - "traefik.wss.protocol=ws"
+      - "traefik.wss.routers.m2m_service_api.rule=Host(`${API_SERVER_BASE_URL}`)"
+      - "traefik.wss.routers.m2m_service_api.entrypoints=wss"
+      - "traefik.wss.routers.m2m_service_api.tls=true"
+      - "traefik.wss.routers.m2m_service_api.tls.certresolver=myresolver"
