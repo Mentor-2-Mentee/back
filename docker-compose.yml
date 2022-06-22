@@ -48,6 +48,9 @@ services:
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.myresolver.acme.email=${EMAIL_ADDRESS}"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--log.level=DEBUG"
+      - "--log.filePath=/path/to/log-file.log"
+      - "--log.format=json"
     ports:
       - "80:80"
       - "443:443"
@@ -60,9 +63,6 @@ services:
     labels:
       - traefik.http.routers.traefik.rule=Host(`${API_SERVER_BASE_URL}`)
       - traefik.http.routers.traefik.service=api@internal
-    log:
-      filePath: "/path/to/log-file.log"
-      format: json
 
   api:
     build:
