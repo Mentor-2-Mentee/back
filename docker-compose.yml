@@ -60,6 +60,9 @@ services:
     labels:
       - traefik.http.routers.traefik.rule=Host(`${API_SERVER_BASE_URL}`)
       - traefik.http.routers.traefik.service=api@internal
+    log:
+      filePath: "/path/to/log-file.log"
+      format: json
 
   api:
     build:
@@ -78,6 +81,7 @@ services:
       - "traefik.http.routers.api.entrypoints=web"
       - "traefik.http.routers.api.middlewares=redirect-to-https"
       # ws
+      - "traefik.ws.routers.api.tls.certresolver=myresolver"
       - "traefik.ws.routers.api.rule=Host(`${API_SERVER_BASE_URL}`)"
       - "traefik.ws.routers.api.entrypoints=ws"
       - "traefik.ws.services.api.loadbalancer.server.port=8081"
