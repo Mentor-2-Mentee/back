@@ -28,13 +28,13 @@ import { join } from "path";
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: "mariadb",
-        host: configService.get<string>("DATABASE_HOST"),
-        port: parseInt(configService.get<string>("DATABASE_PORT")),
-        username: configService.get<string>("DATABASE_USER"),
-        password: configService.get<string>("DATABASE_PASSWORD"),
+        host: configService.get<string>("MARIADB_HOST"),
+        port: parseInt(configService.get<string>("MARIADB_PORT")),
+        username: configService.get<string>("MARIADB_USER"),
+        password: configService.get<string>("MARIADB_PASSWORD"),
         database: `liveroom`,
         entities: [LiveRoom],
-        synchronize: true, //production에서는 쓰지말것 db가 서버와동기화되어버림
+        // synchronize: true, //production에서는 쓰지말것 db가 서버와동기화되어버림
       }),
     }),
     ClientsModule.registerAsync([
