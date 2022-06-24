@@ -65,9 +65,9 @@ services:
       - "${DOCKER_SOCK}:/var/run/docker.sock:ro"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.entrypoints=http,https"
-      - "traefik.http.routers.dashboard.rule=Host(`${API_SERVER_BASE_URL}`) &&  PathPrefix(`/dashboard/`)"
-      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboardapi.entrypoints=http,https"
+      - "traefik.http.routers.dashboardapi.rule=Host(`${API_SERVER_BASE_URL}`) &&  PathPrefix(`/api/`)"
+      - "traefik.http.routers.dashboardapi.service=api@internal"
 
   api:
     build:
