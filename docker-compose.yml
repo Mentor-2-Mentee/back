@@ -69,23 +69,15 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
+      #https
       - "traefik.http.routers.api.rule=Host(`${API_SERVER_BASE_URL}`)"
-      - "traefik.http.routers.api.entrypoints=http"
+      - "traefik.http.routers.api.entrypoints=http,https"
       - "traefik.http.routers.api.tls.certresolver=myresolver"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-      #https
-      - "traefik.http.routers.api.rule=hostregexp(`{host:.+}`)"
-      - "traefik.http.routers.api.entrypoints=https"
-      - "traefik.http.routers.api.middlewares=redirect-to-https"
       # ws
       - "traefik.http.routers.websocket.tls.certresolver=myresolver"
       - "traefik.http.routers.websocket.rule=Host(`${API_SERVER_BASE_URL}`)"
-      - "traefik.http.routers.websocket.entrypoints=websocket"
+      - "traefik.http.routers.websocket.entrypoints=websocket,websocketsecure"
       - "traefik.http.services.websocket.loadbalancer.server.port=8081"
       - "traefik.http.middlewares.redirect-to-websocketsecure.redirectscheme.scheme=websocketsecure"
-      # # wss
-      - "traefik.http.routers.websocketsecure.rule=Host(`${API_SERVER_BASE_URL}`)"
-      - "traefik.http.routers.websocketsecure.entrypoints=websocketsecure"
       - "traefik.http.routers.websocketsecure.tls=true"
-      - "traefik.http.routers.websocketsecure.tls.certresolver=myresolver"
-      - "traefik.http.services.websocketsecure.loadbalancer.server.port=8081"
