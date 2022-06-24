@@ -28,6 +28,30 @@ services:
     ports:
       - ${REDIS_PORT}:${REDIS_PORT}
 
+version: "3.7"
+
+services:
+  nginx:
+    image: "nginx:1.22"
+    container_name: "nginx"
+    restart: "always"
+    ports: 
+      - "80:80"
+      - "443:443"
+    volumes: 
+      - ./data/nginx.conf:/etc/nginx/nginx.conf
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
   traefik:
     image: "traefik:v2.6"
     container_name: "traefik"
@@ -39,6 +63,7 @@ services:
       - "--api.debug=true"
       - "--providers.docker=true"
         #- "--log.level=DEBUG"
+      - "--defaultentrypoints=http,https,ws,wss"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--entryPoints.ws.address=:8081"
@@ -55,8 +80,8 @@ services:
       - "80:80"
       - "443:443"
       - "8080:8080"
-      # - "8081:8081"
-      # - "8083:8083"
+      - "8081:8081"
+      - "8083:8083"
     volumes:
       - "${TRAEFIK_LETSSENCRYPT_VOLUEMES}:/letsencrypt"
       - "${DOCKER_SOCK}:/var/run/docker.sock:ro"
@@ -81,14 +106,14 @@ services:
       - "traefik.http.routers.api.entrypoints=web"
       - "traefik.http.routers.api.middlewares=redirect-to-https"
       # ws
-      # - "traefik.ws.routers.api.tls.certresolver=myresolver"
-      # - "traefik.ws.routers.api.rule=Host(`${API_SERVER_BASE_URL}`)"
-      # - "traefik.ws.routers.api.entrypoints=ws"
-      # - "traefik.ws.services.api.loadbalancer.server.port=8081"
+      - "traefik.ws.routers.api.tls.certresolver=myresolver"
+      - "traefik.ws.routers.api.rule=Host(`${API_SERVER_BASE_URL}`)"
+      - "traefik.ws.routers.api.entrypoints=ws"
+      - "traefik.ws.services.api.loadbalancer.server.port=8081"
       # # wss
-      # - "traefik.wss.protocol=ws"
-      # - "traefik.wss.routers.api.rule=Host(`${API_SERVER_BASE_URL}`)"
-      # - "traefik.wss.routers.api.entrypoints=wss"
-      # - "traefik.wss.routers.api.tls=true"
-      # - "traefik.wss.routers.api.tls.certresolver=myresolver"
-      # - "traefik.wss.services.api.loadbalancer.server.port=8083"
+      - "traefik.wss.protocol=ws"
+      - "traefik.wss.routers.api.rule=Host(`${API_SERVER_BASE_URL}`)"
+      - "traefik.wss.routers.api.entrypoints=wss"
+      - "traefik.wss.routers.api.tls=true"
+      - "traefik.wss.routers.api.tls.certresolver=myresolver"
+      - "traefik.wss.services.api.loadbalancer.server.port=8083"

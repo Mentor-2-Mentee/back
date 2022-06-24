@@ -15,9 +15,6 @@ import { Socket } from "dgram";
 @WebSocketGateway(8081, {
   namespace: "/live-chat",
   transports: ["websocket"],
-  auth: {
-    ["1234"]: "qwer",
-  },
 })
 export class LiveChatGateway {
   constructor(private readonly liveChatService: LiveChatService) {}
