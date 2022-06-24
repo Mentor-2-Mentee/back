@@ -86,8 +86,8 @@ services:
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.services.api.loadbalancer.server.port=80"
       # ws
-      - "traefik.ws.routers.websocket.tls.certresolver=myresolver"
-      - "traefik.ws.routers.websocket.rule=Host(`${API_SERVER_BASE_URL}`)"
-      - "traefik.ws.routers.websocket.entrypoints=websocket,websocketsecure"
-      - "traefik.ws.services.websocket.loadbalancer.server.port=8081"
-      - "traefik.ws.middlewares.redirect-to-websocketsecure.redirectscheme.scheme=websocketsecure"
+      - "traefik.http.routers.websocket.tls.certresolver=myresolver"
+      - "traefik.http.routers.websocket.rule=Host(`${API_SERVER_BASE_URL}`)"
+      - "traefik.http.routers.websocket.entrypoints=websocket,websocketsecure"
+      - "traefik.http.services.websocket.loadbalancer.server.port=8081"
+      - "traefik.http.middlewares.redirect-to-websocketsecure.redirectscheme.scheme=websocketsecure"
