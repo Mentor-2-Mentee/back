@@ -61,7 +61,6 @@ services:
     volumes:
       - "${TRAEFIK_LETSSENCRYPT_VOLUEMES}:/letsencrypt"
       - "${DOCKER_SOCK}:/var/run/docker.sock:ro"
-
   api:
     build:
       context: .
@@ -79,15 +78,14 @@ services:
       - "traefik.http.routers.api.entrypoints=https"
       - "traefik.http.routers.api.middlewares=redirect-to-https"
       # ws
-      - "traefik.websocket.routers.api.tls.certresolver=myresolver"
-      - "traefik.websocket.routers.api.rule=Host(`${API_SERVER_BASE_URL}`)"
-      - "traefik.websocket.routers.api.entrypoints=websocket"
-      - "traefik.websocket.services.api.loadbalancer.server.port=8081"
-      - "traefik.websocket.middlewares.redirect-to-websocketsecure.redirectscheme.scheme=websocketsecure"
+      - "traefik.http.routers.websocket.tls.certresolver=myresolver"
+      - "traefik.http.routers.websocket.rule=Host(`${API_SERVER_BASE_URL}`)"
+      - "traefik.http.routers.websocket.entrypoints=websocket"
+      - "traefik.http.services.websocket.loadbalancer.server.port=8081"
+      - "traefik.http.middlewares.redirect-to-websocketsecure.redirectscheme.scheme=websocketsecure"
       # # wss
-      - "traefik.websocketsecure.protocol=websocketsecure"
-      - "traefik.websocketsecure.routers.api.rule=Host(`${API_SERVER_BASE_URL}`)"
-      - "traefik.websocketsecure.routers.api.entrypoints=websocketsecure"
-      - "traefik.websocketsecure.routers.api.tls=true"
-      - "traefik.websocketsecure.routers.api.tls.certresolver=myresolver"
-      - "traefik.websocketsecure.services.api.loadbalancer.server.port=8083"
+      - "traefik.http.routers.websocketsecure.rule=Host(`${API_SERVER_BASE_URL}`)"
+      - "traefik.http.routers.websocketsecure.entrypoints=websocketsecure"
+      - "traefik.http.routers.websocketsecure.tls=true"
+      - "traefik.http.routers.websocketsecure.tls.certresolver=myresolver"
+      - "traefik.http.services.websocketsecure.loadbalancer.server.port=8081"
