@@ -37,7 +37,6 @@ services:
       - "--api.dashboard=true"
       - "--api.insecure=true"
       - "--api.debug=true"
-      - "--api.middlewares.default-whitelist=true"
       - "--providers.docker=true"
       - "--entrypoints.metrics.address=:9999"
       - "--entrypoints.http.address=:80"
@@ -45,8 +44,6 @@ services:
       # - "--entrypoints.https.address.tls=true"
       - "--entryPoints.websocket.address=:8081"
       - "--entryPoints.websocketsecure.address=:8083"
-      - "--entryPoints.ws=true"
-      - "--entryPoints.wss=true"
       # - "--entrypoints.websocketsecure.address.tls=true"
       - "--providers.docker.exposedbydefault=false"
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
@@ -66,6 +63,11 @@ services:
     volumes:
       - "${TRAEFIK_LETSSENCRYPT_VOLUEMES}:/letsencrypt"
       - "${DOCKER_SOCK}:/var/run/docker.sock:ro"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.entrypoints=http,https"
+      - "traefik.http.routers.dashboard.rule=Host(`${API_SERVER_BASE_URL}`) &&  PathPrefix(`/dashboard/`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
 
   api:
     build:
