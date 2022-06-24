@@ -62,7 +62,9 @@ services:
       - "9999:9999"
     volumes:
       - "${TRAEFIK_LETSSENCRYPT_VOLUEMES}:/letsencrypt"
-      - "${DOCKER_SOCK}:/var/run/docker.sock:ro"  api:
+      - "${DOCKER_SOCK}:/var/run/docker.sock:ro"
+
+  api:
     build:
       context: .
       dockerfile: Dockerfile
