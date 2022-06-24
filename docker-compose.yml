@@ -37,6 +37,7 @@ services:
       - "--api.dashboard=true"
       - "--api.insecure=true"
       - "--api.debug=true"
+      - "--api.middlewares.default-whitelist=true"
       - "--providers.docker=true"
       - "--entrypoints.metrics.address=:9999"
       - "--entrypoints.http.address=:80"
