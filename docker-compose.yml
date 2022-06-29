@@ -45,6 +45,6 @@ services:
       - mariadb:mariadb
     build:
       context: .
-      dockerfile: Dockerfil
+      dockerfile: Dockerfile
     container_name: "api"
     restart: always
