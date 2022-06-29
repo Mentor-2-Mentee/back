@@ -10,6 +10,7 @@ FROM node:10-alpine
 WORKDIR /app
 COPY --from=builder /app ./
 EXPOSE 80
+EXPOSE 443
 EXPOSE 8081
 EXPOSE 8083
 
