@@ -40,6 +40,12 @@ services:
       - ./nginx_config/proxy.conf:/etc/nginx/proxy.conf
       - ./nginx_config/nginx_params:/etc/nginx/nginx_params
 
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+
   api:
     links:
       - mariadb:mariadb
