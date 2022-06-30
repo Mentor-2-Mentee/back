@@ -12,7 +12,7 @@ services:
       - "${MARIADB_PORT}:${MARIADB_PORT}"
     networks:
       m2m_network:
-        ipv4_address: 172.19.0.4
+        ipv4_address: 172.20.0.5
 
   redis:
     image: redis:alpine
@@ -32,7 +32,7 @@ services:
       - ${REDIS_PORT}:${REDIS_PORT}
     networks:
       m2m_network:
-        ipv4_address: 172.19.0.3
+        ipv4_address: 172.20.0.4
 
   nginx:
     image: "nginx:1.22"
@@ -50,7 +50,7 @@ services:
       - ./data/certbot/www:/var/www/certbot
     networks:
       m2m_network:
-        ipv4_address: 172.19.0.5
+        ipv4_address: 172.20.0.2
 
   certbot:
     image: certbot/certbot
@@ -66,14 +66,11 @@ services:
       dockerfile: Dockerfile
     networks:
       m2m_network:
-        ipv4_address: 172.19.0.2
+        ipv4_address: 172.20.0.3
     container_name: "api"
     restart: always
 
 networks:
   m2m_network:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: "172.19.0.0/16"
+    external:
+      name: m2m_service
