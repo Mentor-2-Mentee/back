@@ -57,7 +57,7 @@ services:
       dockerfile: Dockerfile
     networks:
       api_network:
-        ipv4_address: 172.24.10.1
+        ipv4_address: 172.25.10.1
     container_name: "api"
     restart: always
 
@@ -67,4 +67,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: "172.24.10.0/16"
+        - subnet: "172.25.10.0/24"
