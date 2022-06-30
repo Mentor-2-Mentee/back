@@ -50,7 +50,7 @@ services:
       - ./data/certbot/www:/var/www/certbot
     networks:
       m2m_network:
-        ipv4_address: 172.19.0.1
+        ipv4_address: 172.19.0.5
 
   certbot:
     image: certbot/certbot
