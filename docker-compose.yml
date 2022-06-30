@@ -48,9 +48,6 @@ services:
       - ./nginx_config/nginx_params:/etc/nginx/nginx_params
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
-    networks:
-      m2m_network:
-        ipv4_address: 172.19.0.5
 
   certbot:
     image: certbot/certbot
