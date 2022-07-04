@@ -13,6 +13,7 @@ import {
   Req,
   Inject,
   CACHE_MANAGER,
+  Res,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "./auth.service";
@@ -24,8 +25,13 @@ import { MessagePattern } from "@nestjs/microservices";
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Get()
+  @Post("/token")
+  sendToken(@Body() bodyParam: any) {
+    const tokens = this.authService.sendToken(bodyParam.code);
+    return tokens;
+  }
   @UseGuards(AuthGuard("kakao"))
+  @Get("/kakao")
   async kakaoLogin(@Req() req): Promise<any> {
     return HttpStatus.OK;
   }

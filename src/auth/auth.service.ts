@@ -1,5 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { CACHE_MANAGER, Inject, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { Cache } from "cache-manager";
 import { UsersService } from "src/users/users.service";
 import configuration from "../config/configuration";
 
@@ -7,7 +8,8 @@ import configuration from "../config/configuration";
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
@@ -30,6 +32,11 @@ export class AuthService {
     }
 
     return this.jwtService.sign(payload);
+  }
+
+  async sendToken(tokenKeyCode: string) {
+    const tokens = await this.cacheManager.get<string>(tokenKeyCode);
+    return tokens;
   }
 
   async login(user: any) {

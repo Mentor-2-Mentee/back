@@ -5,10 +5,18 @@ import { Strategy } from "passport-kakao";
 import configuration from "src/config/configuration";
 import { UserKakaoDto } from "./dto/user.kakao.dto";
 import { Cache } from "cache-manager";
+import { v4 as uuidv4 } from "uuid";
+import { AuthService } from "../auth.service";
+
+interface CachingTokenPayload {
+  accessToken: string;
+  refreshToken: string;
+}
 
 export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
   constructor(
     readonly configService: ConfigService,
+    private authService: AuthService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {
     super({
@@ -18,8 +26,8 @@ export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
     });
   }
 
-  async validate(accessToken, refreshToken, profile, done) {
-    console.log(profile);
+  async validate(_accessToken, _refreshToken, profile, done) {
+    console.log("now_SignIn UserProfile", profile);
     const profileJson = profile._json;
     const kakaoAccount = profileJson.kakao_account;
     const payload: UserKakaoDto = {
@@ -30,8 +38,17 @@ export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
           ? kakaoAccount.email
           : null,
     };
-    await this.cacheManager.set<number>("authCahe", 123123123, { ttl: 60 });
+    const tokenKeyCode = uuidv4();
+    const tokenPayload: CachingTokenPayload = {
+      accessToken: await this.authService.createToken(payload, "ACCESS"),
+      refreshToken: await this.authService.createToken(payload, "REFRESH"),
+    };
+    await this.cacheManager.set<CachingTokenPayload>(
+      tokenKeyCode,
+      tokenPayload,
+      { ttl: 60 }
+    );
 
-    done(null, payload);
+    done(null, tokenKeyCode);
   }
 }
