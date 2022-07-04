@@ -1,6 +1,7 @@
-import { Module } from "@nestjs/common";
+import { CacheModule, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
+import { ClientsModule, Transport } from "@nestjs/microservices";
 import { PassportModule } from "@nestjs/passport"; //주입된 passport전략 모듈을 주입
 import { UsersModule } from "src/users/users.module"; // 검증할 유저에 대한 모듈을 주입
 import { AuthService } from "./auth.service";
@@ -23,6 +24,9 @@ import { LocalStrategy } from "./local/local.strategy"; // LocalStrategy로 내�
         },
       }),
     }),
+    ClientsModule.register([
+      { name: "AUTH_SERVICE", transport: Transport.TCP },
+    ]),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, KakaoStrategy],
   exports: [AuthService],

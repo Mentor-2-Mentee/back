@@ -1,11 +1,16 @@
+import { CACHE_MANAGER, Inject } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-kakao";
 import configuration from "src/config/configuration";
 import { UserKakaoDto } from "./dto/user.kakao.dto";
+import { Cache } from "cache-manager";
 
 export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
-  constructor(readonly configService: ConfigService) {
+  constructor(
+    readonly configService: ConfigService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
+  ) {
     super({
       clientID: configuration().kakaoRestApiKey,
       callbackURL: configuration().kakaoCallbackURL,
@@ -25,6 +30,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
           ? kakaoAccount.email
           : null,
     };
+    await this.cacheManager.set<number>("authCahe", 123123123, { ttl: 60 });
 
     done(null, payload);
   }

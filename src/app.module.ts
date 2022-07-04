@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { CacheModule, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
@@ -13,6 +13,7 @@ import { UsersModule } from "./users/users.module";
 import configuration from "./config/configuration";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
+import * as redisStore from "cache-manager-ioredis";
 
 @Module({
   imports: [
@@ -37,26 +38,37 @@ import { join } from "path";
         // synchronize: true, //production에서는 쓰지말것 db가 서버와동기화되어버림
       }),
     }),
-    ClientsModule.registerAsync([
-      {
-        imports: [ConfigModule],
-        inject: [ConfigService],
-        name: "live-chat",
-        useFactory: (configService: ConfigService) => ({
-          transport: Transport.REDIS,
-          options: {
-            url: `redis://${configService.get<string>(
-              "REDIS_HOST"
-            )}:${configService.get<string>("REDIS_PORT")}`,
-          },
-        }),
-      },
-    ]),
+    // ClientsModule.registerAsync([
+    //   {
+    //     imports: [ConfigModule],
+    //     inject: [ConfigService],
+    //     name: "live-chat",
+    //     useFactory: (configService: ConfigService) => ({
+    //       transport: Transport.REDIS,
+    //       options: {
+    //         url: `redis://${configService.get<string>(
+    //           "REDIS_HOST"
+    //         )}:${configService.get<string>("REDIS_PORT")}`,
+    //       },
+    //     }),
+    //   },
+    // ]),
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        store: redisStore,
+        host: `${configService.get<string>("REDIS_HOST")}`,
+        port: configService.get<string>("REDIS_PORT"),
+      }),
+      isGlobal: true,
+    }),
     LiveChatModule,
     AuthModule,
     UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
+  exports: [CacheModule],
 })
 export class AppModule {}
