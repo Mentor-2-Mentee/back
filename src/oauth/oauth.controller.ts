@@ -3,25 +3,14 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  HttpCode,
   UseGuards,
   HttpStatus,
   Req,
-  Inject,
-  CACHE_MANAGER,
-  Res,
   Request,
   Redirect,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { OauthService } from "./oauth.service";
-import { UserKakaoDto } from "./kakao/dto/user.kakao.dto";
-import { Cache } from "cache-manager";
-import { MessagePattern } from "@nestjs/microservices";
 import { JwtAuthGuard } from "./jwt/jwt-auth.guard";
 import { injectQuerys } from "src/common/utils/injectQuerys";
 import { ConfigService } from "@nestjs/config";
