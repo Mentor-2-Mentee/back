@@ -2,11 +2,11 @@ import { CACHE_MANAGER, Inject } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-kakao";
-import configuration from "src/config/configuration";
+import configuration from "src/common/config/configuration";
 import { UserKakaoDto } from "./dto/user.kakao.dto";
 import { Cache } from "cache-manager";
 import { v4 as uuidv4 } from "uuid";
-import { AuthService } from "../auth.service";
+import { OauthService } from "../oauth.service";
 
 interface CachingTokenPayload {
   accessToken: string;
@@ -16,7 +16,7 @@ interface CachingTokenPayload {
 export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
   constructor(
     readonly configService: ConfigService,
-    private authService: AuthService,
+    private OauthService: OauthService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {
     super({
@@ -27,7 +27,6 @@ export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
   }
 
   async validate(_accessToken, _refreshToken, profile, done) {
-    console.log("now_SignIn UserProfile", profile);
     const profileJson = profile._json;
     const kakaoAccount = profileJson.kakao_account;
     const payload: UserKakaoDto = {
@@ -38,10 +37,11 @@ export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
           ? kakaoAccount.email
           : null,
     };
+    console.log(payload);
     const tokenKeyCode = uuidv4();
     const tokenPayload: CachingTokenPayload = {
-      accessToken: await this.authService.createToken(payload, "ACCESS"),
-      refreshToken: await this.authService.createToken(payload, "REFRESH"),
+      accessToken: await this.OauthService.createToken(payload, "ACCESS"),
+      refreshToken: await this.OauthService.createToken(payload, "REFRESH"),
     };
     await this.cacheManager.set<CachingTokenPayload>(
       tokenKeyCode,

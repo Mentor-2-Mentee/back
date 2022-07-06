@@ -8,9 +8,9 @@ import { LiveRoomsModule } from "./live-rooms/live-rooms.module";
 import { LiveRoom } from "./live-rooms/entities/live-room.entity";
 import { LiveChatModule } from "./live-chat/live-chat.module";
 import { ClientsModule, Transport } from "@nestjs/microservices";
-import { AuthModule } from "./auth/auth.module";
-import { UsersModule } from "./users/users.module";
-import configuration from "./config/configuration";
+import { OauthModule } from "./oauth/oauth.module";
+
+import configuration from "./common/config/configuration";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 import * as redisStore from "cache-manager-ioredis";
@@ -38,21 +38,6 @@ import * as redisStore from "cache-manager-ioredis";
         // synchronize: true, //production에서는 쓰지말것 db가 서버와동기화되어버림
       }),
     }),
-    // ClientsModule.registerAsync([
-    //   {
-    //     imports: [ConfigModule],
-    //     inject: [ConfigService],
-    //     name: "live-chat",
-    //     useFactory: (configService: ConfigService) => ({
-    //       transport: Transport.REDIS,
-    //       options: {
-    //         url: `redis://${configService.get<string>(
-    //           "REDIS_HOST"
-    //         )}:${configService.get<string>("REDIS_PORT")}`,
-    //       },
-    //     }),
-    //   },
-    // ]),
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -64,8 +49,7 @@ import * as redisStore from "cache-manager-ioredis";
       isGlobal: true,
     }),
     LiveChatModule,
-    AuthModule,
-    UsersModule,
+    OauthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
