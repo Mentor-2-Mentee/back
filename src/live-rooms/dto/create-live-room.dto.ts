@@ -1,10 +1,19 @@
+interface FilterOptionElement {
+  filterKey: string;
+  describeText: string;
+  parentElement?: {
+    parentDescribeText: string;
+    parentFilterKey: string;
+  };
+}
+interface AppliedOptions {
+  parentElement?: Omit<FilterOptionElement, "parentElement">;
+  childElements: Omit<FilterOptionElement, "parentElement">[];
+  filterKeywords: string[];
+}
+
 export class CreateLiveRoomDto {
-  roomId: string;
-  title: string;
-  author: string;
-  authorColor: string;
-  createdAt: string;
-  startedAt: string;
-  thumbnailImgURL: string;
-  roomTags?: string[];
+  roomTitle: string;
+  appliedTagOptions: string; //Omit<AppliedOptions, "filterKeywords">;
+  explainRoomText?: string;
 }
