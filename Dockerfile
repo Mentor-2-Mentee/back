@@ -9,6 +9,7 @@ RUN npm run build
 FROM node:10-alpine
 WORKDIR /app
 COPY --from=builder /app ./
+VOLUME ./../../mnt/hdd1/m2m_public:/app/public
 EXPOSE 80
 EXPOSE 443
 EXPOSE 8081

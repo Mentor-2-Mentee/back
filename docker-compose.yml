@@ -35,8 +35,8 @@ services:
       m2m_network:
         ipv4_address: ${API_STATIC_IP}
     container_name: "api"
-    volumes:
-      - ~/../mnt/hdd1/m2m_public:/app
+    # volumes:
+    # - ./../../mnt/hdd1/m2m_public:/app/public
     restart: always
 
   redis:
