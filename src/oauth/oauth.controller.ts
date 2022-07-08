@@ -32,10 +32,7 @@ export class OauthController {
   @UseGuards(AuthGuard("kakao"))
   @Get()
   @Redirect("AUTH_CALLBACK_URL", 301)
-  async kakaoAuthRedirect(
-    @Req() req
-    // @Res({ passthrough: true }) response: Response
-  ) {
+  async kakaoAuthRedirect(@Req() req) {
     console.log("tokenCode:", req.user);
 
     const targetURL = injectQuerys({
