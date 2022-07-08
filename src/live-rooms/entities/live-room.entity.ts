@@ -5,20 +5,27 @@ export class LiveRoom {
   @PrimaryGeneratedColumn()
   id: number;
 
-  //   @Column()
-  //   roomId: string;
-  @Column()
-  title: string;
-  //   @Column()
-  //   author: string;
-  //   @Column()
-  //   authorColor: string;
-  //   @Column()
-  //   createdAt: string;
-  //   @Column()
-  //   startedAt: string;
-  //   @Column()
-  //   thumbnailImgURL: string;
-  //   @Column({ array: true })
-  //   roomTags: string;
+  @Column({ nullable: false })
+  roomId: string;
+
+  @Column({ nullable: false })
+  roomTitle: string;
+
+  @Column({ nullable: false })
+  author: string;
+
+  @Column({ nullable: false })
+  imageFiles: string;
+
+  @Column({ nullable: true })
+  parentsTag: string;
+
+  @Column({ nullable: true })
+  roomTags: string;
+
+  @Column({ type: "timestamp" })
+  createdAt: string;
+
+  @Column({ type: "timestamp" })
+  startedAt: string;
 }

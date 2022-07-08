@@ -24,20 +24,20 @@ import * as redisStore from "cache-manager-ioredis";
       load: [configuration],
     }),
     LiveRoomsModule,
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: "mariadb",
-        host: configService.get<string>("MARIADB_HOST"),
-        port: parseInt(configService.get<string>("MARIADB_PORT")),
-        username: configService.get<string>("MARIADB_USER"),
-        password: configService.get<string>("MARIADB_PASSWORD"),
-        database: `liveroom`,
-        entities: [LiveRoom],
-        // synchronize: true, //production에서는 쓰지말것 db가 서버와동기화되어버림
-      }),
-    }),
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: (configService: ConfigService) => ({
+    //     type: "mariadb",
+    //     host: configService.get<string>("MARIADB_HOST"),
+    //     port: parseInt(configService.get<string>("MARIADB_PORT")),
+    //     username: configService.get<string>("MARIADB_USER"),
+    //     password: configService.get<string>("MARIADB_PASSWORD"),
+    //     database: `liveroom`,
+    //     entities: [LiveRoom],
+    //     // synchronize: true, //production에서는 쓰지말것 db가 서버와동기화되어버림
+    //   }),
+    // }),
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
