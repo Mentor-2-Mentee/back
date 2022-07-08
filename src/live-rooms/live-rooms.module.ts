@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import { extname } from "path/posix";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { LiveRoom } from "./entities/live-room.entity";
+import DateFormatting from "src/common/utils/DateFormatting";
 
 @Module({
   imports: [
