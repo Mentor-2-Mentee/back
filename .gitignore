@@ -30,3 +30,6 @@ dockerSettings/*
 
 nginx
 nginx/*
+
+public
+public/*
