@@ -46,7 +46,10 @@ export class LiveRoomsService {
       roomTitle: createLiveRoomDto.roomTitle,
       author: userData.username,
       imageFiles: JSON.stringify(imagesPath),
-      parentsTag: parsedAppliedTagOptions.parentElement.filterKey,
+      parentsTag:
+        parsedAppliedTagOptions.parentElement === undefined
+          ? null
+          : parsedAppliedTagOptions.parentElement.filterKey,
       roomTags: JSON.stringify(parsedAppliedTagOptions.childElements),
     });
     console.log(findAllResult);
