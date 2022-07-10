@@ -7,6 +7,9 @@ import { OauthController } from "./oauth.controller";
 import { OauthService } from "./oauth.service";
 import { JwtStrategy } from "./jwt/jwt.strategy";
 import { KakaoStrategy } from "./kakao/kakao.strategy";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { User } from "./entities/user.entitiy";
+import { LiveRoom } from "src/live-rooms/entities/live-room.entity";
 
 @Module({
   imports: [
@@ -25,6 +28,20 @@ import { KakaoStrategy } from "./kakao/kakao.strategy";
     ClientsModule.register([
       { name: "AUTH_SERVICE", transport: Transport.TCP },
     ]),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: "mariadb",
+        host: configService.get<string>("MARIADB_HOST"),
+        port: parseInt(configService.get<string>("MARIADB_PORT")),
+        username: configService.get<string>("MARIADB_USER"),
+        password: configService.get<string>("MARIADB_PASSWORD"),
+        database: `liveroom`,
+        entities: [LiveRoom, User],
+      }),
+    }),
+    TypeOrmModule.forFeature([User]),
   ],
   controllers: [OauthController],
   providers: [OauthService, JwtStrategy, KakaoStrategy],

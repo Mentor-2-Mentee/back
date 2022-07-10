@@ -31,7 +31,7 @@ export class LiveRoomsService {
     const imagesPath = [];
 
     imageFiles.map((imageFile) => {
-      const rootDirName = new RegExp("public");
+      const rootDirName = new RegExp("public/");
       const savedPath = imageFile.path.replace(rootDirName, "");
       imagesPath.push(savedPath);
     });
