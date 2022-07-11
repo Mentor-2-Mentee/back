@@ -39,10 +39,13 @@ export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
     };
     console.log(payload);
     const tokenKeyCode = uuidv4();
-    const tokenPayload: CachingTokenPayload = {
-      accessToken: await this.OauthService.createToken(payload, "ACCESS"),
-      refreshToken: await this.OauthService.createToken(payload, "REFRESH"),
-    };
+    // const tokenPayload: CachingTokenPayload = {
+    //   accessToken: await this.OauthService.createToken(payload, "ACCESS"),
+    //   refreshToken: await this.OauthService.createToken(payload, "REFRESH"),
+    // };
+
+    const tokenPayload: CachingTokenPayload =
+      await this.OauthService.createToken(payload);
     await this.cacheManager.set<CachingTokenPayload>(
       tokenKeyCode,
       tokenPayload,

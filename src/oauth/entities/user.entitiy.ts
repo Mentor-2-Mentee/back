@@ -9,7 +9,7 @@ export class User {
   userId: number;
 
   @Column({ nullable: false })
-  userName: string;
+  username: string;
 
   @Column({ type: "timestamp" })
   createdAt: string;

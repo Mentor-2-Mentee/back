@@ -7,6 +7,14 @@ import configuration from "../common/config/configuration";
 import { User } from "./entities/user.entitiy";
 import { UserKakaoDto } from "./kakao/dto/user.kakao.dto";
 
+interface UserPayload {
+  isFirstSignIn: boolean;
+  payload: {
+    userId: number;
+    username: string;
+  };
+}
+
 @Injectable()
 export class OauthService {
   constructor(
@@ -16,43 +24,52 @@ export class OauthService {
     private UserRepository: Repository<User>
   ) {}
 
-  async getUserPayload(params: UserKakaoDto) {
+  async getUserPayload(params: UserKakaoDto): Promise<UserPayload> {
     const registeredUser = await this.UserRepository.findOne({
       userId: params.kakaoId,
     });
 
+    const isFirstSignIn = Boolean(registeredUser);
+
     if (!registeredUser) {
       const initialRandomName = `UID-${Math.random()
         .toString()
-        .replace("0.", "")}`;
+        .replace("0.", "")
+        .slice(0, 6)}`;
 
       const result = await this.UserRepository.save({
         userId: params.kakaoId,
-        userName: initialRandomName,
+        username: initialRandomName,
       });
 
       return {
-        userId: result.userId,
-        username: result.userName,
+        isFirstSignIn: true,
+        payload: {
+          userId: result.userId,
+          username: result.username,
+        },
       };
     }
 
     return {
-      userId: registeredUser.userId,
-      username: registeredUser.userName,
+      isFirstSignIn: false,
+      payload: {
+        userId: registeredUser.userId,
+        username: registeredUser.username,
+      },
     };
   }
 
-  async createToken(params: UserKakaoDto, tokenType: "ACCESS" | "REFRESH") {
-    const payload = await this.getUserPayload(params);
+  async createToken(params: UserKakaoDto) {
+    const { isFirstSignIn, payload } = await this.getUserPayload(params);
 
-    if (tokenType === "REFRESH") {
-      return this.jwtService.sign(payload, {
+    return {
+      isFirstSignIn,
+      accessToken: this.jwtService.sign(payload),
+      refreshToken: this.jwtService.sign(payload, {
         expiresIn: `${configuration().jwtRefreshExpireTime}`,
-      });
-    }
-
-    return this.jwtService.sign(payload);
+      }),
+    };
   }
 
   async sendToken(tokenKeyCode: string) {
