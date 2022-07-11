@@ -8,12 +8,17 @@ import {
   Req,
   Request,
   Redirect,
+  Put,
+  Param,
+  ParseIntPipe,
+  Query,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { OauthService } from "./oauth.service";
 import { JwtAuthGuard } from "./jwt/jwt-auth.guard";
 import { injectQuerys } from "src/common/utils/injectQuerys";
 import { ConfigService } from "@nestjs/config";
+import { UserPipe } from "src/pipes";
 
 @Controller("oauth")
 export class OauthController {
@@ -25,8 +30,21 @@ export class OauthController {
   @UseGuards(JwtAuthGuard)
   @Get("profile")
   getProfile(@Request() req) {
-    console.log("/profile", req.user);
+    console.log("GET /profile", req.user);
     return req.user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("profile")
+  updateProfile(@Request() req) {
+    console.log("POST /profile", req.user);
+
+    return "OK";
+  }
+
+  @Get("name_check?")
+  async getCheckResult(@Request() req, @Query("newname") newName) {
+    return this.OauthService.checkUseableName(newName);
   }
 
   @UseGuards(AuthGuard("kakao"))

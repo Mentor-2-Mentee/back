@@ -60,6 +60,38 @@ export class OauthService {
     };
   }
 
+  async checkUseableName(newName: string) {
+    if (newName.length < 1) {
+      return {
+        message: "새 닉네임을 입력해주세요.",
+        canUse: false,
+      };
+    }
+    if (newName.match(/\s/g)) {
+      console.log("공백발견");
+
+      return {
+        message: "공백문자는 사용할 수 없습니다.",
+        canUse: false,
+      };
+    }
+
+    const result = await this.UserRepository.findOne({
+      username: newName,
+    });
+    if (Boolean(result)) {
+      return {
+        message: "이미 사용중인 닉네임입니다.",
+        canUse: false,
+      };
+    }
+
+    return {
+      message: `OK`,
+      canUse: true,
+    };
+  }
+
   async createToken(params: UserKakaoDto) {
     const { isFirstSignIn, payload } = await this.getUserPayload(params);
 
