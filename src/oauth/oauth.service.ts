@@ -29,7 +29,7 @@ export class OauthService {
       userId: params.kakaoId,
     });
 
-    const isFirstSignIn = Boolean(registeredUser);
+    console.log("로그인한 유저 db정보:", registeredUser);
 
     if (!registeredUser) {
       const initialRandomName = `UID-${Math.random()

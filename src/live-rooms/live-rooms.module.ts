@@ -16,20 +16,6 @@ import DateFormatting from "src/common/utils/DateFormatting";
 @Module({
   imports: [
     OauthModule,
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: "mariadb",
-        host: configService.get<string>("MARIADB_HOST"),
-        port: parseInt(configService.get<string>("MARIADB_PORT")),
-        username: configService.get<string>("MARIADB_USER"),
-        password: configService.get<string>("MARIADB_PASSWORD"),
-        database: `liveroom`,
-        entities: [LiveRoom],
-        // synchronize: true, //production에서는 쓰지말것 db가 서버와동기화되어버림
-      }),
-    }),
     TypeOrmModule.forFeature([LiveRoom]),
     MulterModule.registerAsync({
       imports: [ConfigModule],
