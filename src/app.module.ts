@@ -16,6 +16,8 @@ import * as redisStore from "cache-manager-ioredis";
 import { User } from "./models/entities/user.entitiy";
 import { LiveRoom } from "src/models";
 
+import { SequelizeModule } from "@nestjs/sequelize";
+
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -25,18 +27,17 @@ import { LiveRoom } from "src/models";
       load: [configuration],
     }),
     LiveRoomsModule,
-    TypeOrmModule.forRootAsync({
+    SequelizeModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        type: "mariadb",
+        dialect: "mariadb",
         host: configService.get<string>("MARIADB_HOST"),
         port: parseInt(configService.get<string>("MARIADB_PORT")),
         username: configService.get<string>("MARIADB_USER"),
         password: configService.get<string>("MARIADB_PASSWORD"),
-        database: `M2M`,
-        entities: [LiveRoom, User],
-        // synchronize: true, //production에서는 쓰지말것 db가 서버와동기화되어버림
+        database: "M2M",
+        models: [LiveRoom, User],
       }),
     }),
     CacheModule.registerAsync({

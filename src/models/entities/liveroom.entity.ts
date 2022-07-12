@@ -1,31 +1,36 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Model, Table, AutoIncrement } from "sequelize-typescript";
 
-@Entity()
-export class LiveRoom {
-  @PrimaryGeneratedColumn()
+@Table({
+  tableName: "Liverooms",
+  timestamps: true,
+  createdAt: true,
+  updatedAt: "startedAt",
+})
+export class LiveRoom extends Model {
+  @AutoIncrement
+  @Column({
+    primaryKey: true,
+  })
   id: number;
 
-  @Column({ nullable: false })
+  @Column({ allowNull: false })
   roomId: string;
 
-  @Column({ nullable: false })
+  @Column({ allowNull: false })
   roomTitle: string;
 
-  @Column({ nullable: false })
+  @Column({ allowNull: true })
+  explainRoomText: string;
+
+  @Column({ allowNull: false })
   author: string;
 
-  @Column({ nullable: false })
+  @Column({ allowNull: false })
   imageFiles: string;
 
-  @Column({ nullable: true })
+  @Column({ allowNull: true })
   parentsTag: string;
 
-  @Column({ nullable: true })
+  @Column({ allowNull: true })
   roomTags: string;
-
-  @Column({ type: "timestamp" })
-  createdAt: string;
-
-  @Column({ type: "timestamp" })
-  startedAt: string;
 }

@@ -10,6 +10,7 @@ import { KakaoStrategy } from "./kakao/kakao.strategy";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "../models/entities/user.entitiy";
 import { LiveRoom } from "src/models/entities/liveroom.entity";
+import { SequelizeModule } from "@nestjs/sequelize";
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { LiveRoom } from "src/models/entities/liveroom.entity";
     ClientsModule.register([
       { name: "AUTH_SERVICE", transport: Transport.TCP },
     ]),
-    TypeOrmModule.forFeature([User]),
+    SequelizeModule.forFeature([User]),
   ],
   controllers: [OauthController],
   providers: [OauthService, JwtStrategy, KakaoStrategy],

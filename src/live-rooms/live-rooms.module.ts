@@ -12,11 +12,12 @@ import { extname } from "path";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { LiveRoom } from "../models/entities/liveroom.entity";
 import DateFormatting from "src/common/utils/DateFormatting";
+import { SequelizeModule } from "@nestjs/sequelize";
 
 @Module({
   imports: [
     OauthModule,
-    TypeOrmModule.forFeature([LiveRoom]),
+    SequelizeModule.forFeature([LiveRoom]),
     MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

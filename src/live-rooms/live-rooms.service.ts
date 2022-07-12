@@ -8,12 +8,15 @@ import {
 } from "src/models/dto";
 import { v4 as uuidv4 } from "uuid";
 import { LiveRoom } from "src/models/entities";
+import { InjectModel } from "@nestjs/sequelize";
 
 @Injectable()
 export class LiveRoomsService {
   constructor(
-    @InjectRepository(LiveRoom)
-    private liveRoomRepository: Repository<LiveRoom>
+    // @InjectRepository(LiveRoom)
+    // private liveRoomRepository: Repository<LiveRoom>
+    @InjectModel(LiveRoom)
+    private liveRoomModel: typeof LiveRoom
   ) {}
 
   async createRoom(
@@ -45,9 +48,10 @@ export class LiveRoomsService {
       createLiveRoomDto.appliedTagOptions
     );
 
-    const findAllResult = await this.liveRoomRepository.save({
+    const findAllResult = await this.liveRoomModel.create({
       roomId: roomPath,
       roomTitle: createLiveRoomDto.roomTitle,
+      explainRoomText: createLiveRoomDto.explainRoomText,
       author: userData.username,
       imageFiles: JSON.stringify(imagesPath),
       parentsTag:

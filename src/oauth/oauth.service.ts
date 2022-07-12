@@ -6,6 +6,7 @@ import { User } from "src/models";
 import { Repository } from "typeorm";
 import configuration from "../common/config/configuration";
 import { UserKakaoDto, UserM2MDto } from "src/models/dto";
+import { InjectModel } from "@nestjs/sequelize";
 
 interface UserPayload {
   isFirstSignIn: boolean;
@@ -20,13 +21,17 @@ export class OauthService {
   constructor(
     private jwtService: JwtService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    @InjectRepository(User)
-    private UserRepository: Repository<User>
+    // @InjectRepository(User)
+    // private UserRepository: Repository<User>
+    @InjectModel(User)
+    private userModel: typeof User
   ) {}
 
-  async getUserPayload(params: UserKakaoDto): Promise<UserPayload> {
-    const registeredUser = await this.UserRepository.findOne({
-      userId: params.kakaoId,
+  async getUserPayload({ kakaoId }: UserKakaoDto): Promise<UserPayload> {
+    const registeredUser = await this.userModel.findOne({
+      where: {
+        userId: kakaoId,
+      },
     });
 
     console.log("로그인한 유저 db정보:", registeredUser);
@@ -37,8 +42,8 @@ export class OauthService {
         .replace("0.", "")
         .slice(0, 6)}`;
 
-      const result = await this.UserRepository.save({
-        userId: params.kakaoId,
+      const result = await this.userModel.create({
+        userId: kakaoId,
         username: initialRandomName,
       });
 
@@ -61,6 +66,7 @@ export class OauthService {
   }
 
   async checkUseableName(newName: string) {
+    console.log("들어온이름", newName);
     if (newName.length < 1) {
       return {
         message: "새 닉네임을 입력해주세요.",
@@ -76,9 +82,12 @@ export class OauthService {
       };
     }
 
-    const result = await this.UserRepository.findOne({
-      username: newName,
+    const result = await this.userModel.findOne({
+      where: {
+        username: newName,
+      },
     });
+
     if (Boolean(result)) {
       return {
         message: "이미 사용중인 닉네임입니다.",
@@ -92,9 +101,11 @@ export class OauthService {
     };
   }
 
-  async getProfile(payload: { userId: number; username: string }) {
-    const targetUser: User = await this.UserRepository.findOne({
-      userId: payload.userId,
+  async getProfile({ userId, username }: { userId: number; username: string }) {
+    const targetUser: User = await this.userModel.findOne({
+      where: {
+        userId: userId,
+      },
     });
 
     return {
@@ -104,21 +115,29 @@ export class OauthService {
   }
 
   async updateProfile(
-    payload: { userId: number; username: string },
+    { userId, username }: { userId: number; username: string },
     newName: string
   ) {
-    const targetUser: User = await this.UserRepository.findOne({
-      userId: payload.userId,
+    await this.userModel.update(
+      {
+        username: newName,
+      },
+      {
+        where: {
+          userId,
+        },
+      }
+    );
+
+    const updateResult = await this.userModel.findOne({
+      where: {
+        userId,
+      },
     });
-    const newUser: User = {
-      ...targetUser,
-      username: newName,
-    };
-    const result = await this.UserRepository.save(newUser);
 
     return {
-      userId: result.userId,
-      username: result.username,
+      userId: updateResult.userId,
+      username: updateResult.username,
     };
   }
 
