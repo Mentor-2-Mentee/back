@@ -1,12 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { CreateLiveRoomDto } from "./dto/create-live-room.dto";
-import { UpdateLiveRoomDto } from "./dto/update-live-room.dto";
+import {
+  AppliedTagOptionsDto,
+  CreateLiveRoomDto,
+  UpdateLiveRoomDto,
+} from "src/models/dto";
 import { v4 as uuidv4 } from "uuid";
-import { LiveRoom } from "./entities/live-room.entity";
-import { UserM2MDto } from "src/oauth/kakao/dto/user.m2m.dto";
-import { AppliedTagOptionsDto } from "./dto/applied-tag-options.dto";
+import { LiveRoom } from "src/models/entities";
 
 @Injectable()
 export class LiveRoomsService {
@@ -16,7 +17,10 @@ export class LiveRoomsService {
   ) {}
 
   async createRoom(
-    userData: UserM2MDto,
+    userData: {
+      userId: number;
+      username: string;
+    },
     createLiveRoomDto: CreateLiveRoomDto,
     imageFiles: Express.Multer.File[]
   ): Promise<string> {

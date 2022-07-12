@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-kakao";
 import configuration from "src/common/config/configuration";
-import { UserKakaoDto } from "./dto/user.kakao.dto";
+import { UserKakaoDto } from "../../models/dto/user.kakao.dto";
 import { Cache } from "cache-manager";
 import { v4 as uuidv4 } from "uuid";
 import { OauthService } from "../oauth.service";

@@ -10,7 +10,7 @@ import * as fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import { extname } from "path";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { LiveRoom } from "./entities/live-room.entity";
+import { LiveRoom } from "../models/entities/liveroom.entity";
 import DateFormatting from "src/common/utils/DateFormatting";
 
 @Module({

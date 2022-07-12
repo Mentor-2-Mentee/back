@@ -10,26 +10,24 @@ import {
   Request,
   UseInterceptors,
   UploadedFiles,
-  UploadedFile,
-  Redirect,
-  Response,
-  Res,
 } from "@nestjs/common";
 import { LiveRoomsService } from "./live-rooms.service";
-import { CreateLiveRoomDto } from "./dto/create-live-room.dto";
-import { UpdateLiveRoomDto } from "./dto/update-live-room.dto";
+import { CreateLiveRoomDto, UpdateLiveRoomDto } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 
-import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
-import { Express } from "express";
+import { FilesInterceptor } from "@nestjs/platform-express";
 import configuration from "src/common/config/configuration";
-import { UserM2MDto } from "src/oauth/kakao/dto/user.m2m.dto";
+import { UserM2MDto } from "src/models/dto";
+import { OauthService } from "src/oauth/oauth.service";
 
 const MAX_IMAGE_COUNT = 10;
 
 @Controller("live-rooms")
 export class LiveRoomsController {
-  constructor(private readonly liveRoomsService: LiveRoomsService) {}
+  constructor(
+    private readonly liveRoomsService: LiveRoomsService,
+    private readonly OauthService: OauthService
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -41,8 +39,9 @@ export class LiveRoomsController {
   ) {
     console.log("새 질의응답방 생성자", req.user);
 
+    const userData = await this.OauthService.getProfile(req.user);
     const roomPath = await this.liveRoomsService.createRoom(
-      req.user,
+      userData,
       body,
       files
     );

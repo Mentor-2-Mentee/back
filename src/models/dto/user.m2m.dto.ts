@@ -1,5 +1,5 @@
 export class UserM2MDto {
   username: string;
-  kakaoId: number;
+  userId: number;
   email?: string;
 }

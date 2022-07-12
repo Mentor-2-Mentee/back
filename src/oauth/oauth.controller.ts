@@ -9,8 +9,6 @@ import {
   Request,
   Redirect,
   Put,
-  Param,
-  ParseIntPipe,
   Query,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
@@ -18,7 +16,6 @@ import { OauthService } from "./oauth.service";
 import { JwtAuthGuard } from "./jwt/jwt-auth.guard";
 import { injectQuerys } from "src/common/utils/injectQuerys";
 import { ConfigService } from "@nestjs/config";
-import { UserPipe } from "src/pipes";
 
 @Controller("oauth")
 export class OauthController {
@@ -31,7 +28,6 @@ export class OauthController {
   @Get("profile")
   async getProfile(@Request() req) {
     console.log("GET /profile", req.user);
-
     return await this.OauthService.getProfile(req.user);
   }
 
@@ -39,7 +35,6 @@ export class OauthController {
   @Put("profile")
   async updateProfile(@Request() req, @Body() body) {
     console.log("POST /profile", req.user, body);
-
     return await this.OauthService.updateProfile(req.user, body.newName);
   }
 

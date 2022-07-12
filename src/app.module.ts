@@ -5,16 +5,16 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { LiveRoomsModule } from "./live-rooms/live-rooms.module";
-import { LiveRoom } from "./live-rooms/entities/live-room.entity";
+
 import { LiveChatModule } from "./live-chat/live-chat.module";
-import { ClientsModule, Transport } from "@nestjs/microservices";
 import { OauthModule } from "./oauth/oauth.module";
 
 import configuration from "./common/config/configuration";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 import * as redisStore from "cache-manager-ioredis";
-import { User } from "./oauth/entities/user.entitiy";
+import { User } from "./models/entities/user.entitiy";
+import { LiveRoom } from "src/models";
 
 @Module({
   imports: [

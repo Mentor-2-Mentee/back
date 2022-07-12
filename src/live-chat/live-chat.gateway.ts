@@ -6,8 +6,7 @@ import {
   ConnectedSocket,
 } from "@nestjs/websockets";
 import { LiveChatService } from "./live-chat.service";
-import { CreateLiveChatDto } from "./dto/create-live-chat.dto";
-import { UpdateLiveChatDto } from "./dto/update-live-chat.dto";
+import { CreateLiveChatDto, UpdateLiveChatDto } from "src/models";
 import { Server } from "http";
 import { Logger } from "@nestjs/common";
 import { Socket } from "dgram";
