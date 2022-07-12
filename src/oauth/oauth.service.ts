@@ -107,18 +107,20 @@ export class OauthService {
     payload: { userId: number; username: string },
     newName: string
   ) {
-    const targetUser: User = await this.UserRepository.findOne({
-      userId: payload.userId,
-    });
-    const newUser: User = {
-      ...targetUser,
-      username: newName,
-    };
-    const result = await this.UserRepository.save(newUser);
+    const result_update = await this.UserRepository.update(
+      {
+        userId: payload.userId,
+      },
+      {
+        username: newName,
+      }
+    );
+
+    console.log(result_update);
 
     return {
-      userId: result.userId,
-      username: result.username,
+      userId: 123,
+      username: "now Test",
     };
   }
 

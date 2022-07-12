@@ -2,16 +2,12 @@ import { CACHE_MANAGER, Inject } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-kakao";
-import configuration from "src/common/config/configuration";
-import { UserKakaoDto } from "../../models/dto/user.kakao.dto";
-import { Cache } from "cache-manager";
 import { v4 as uuidv4 } from "uuid";
-import { OauthService } from "../oauth.service";
+import { Cache } from "cache-manager";
 
-interface CachingTokenPayload {
-  accessToken: string;
-  refreshToken: string;
-}
+import configuration from "src/common/config/configuration";
+import { OauthService } from "../oauth.service";
+import { CacheTokenPayload, UserKakaoDto } from "src/models/dto";
 
 export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
   constructor(
@@ -39,18 +35,13 @@ export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
     };
     console.log(payload);
     const tokenKeyCode = uuidv4();
-    // const tokenPayload: CachingTokenPayload = {
-    //   accessToken: await this.OauthService.createToken(payload, "ACCESS"),
-    //   refreshToken: await this.OauthService.createToken(payload, "REFRESH"),
-    // };
 
-    const tokenPayload: CachingTokenPayload =
-      await this.OauthService.createToken(payload);
-    await this.cacheManager.set<CachingTokenPayload>(
-      tokenKeyCode,
-      tokenPayload,
-      { ttl: 60 }
+    const tokenPayload: CacheTokenPayload = await this.OauthService.createToken(
+      payload
     );
+    await this.cacheManager.set<CacheTokenPayload>(tokenKeyCode, tokenPayload, {
+      ttl: 60,
+    });
 
     done(null, tokenKeyCode);
   }

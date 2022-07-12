@@ -1,3 +1,4 @@
+//entities로 분해해야함
 interface FilterOptionElement {
   filterKey: string;
   describeText: string;
