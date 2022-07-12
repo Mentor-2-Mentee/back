@@ -29,17 +29,18 @@ export class OauthController {
 
   @UseGuards(JwtAuthGuard)
   @Get("profile")
-  getProfile(@Request() req) {
+  async getProfile(@Request() req) {
     console.log("GET /profile", req.user);
-    return req.user;
+
+    return await this.OauthService.getProfile(req.user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put("profile")
-  updateProfile(@Request() req) {
-    console.log("POST /profile", req.user);
+  async updateProfile(@Request() req, @Body() body) {
+    console.log("POST /profile", req.user, body);
 
-    return "OK";
+    return await this.OauthService.updateProfile(req.user, body.newName);
   }
 
   @Get("name_check?")

@@ -6,6 +6,7 @@ import { Repository } from "typeorm";
 import configuration from "../common/config/configuration";
 import { User } from "./entities/user.entitiy";
 import { UserKakaoDto } from "./kakao/dto/user.kakao.dto";
+import { UserM2MDto } from "./kakao/dto/user.m2m.dto";
 
 interface UserPayload {
   isFirstSignIn: boolean;
@@ -89,6 +90,36 @@ export class OauthService {
     return {
       message: `OK`,
       canUse: true,
+    };
+  }
+
+  async getProfile(payload: { userId: number; username: string }) {
+    const targetUser: User = await this.UserRepository.findOne({
+      userId: payload.userId,
+    });
+
+    return {
+      userId: targetUser.userId,
+      username: targetUser.username,
+    };
+  }
+
+  async updateProfile(
+    payload: { userId: number; username: string },
+    newName: string
+  ) {
+    const targetUser: User = await this.UserRepository.findOne({
+      userId: payload.userId,
+    });
+    const newUser: User = {
+      ...targetUser,
+      username: newName,
+    };
+    const result = await this.UserRepository.save(newUser);
+
+    return {
+      userId: result.userId,
+      username: result.username,
     };
   }
 
