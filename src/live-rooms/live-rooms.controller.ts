@@ -10,6 +10,7 @@ import {
   Request,
   UseInterceptors,
   UploadedFiles,
+  Query,
 } from "@nestjs/common";
 import { LiveRoomsService } from "./live-rooms.service";
 import { CreateLiveRoomDto, UpdateLiveRoomDto } from "src/models";
@@ -17,7 +18,7 @@ import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 
 import { FilesInterceptor } from "@nestjs/platform-express";
 import configuration from "src/common/config/configuration";
-import { UserM2MDto } from "src/models/dto";
+import { GetLiveRoomDto, UserM2MDto } from "src/models/dto";
 import { OauthService } from "src/oauth/oauth.service";
 
 const MAX_IMAGE_COUNT = 10;
@@ -52,8 +53,22 @@ export class LiveRoomsController {
   }
 
   @Get()
-  findAll() {
-    return this.liveRoomsService.findAll();
+  async findRooms(
+    @Query("page") page: string,
+    @Query("limit") limit: string,
+    @Query("filter") filter: string
+  ) {
+    console.log("/GET live-rooms", page, limit, filter);
+    const querys: GetLiveRoomDto = {
+      page: Number(page),
+      limit: Number(limit),
+      filter: JSON.parse(filter),
+    };
+
+    console.log(querys);
+
+    const roolList = this.liveRoomsService.findRoomsByFilter(querys);
+    return roolList;
   }
 
   @Get(":id")

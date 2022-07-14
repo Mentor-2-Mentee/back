@@ -1,14 +1,34 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
 import {
   AppliedTagOptionsDto,
   CreateLiveRoomDto,
+  GetLiveRoomDto,
   UpdateLiveRoomDto,
 } from "src/models/dto";
 import { v4 as uuidv4 } from "uuid";
 import { LiveRoom } from "src/models/entities";
 import { InjectModel } from "@nestjs/sequelize";
+import {
+  Sequelize,
+  IncludeOptions,
+  OrderItem,
+  WhereOptions,
+  Op,
+} from "sequelize";
+
+export enum ItemTypes {
+  /**
+   * 제품
+   */
+  product = "product",
+  /**
+   * 부속품
+   */
+  parts = "parts",
+}
+
+export type ItemType = typeof ItemTypes[keyof typeof ItemTypes];
 
 @Injectable()
 export class LiveRoomsService {
@@ -28,7 +48,6 @@ export class LiveRoomsService {
     imageFiles: Express.Multer.File[]
   ): Promise<string> {
     console.log(
-      "받은 값",
       userData,
       createLiveRoomDto.roomTitle,
       JSON.parse(createLiveRoomDto.appliedTagOptions),
@@ -42,7 +61,6 @@ export class LiveRoomsService {
       const savedPath = imageFile.path.replace(rootDirName, "");
       imagesPath.push(savedPath);
     });
-    console.log(imagesPath);
 
     const parsedAppliedTagOptions: AppliedTagOptionsDto = JSON.parse(
       createLiveRoomDto.appliedTagOptions
@@ -55,14 +73,53 @@ export class LiveRoomsService {
       author: userData.username,
       imageFiles: JSON.stringify(imagesPath),
       parentsTag:
-        parsedAppliedTagOptions.parentElement === undefined
+        parsedAppliedTagOptions.rootFilterTag === undefined
           ? null
-          : parsedAppliedTagOptions.parentElement.filterKey,
-      roomTags: JSON.stringify(parsedAppliedTagOptions.childElements),
+          : parsedAppliedTagOptions.rootFilterTag,
+      roomTags: JSON.stringify(
+        parsedAppliedTagOptions.childFilterTags.map((ele) => {
+          return ele.tagName;
+        })
+      ),
     });
-    console.log(findAllResult);
 
     return roomPath;
+  }
+
+  async findRoomsByFilter({ page, limit, filter }: GetLiveRoomDto) {
+    console.log(page, limit, filter);
+
+    let where: WhereOptions;
+
+    const asd = filter.childFilterTags.map((childTag) => {
+      return childTag.tagName;
+    });
+    console.log(asd);
+
+    if (filter) {
+      where = {
+        [Op.and]: [
+          {
+            parentsTag: {
+              [Op.like]: "NCS",
+            },
+          },
+          {
+            roomTags: {
+              [Op.like]: "수리능력",
+            },
+          },
+        ],
+      };
+    }
+
+    const result = await this.liveRoomModel.findAll({
+      where,
+      // offset: page * limit,
+      // limit: limit,
+    });
+
+    return result;
   }
 
   findAll() {

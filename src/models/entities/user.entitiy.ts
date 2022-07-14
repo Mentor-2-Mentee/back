@@ -17,4 +17,7 @@ export class User extends Model<User> {
 
   @Column({ allowNull: false })
   username: string;
+
+  @Column({ allowNull: false })
+  userGrade: string;
 }

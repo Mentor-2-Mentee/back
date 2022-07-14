@@ -1,3 +1,4 @@
+export * from "./get-liveroom.dto";
 export * from "./create-liveroom.dto";
 export * from "./update-liveroom.dto";
 

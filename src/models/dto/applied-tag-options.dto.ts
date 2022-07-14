@@ -1,14 +1,16 @@
-interface FilterOptionElement {
-  filterKey: string;
-  describeText: string;
-  parentElement?: {
-    parentDescribeText: string;
-    parentFilterKey: string;
-  };
+interface FilterOption {
+  rootFilterTag?: string;
+  childFilterTags: FilterTag[];
+  filterKeywords: string[];
+}
+
+interface FilterTag {
+  parentFilterTag?: string;
+  tagName: string;
 }
 
 export class AppliedTagOptionsDto {
-  parentElement?: Omit<FilterOptionElement, "parentElement">;
-  childElements: Omit<FilterOptionElement, "parentElement">[];
+  rootFilterTag?: string;
+  childFilterTags: FilterTag[];
   filterKeywords: string[];
 }

@@ -101,7 +101,10 @@ export class OauthService {
     };
   }
 
-  async getProfile({ userId, username }: { userId: number; username: string }) {
+  async getProfile({
+    userId,
+    username,
+  }: UserM2MDto): Promise<Pick<User, "userId" | "username" | "userGrade">> {
     const targetUser: User = await this.userModel.findOne({
       where: {
         userId: userId,
@@ -111,6 +114,7 @@ export class OauthService {
     return {
       userId: targetUser.userId,
       username: targetUser.username,
+      userGrade: targetUser.userGrade,
     };
   }
 

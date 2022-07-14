@@ -27,8 +27,9 @@ export class OauthController {
   @UseGuards(JwtAuthGuard)
   @Get("profile")
   async getProfile(@Request() req) {
-    console.log("GET /profile", req.user);
-    return await this.OauthService.getProfile(req.user);
+    const result = await this.OauthService.getProfile(req.user);
+    console.log("GET /profile", result);
+    return result;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -38,7 +39,7 @@ export class OauthController {
     return await this.OauthService.updateProfile(req.user, body.newName);
   }
 
-  @Get("name_check?")
+  @Get("name_check")
   async getCheckResult(@Request() req, @Query("newname") newName) {
     return this.OauthService.checkUseableName(newName);
   }
