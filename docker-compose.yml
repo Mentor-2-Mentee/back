@@ -37,6 +37,7 @@ services:
     container_name: "api"
     volumes:
       - ./../../mnt/hdd1/m2m_public:/app/public
+      - ./../../error_logs:/root/.npm/_logs/
     restart: always
 
   redis:
