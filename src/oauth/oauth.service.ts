@@ -1,9 +1,7 @@
 import { CACHE_MANAGER, Inject, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Cache } from "cache-manager";
 import { User } from "src/models";
-import { Repository } from "typeorm";
 import configuration from "../common/config/configuration";
 import { UserKakaoDto, UserM2MDto } from "src/models/dto";
 import { InjectModel } from "@nestjs/sequelize";

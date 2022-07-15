@@ -7,7 +7,6 @@ import { OauthController } from "./oauth.controller";
 import { OauthService } from "./oauth.service";
 import { JwtStrategy } from "./jwt/jwt.strategy";
 import { KakaoStrategy } from "./kakao/kakao.strategy";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "../models/entities/user.entitiy";
 import { LiveRoom } from "src/models/entities/liveroom.entity";
 import { SequelizeModule } from "@nestjs/sequelize";
