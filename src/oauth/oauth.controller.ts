@@ -14,7 +14,7 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { OauthService } from "./oauth.service";
 import { JwtAuthGuard } from "./jwt/jwt-auth.guard";
-import { injectQuerys } from "src/common/utils/injectQuerys";
+import { injectURLQuerys } from "src/common/utils/injectURLQuerys";
 import { ConfigService } from "@nestjs/config";
 
 @Controller("oauth")
@@ -50,7 +50,7 @@ export class OauthController {
   async kakaoAuthRedirect(@Req() req) {
     console.log("tokenCode:", req.user);
 
-    const targetURL = injectQuerys({
+    const targetURL = injectURLQuerys({
       targetBaseURL: this.configService.get<string>("AUTH_CALLBACK_URL"),
       querys: {
         code: req.user,

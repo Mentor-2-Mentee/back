@@ -16,25 +16,11 @@ import {
   WhereOptions,
   Op,
 } from "sequelize";
-
-export enum ItemTypes {
-  /**
-   * 제품
-   */
-  product = "product",
-  /**
-   * 부속품
-   */
-  parts = "parts",
-}
-
-export type ItemType = typeof ItemTypes[keyof typeof ItemTypes];
+import { generateLiveRoomWhereOption } from "src/common/utils/generateLiveRoomWhereOption";
 
 @Injectable()
 export class LiveRoomsService {
   constructor(
-    // @InjectRepository(LiveRoom)
-    // private liveRoomRepository: Repository<LiveRoom>
     @InjectModel(LiveRoom)
     private liveRoomModel: typeof LiveRoom
   ) {}
@@ -68,19 +54,17 @@ export class LiveRoomsService {
 
     const findAllResult = await this.liveRoomModel.create({
       roomId: roomPath,
-      roomTitle: createLiveRoomDto.roomTitle,
-      explainRoomText: createLiveRoomDto.explainRoomText,
+      roomTitle: JSON.parse(createLiveRoomDto.roomTitle),
+      explainRoomText: JSON.parse(createLiveRoomDto.explainRoomText),
       author: userData.username,
-      imageFiles: JSON.stringify(imagesPath),
-      parentsTag:
+      imageFiles: imagesPath,
+      rootFilterTag:
         parsedAppliedTagOptions.rootFilterTag === undefined
           ? null
           : parsedAppliedTagOptions.rootFilterTag,
-      roomTags: JSON.stringify(
-        parsedAppliedTagOptions.childFilterTags.map((ele) => {
-          return ele.tagName;
-        })
-      ),
+      roomTags: parsedAppliedTagOptions.childFilterTags.map((ele) => {
+        return ele.tagName;
+      }),
     });
 
     return roomPath;
@@ -89,35 +73,47 @@ export class LiveRoomsService {
   async findRoomsByFilter({ page, limit, filter }: GetLiveRoomDto) {
     console.log(page, limit, filter);
 
-    let where: WhereOptions;
+    const searchFilterQuerys: WhereOptions = [];
 
-    const asd = filter.childFilterTags.map((childTag) => {
-      return childTag.tagName;
-    });
-    console.log(asd);
+    if (filter.rootFilterTag) {
+      searchFilterQuerys.push(
+        generateLiveRoomWhereOption(
+          filter.rootFilterTag,
+          "rootFilterTag",
+          "string"
+        )
+      );
+    }
 
-    if (filter) {
-      where = {
-        [Op.and]: [
-          {
-            parentsTag: {
-              [Op.like]: "NCS",
-            },
-          },
-          {
-            roomTags: {
-              [Op.like]: "수리능력",
-            },
-          },
-        ],
-      };
+    if (filter.childFilterTags !== []) {
+      filter.childFilterTags.map((childFilterTag) => {
+        searchFilterQuerys.push(
+          generateLiveRoomWhereOption(
+            childFilterTag.tagName,
+            "roomTags",
+            "JSON"
+          )
+        );
+      });
+    }
+
+    if (filter.filterKeywords !== []) {
+      filter.filterKeywords.map((filterKeyword) => {
+        searchFilterQuerys.push(
+          generateLiveRoomWhereOption(filterKeyword, "roomTitle", "string")
+        );
+      });
     }
 
     const result = await this.liveRoomModel.findAll({
-      where,
-      // offset: page * limit,
-      // limit: limit,
+      where: {
+        [Op.and]: searchFilterQuerys,
+      },
+      offset: page * limit,
+      limit: limit,
     });
+
+    // console.log(result);
 
     return result;
   }

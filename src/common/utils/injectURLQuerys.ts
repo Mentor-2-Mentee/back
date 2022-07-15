@@ -1,12 +1,12 @@
-interface injectQuerysParams {
+interface injectURLQuerysParams {
   targetBaseURL: string;
   querys: object;
 }
 
-export const injectQuerys = ({
+export const injectURLQuerys = ({
   targetBaseURL,
   querys,
-}: injectQuerysParams): string => {
+}: injectURLQuerysParams): string => {
   let resultURL = targetBaseURL + "?";
 
   for (const [index, [key, value]] of Object.entries(Object.entries(querys))) {

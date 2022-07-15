@@ -65,8 +65,6 @@ export class LiveRoomsController {
       filter: JSON.parse(filter),
     };
 
-    console.log(querys);
-
     const roolList = this.liveRoomsService.findRoomsByFilter(querys);
     return roolList;
   }

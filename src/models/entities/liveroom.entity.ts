@@ -1,5 +1,11 @@
-import { Column, Model, Table, AutoIncrement } from "sequelize-typescript";
-
+import {
+  Column,
+  Model,
+  Table,
+  AutoIncrement,
+  DataType,
+} from "sequelize-typescript";
+import { Sequelize } from "sequelize";
 @Table({
   tableName: "Liverooms",
   timestamps: true,
@@ -25,12 +31,12 @@ export class LiveRoom extends Model {
   @Column({ allowNull: false })
   author: string;
 
-  @Column({ allowNull: false })
+  @Column({ allowNull: false, type: DataType.JSON })
   imageFiles: string;
 
   @Column({ allowNull: true })
-  parentsTag: string;
+  rootFilterTag: string;
 
-  @Column({ allowNull: true })
+  @Column({ allowNull: true, type: DataType.JSON })
   roomTags: string;
 }
