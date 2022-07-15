@@ -15,7 +15,7 @@ import {
   WhereOptions,
   Op,
 } from "sequelize";
-import { generateLiveRoomWhereOption } from "src/common/utils/generateLiveRoomWhereOption";
+import { generateLiveRoomWhereOption } from "../common/utils/generateLiveRoomWhereOption";
 
 @Injectable()
 export class LiveRoomsService {
