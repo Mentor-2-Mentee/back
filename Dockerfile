@@ -1,12 +1,12 @@
 #install
-FROM node:10 AS builder
+FROM node:16 AS builder
 WORKDIR /app
 COPY . .
-RUN npm install -g
+RUN npm install
 RUN npm run build
 
 #build
-FROM node:10-alpine
+FROM node:16
 WORKDIR /app
 COPY --from=builder /app ./
 EXPOSE 80
