@@ -17,7 +17,7 @@ import { CreateLiveRoomDto, UpdateLiveRoomDto } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 
 import { FilesInterceptor } from "@nestjs/platform-express";
-import configuration from "src/common/config/configuration";
+import configuration from "../common/config/configuration";
 import { GetLiveRoomDto, UserM2MDto } from "src/models/dto";
 import { OauthService } from "src/oauth/oauth.service";
 
