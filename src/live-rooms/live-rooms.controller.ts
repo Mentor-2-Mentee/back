@@ -67,21 +67,14 @@ export class LiveRoomsController {
 
     const roomList = await this.liveRoomsService.findRoomsByFilter(querys);
 
-    const maxpage = 2;
+    const maxpage = 3;
 
     if (Number(page) === maxpage) {
-      console.log("마지막페이지로 넘겨준것:", {
-        data: roomList,
-      });
       return {
         data: roomList,
       };
     }
 
-    console.log("페이지로 넘겨준것:", {
-      data: roomList,
-      nextPage: Number(page) + 1,
-    });
     return {
       data: roomList,
       nextPage: Number(page) + 1,

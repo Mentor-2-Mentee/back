@@ -50,11 +50,15 @@ export class LiveRoomsService {
     const parsedAppliedTagOptions: AppliedTagOptionsDto = JSON.parse(
       createLiveRoomDto.appliedTagOptions
     );
+    const parsedExplainRoomText: string =
+      createLiveRoomDto.explainRoomText === undefined
+        ? JSON.parse(createLiveRoomDto.explainRoomText)
+        : null;
 
     const findAllResult = await this.liveRoomModel.create({
       roomId: roomPath,
       roomTitle: JSON.parse(createLiveRoomDto.roomTitle),
-      explainRoomText: JSON.parse(createLiveRoomDto.explainRoomText),
+      explainRoomText: parsedExplainRoomText,
       author: userData.username,
       imageFiles: imagesPath,
       rootFilterTag:
