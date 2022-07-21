@@ -25,7 +25,6 @@ export class QuestionTagService {
         [Op.eq]: createQuestionTagDto.tagName,
       },
     });
-
     try {
       const checkExist = await this.questionTagModel.findAll({
         where: {
