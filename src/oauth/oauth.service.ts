@@ -11,6 +11,7 @@ interface UserPayload {
   payload: {
     userId: number;
     username: string;
+    userGrade: string;
   };
 }
 
@@ -43,6 +44,7 @@ export class OauthService {
       const result = await this.userModel.create({
         userId: kakaoId,
         username: initialRandomName,
+        userGrade: "user",
       });
 
       return {
@@ -50,6 +52,7 @@ export class OauthService {
         payload: {
           userId: result.userId,
           username: result.username,
+          userGrade: result.userGrade,
         },
       };
     }
@@ -59,6 +62,7 @@ export class OauthService {
       payload: {
         userId: registeredUser.userId,
         username: registeredUser.username,
+        userGrade: registeredUser.userGrade,
       },
     };
   }
@@ -140,6 +144,7 @@ export class OauthService {
     return {
       userId: updateResult.userId,
       username: updateResult.username,
+      userGrade: updateResult.userGrade,
     };
   }
 

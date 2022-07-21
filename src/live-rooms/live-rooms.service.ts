@@ -116,9 +116,17 @@ export class LiveRoomsService {
       limit: limit,
     });
 
-    // console.log(result);
+    const countAllRooms = await this.liveRoomModel.count();
+
+    console.log("countAllRooms", countAllRooms);
 
     return result;
+  }
+
+  async getMaxPage(limit: number) {
+    const countAllRooms = await this.liveRoomModel.count();
+
+    return Math.ceil(countAllRooms / limit);
   }
 
   findAll() {

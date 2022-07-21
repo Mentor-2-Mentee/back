@@ -1,16 +1,18 @@
-interface FilterOption {
-  rootFilterTag?: string;
-  childFilterTags: FilterTag[];
-  filterKeywords: string[];
-}
+import { QuestionTag } from "../entities";
 
-interface FilterTag {
-  parentFilterTag?: string;
-  tagName: string;
-}
+// interface FilterOption {
+//   rootFilterTag?: string;
+//   childFilterTags: FilterTag[];
+//   filterKeywords: string[];
+// }
+
+// interface FilterTag {
+//   parentFilterTag?: string;
+//   tagName: string;
+// }
 
 export class AppliedTagOptionsDto {
   rootFilterTag?: string;
-  childFilterTags: FilterTag[];
+  childFilterTags: QuestionTag[];
   filterKeywords: string[];
 }

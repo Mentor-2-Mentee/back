@@ -1,7 +1,7 @@
-import { FilterTag } from "./filterTag.entity";
+import { QuestionTag } from "./questionTag.entitiy";
 
 export class FilterOption {
   rootFilterTag?: string;
-  childFilterTags: FilterTag[];
+  childFilterTags: QuestionTag[];
   filterKeywords: string[];
 }

@@ -13,9 +13,10 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 import * as redisStore from "cache-manager-ioredis";
 import { User } from "./models/entities/user.entitiy";
-import { LiveRoom } from "src/models";
+import { LiveRoom, QuestionTag } from "src/models";
 
 import { SequelizeModule } from "@nestjs/sequelize";
+import { QuestionTagModule } from "./question-tag/question-tag.module";
 
 @Module({
   imports: [
@@ -36,7 +37,7 @@ import { SequelizeModule } from "@nestjs/sequelize";
         username: configService.get<string>("MARIADB_USER"),
         password: configService.get<string>("MARIADB_PASSWORD"),
         database: "M2M",
-        models: [LiveRoom, User],
+        models: [LiveRoom, User, QuestionTag],
       }),
     }),
     CacheModule.registerAsync({
@@ -51,6 +52,7 @@ import { SequelizeModule } from "@nestjs/sequelize";
     }),
     LiveChatModule,
     OauthModule,
+    QuestionTagModule,
   ],
   controllers: [AppController],
   providers: [AppService],
