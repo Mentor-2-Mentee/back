@@ -13,7 +13,7 @@ export class QuestionTag extends Model {
   id: number;
 
   @Column({ allowNull: true })
-  parentFilterTag: string;
+  parentTag?: string;
 
   @Column({ allowNull: false })
   tagName: string;
