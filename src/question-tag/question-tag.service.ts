@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
+import { Op } from "sequelize/types";
 import { QuestionTag } from "src/models";
 import { CreateQuestionTagDto } from "src/models/dto/create-questionTag.dto";
 
@@ -12,8 +13,19 @@ export class QuestionTagService {
   async createTag(createQuestionTagDto: CreateQuestionTagDto) {
     console.log("받은값", createQuestionTagDto, createQuestionTagDto.parentTag);
 
+    const checkExist = await this.questionTagModel.findAll({
+      where: {
+        parentFilterTag: createQuestionTagDto.parentTag,
+        tagName: createQuestionTagDto.tagName,
+      },
+    });
+
+    if (checkExist.length !== 0) {
+      return "already exist!!";
+    }
+
     const result = await this.questionTagModel.create({
-      parentTag: createQuestionTagDto.parentTag,
+      parentFilterTag: createQuestionTagDto.parentTag,
       tagName: createQuestionTagDto.tagName,
     });
 

@@ -33,7 +33,7 @@ export class QuestionTagController {
 
     const result = await this.questionTagService.createTag(body);
 
-    return "ok";
+    return result;
   }
 
   @Get()

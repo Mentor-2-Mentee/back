@@ -55,7 +55,7 @@ export class LiveRoomsService {
         ? JSON.parse(createLiveRoomDto.explainRoomText)
         : null;
 
-    const findAllResult = await this.liveRoomModel.create({
+    await this.liveRoomModel.create({
       roomId: roomPath,
       roomTitle: JSON.parse(createLiveRoomDto.roomTitle),
       explainRoomText: parsedExplainRoomText,
