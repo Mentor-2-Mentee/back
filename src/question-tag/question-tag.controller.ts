@@ -8,8 +8,9 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from "@nestjs/common";
-import { CreateQuestionTagDto } from "src/models/dto/create-questionTag.dto";
+import { CreateQuestionTagDto, DeleteQuestionTagDto } from "src/models/dto";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { OauthService } from "src/oauth/oauth.service";
 import { QuestionTagService } from "./question-tag.service";
@@ -28,7 +29,7 @@ export class QuestionTagController {
     console.log("/POST question-tag ", userData, body);
 
     if (userData.userGrade !== "master") {
-      return "닌 만들자격이 업따";
+      return "permission denied";
     }
 
     const result = await this.questionTagService.createTag(body);
@@ -45,18 +46,32 @@ export class QuestionTagController {
     };
   }
 
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.questionTagService.findOne(+id);
-  }
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  async deleteTag(
+    @Request() req,
+    @Query("tagname") tagName: string,
+    @Query("parentTag") parentTag: string
+  ) {
+    const userData = await this.OauthService.getProfile(req.user);
+    console.log("/DELETE question-tag ", userData, tagName, parentTag);
 
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateQuestionTagDto: any) {
-    return this.questionTagService.update(+id, updateQuestionTagDto);
-  }
+    if (userData.userGrade !== "master") {
+      return "permission denied";
+    }
 
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.questionTagService.remove(+id);
+    if (parentTag === "undefined") {
+      const result = await this.questionTagService.deleteParentsFamilyTag({
+        tagName,
+      });
+      return result;
+    }
+    if (parentTag !== "undefined") {
+      const result = await this.questionTagService.deleteChildTag({
+        tagName,
+        parentTag,
+      });
+      return result;
+    }
   }
 }
