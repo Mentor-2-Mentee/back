@@ -4,4 +4,5 @@ export class GetLiveRoomDto {
   page: number;
   limit: number;
   filter: FilterOption;
+  option?: "INCREASE" | "DECREASE";
 }

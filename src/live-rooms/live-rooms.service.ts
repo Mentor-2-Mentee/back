@@ -14,6 +14,7 @@ import {
   OrderItem,
   WhereOptions,
   Op,
+  Order,
 } from "sequelize";
 import { generateLiveRoomWhereOption } from "../common/utils/generateLiveRoomWhereOption";
 
@@ -73,10 +74,22 @@ export class LiveRoomsService {
     return roomPath;
   }
 
-  async findRoomsByFilter({ page, limit, filter }: GetLiveRoomDto) {
-    console.log(page, limit, filter);
-
+  async findRoomsByFilter({ page, limit, filter, option }: GetLiveRoomDto) {
     const searchFilterQuerys: WhereOptions = [];
+    const orderOption: Order = [];
+
+    switch (option) {
+      case "INCREASE":
+        orderOption.push(["createdAt", "ASC"]);
+        break;
+      case "DECREASE":
+        orderOption.push(["createdAt", "DESC"]);
+      default:
+        orderOption.push(["createdAt", "DESC"]);
+        break;
+    }
+
+    console.log(orderOption);
 
     if (filter.rootFilterTag) {
       searchFilterQuerys.push(
@@ -114,11 +127,10 @@ export class LiveRoomsService {
       },
       offset: page * limit,
       limit: limit,
+      order: orderOption,
     });
 
     const countAllRooms = await this.liveRoomModel.count();
-
-    console.log("countAllRooms", countAllRooms);
 
     return result;
   }
