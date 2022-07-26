@@ -39,7 +39,7 @@ export class LiveRoomsService {
       JSON.parse(createLiveRoomDto.appliedTagOptions),
       createLiveRoomDto.explainRoomText
     );
-    const roomPath = String(uuidv4()).split("-")[0];
+    const roomPath = String(uuidv4());
     const imagesPath = [];
 
     imageFiles.map((imageFile) => {
@@ -135,7 +135,7 @@ export class LiveRoomsService {
     return result;
   }
 
-  async getMaxPage(limit: number) {
+  async getMaxPage({ limit }: GetLiveRoomDto) {
     const countAllRooms = await this.liveRoomModel.count();
 
     return Math.ceil(countAllRooms / limit);

@@ -20,8 +20,6 @@ export class OauthService {
   constructor(
     private jwtService: JwtService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    // @InjectRepository(User)
-    // private UserRepository: Repository<User>
     @InjectModel(User)
     private userModel: typeof User
   ) {}

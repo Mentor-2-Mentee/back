@@ -66,12 +66,9 @@ export class LiveRoomsController {
     };
 
     const roomList = await this.liveRoomsService.findRoomsByFilter(querys);
+    const maxpage = await this.liveRoomsService.getMaxPage(querys);
 
-    const maxpage = await this.liveRoomsService.getMaxPage(querys.page);
-
-    // const maxpage = 3;
-
-    if (Number(page) === maxpage) {
+    if (Number(page) >= maxpage) {
       return {
         data: roomList,
       };

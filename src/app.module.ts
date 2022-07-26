@@ -47,6 +47,7 @@ import { QuestionTagModule } from "./question-tag/question-tag.module";
         store: redisStore,
         host: `${configService.get<string>("REDIS_HOST")}`,
         port: configService.get<string>("REDIS_PORT"),
+        ttl: 3600,
       }),
       isGlobal: true,
     }),

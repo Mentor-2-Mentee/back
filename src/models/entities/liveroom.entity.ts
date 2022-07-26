@@ -5,7 +5,6 @@ import {
   AutoIncrement,
   DataType,
 } from "sequelize-typescript";
-import { Sequelize } from "sequelize";
 @Table({
   tableName: "Liverooms",
   timestamps: true,

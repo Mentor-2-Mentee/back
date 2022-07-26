@@ -6,10 +6,21 @@ import {
   ConnectedSocket,
 } from "@nestjs/websockets";
 import { LiveChatService } from "./live-chat.service";
-import { CreateLiveChatDto, UpdateLiveChatDto } from "src/models";
+import {
+  CreateLiveChatDto,
+  GetPastChatListDto,
+  LiveChat,
+  LiveRoomChatSummary,
+  UpdateLiveChatDto,
+} from "src/models";
 import { Server } from "http";
-import { Logger } from "@nestjs/common";
+import { CACHE_MANAGER, Get, Inject, Logger } from "@nestjs/common";
 import { Socket } from "dgram";
+import { Cache } from "cache-manager";
+
+const CACHE_TTL = {
+  ttl: 3600,
+};
 
 @WebSocketGateway(8081, {
   namespace: "/live-chat",
@@ -17,32 +28,44 @@ import { Socket } from "dgram";
   transports: ["websocket"],
 })
 export class LiveChatGateway {
-  constructor(private readonly liveChatService: LiveChatService) {}
+  constructor(
+    private readonly liveChatService: LiveChatService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
+  ) {}
 
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger("AppGateway");
 
-  @SubscribeMessage("getBeforeMessages")
+  @SubscribeMessage("getPastChatList")
   async sendChatLog(@MessageBody() data: any) {
     console.log(data);
 
-    this.server.emit(`chatToClient_${data.roomId}`, [
-      // roomId + uid를 이용하면 특정 사용자의 특정 톡방에만 emit 가능
-      "소켓으로",
-      "원하는순간에",
-      "데이터보내기",
-    ]);
+    const currentLiveRoomChatSummary =
+      await this.cacheManager.get<LiveRoomChatSummary>(data.roomId);
+    const pastChatListByPage = await this.cacheManager.get<LiveChat[]>(
+      currentLiveRoomChatSummary.bundleIdList[
+        currentLiveRoomChatSummary.maxBundlePage - data.page
+      ]
+    );
+
+    this.server.emit(
+      `getPastChatList_${data.roomId}_${data.userId}`,
+      pastChatListByPage
+    );
   }
 
   @SubscribeMessage("chatToServer")
-  handleEvent(
-    @MessageBody() data: any, // 클라이언트로부터 들어온 데이터
+  async handleEvent(
+    @MessageBody() chatData: LiveChat, // 클라이언트로부터 들어온 데이터
     @ConnectedSocket() client: Socket
   ) {
-    console.log("챗받음:", data, client.address);
+    console.log("챗받음:", chatData.text);
+    this.server.emit(`chatToClient_${chatData.roomId}`, chatData);
 
-    this.server.emit(`chatToClient_${data.roomId}`, data);
-    console.log("받은것 뿌림", data.text);
+    const currentRoomCacheData =
+      await this.cacheManager.get<LiveRoomChatSummary | null>(chatData.roomId);
+
+    await this.liveChatService.saveChatLog(chatData, currentRoomCacheData);
   }
 
   // afterInit(server: Server) {

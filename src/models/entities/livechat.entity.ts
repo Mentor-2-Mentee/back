@@ -3,4 +3,6 @@ export class LiveChat {
   nickName: string;
   text: string;
   createAt: string;
+  roomId: string;
+  imageURL?: string;
 }
