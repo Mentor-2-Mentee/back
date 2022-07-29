@@ -20,65 +20,46 @@ export class LiveChatService {
     currentRoomCacheData: LiveRoomChatSummary | null
   ) {
     if (!currentRoomCacheData) {
-      const firstBundleId: string = uuidv4();
-      const initialSummaryData: LiveRoomChatSummary = {
-        maxBundlePage: 0,
-        bundleIdList: [firstBundleId],
+      const configSummaryData: LiveRoomChatSummary = {
+        latestChatIndex: 0,
+        data: [chatData],
       };
-
-      await this.cacheManager.set<LiveChat[]>(firstBundleId, [chatData]);
       await this.cacheManager.set<LiveRoomChatSummary>(
         chatData.roomId,
-        initialSummaryData
+        configSummaryData
       );
-      return;
+      return configSummaryData;
     }
 
-    const recentChatBundleId =
-      currentRoomCacheData.bundleIdList[currentRoomCacheData.maxBundlePage];
-    const recentChatBundle = await this.cacheManager.get<LiveChat[]>(
-      recentChatBundleId
-    );
+    const saveData: LiveRoomChatSummary = {
+      latestChatIndex: currentRoomCacheData.latestChatIndex + 1,
+      data: [...currentRoomCacheData.data, chatData],
+    };
 
-    for (const bundleId of currentRoomCacheData.bundleIdList) {
-      const currentValue = await this.cacheManager.get<LiveChat[]>(bundleId);
-      await this.cacheManager.set(bundleId, currentValue, { ttl: 3600 });
-    }
+    await this.cacheManager.set<LiveRoomChatSummary>(chatData.roomId, {
+      latestChatIndex: currentRoomCacheData.latestChatIndex + 1,
+      data: [...currentRoomCacheData.data, chatData],
+    });
 
-    if (recentChatBundle.length >= 20) {
-      const newBundleId = uuidv4();
-      const newRoomCacheData: LiveRoomChatSummary = {
-        maxBundlePage: currentRoomCacheData.maxBundlePage + 1,
-        bundleIdList: [...currentRoomCacheData.bundleIdList, newBundleId],
-      };
-
-      await this.cacheManager.set<LiveRoomChatSummary>(
-        chatData.roomId,
-        newRoomCacheData
-      );
-      await this.cacheManager.set<LiveChat[]>(newBundleId, [chatData]);
-
-      return;
-    }
-
-    await this.cacheManager.set<LiveChat[]>(recentChatBundleId, [
-      ...recentChatBundle,
-      chatData,
-    ]);
+    return saveData;
   }
 
-  async getPastChatList(getPastChatListDto: GetPastChatListDto) {
-    const currentLiveRoomChatSummary =
-      await this.cacheManager.get<LiveRoomChatSummary>(
-        getPastChatListDto.roomId
-      );
-    const pastChatListByPage = await this.cacheManager.get<LiveChat[]>(
-      currentLiveRoomChatSummary.bundleIdList[
-        currentLiveRoomChatSummary.maxBundlePage - getPastChatListDto.page
-      ]
-    );
-
-    return pastChatListByPage;
+  async getPastChatListByPage(getPastChatListDto: GetPastChatListDto) {
+    // const currentLiveRoomChatSummary =
+    //   await this.cacheManager.get<LiveRoomChatSummary>(
+    //     getPastChatListDto.roomId
+    //   );
+    // const pastChatListByPage = await this.cacheManager.get<LiveChat[]>(
+    //   currentLiveRoomChatSummary.bundleIdList[
+    //     getPastChatListDto.page === 0
+    //       ? currentLiveRoomChatSummary.maxBundlePage
+    //       : currentLiveRoomChatSummary.maxBundlePage - getPastChatListDto.page
+    //   ]
+    // );
+    // return {
+    //   pastChatListByPage: pastChatListByPage,
+    //   maxBundlePage: currentLiveRoomChatSummary.maxBundlePage,
+    // };
   }
 
   findAll() {

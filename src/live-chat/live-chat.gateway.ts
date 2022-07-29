@@ -36,47 +36,45 @@ export class LiveChatGateway {
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger("AppGateway");
 
-  @SubscribeMessage("getPastChatList")
-  async sendChatLog(@MessageBody() data: any) {
+  @SubscribeMessage("getPreviousChatList")
+  async sendChatLog(
+    @MessageBody()
+    data: {
+      roomId: string;
+      userId: string;
+      previousChatBundleIndex: "latest" | number;
+    }
+  ) {
     console.log(data);
 
-    const currentLiveRoomChatSummary =
-      await this.cacheManager.get<LiveRoomChatSummary>(data.roomId);
-    const pastChatListByPage = await this.cacheManager.get<LiveChat[]>(
-      currentLiveRoomChatSummary.bundleIdList[
-        currentLiveRoomChatSummary.maxBundlePage - data.page
-      ]
+    const previousChatList = await this.cacheManager.get<LiveRoomChatSummary>(
+      data.roomId
     );
 
-    this.server.emit(
-      `getPastChatList_${data.roomId}_${data.userId}`,
-      pastChatListByPage
-    );
+    this.server.emit(`previousChatList_${data.roomId}_${data.userId}`, {
+      data: previousChatList.data,
+      latestChatIndex: previousChatList.latestChatIndex,
+    });
   }
 
   @SubscribeMessage("chatToServer")
   async handleEvent(
-    @MessageBody() chatData: LiveChat, // 클라이언트로부터 들어온 데이터
+    @MessageBody() chatData: LiveChat,
     @ConnectedSocket() client: Socket
   ) {
     console.log("챗받음:", chatData.text);
-    this.server.emit(`chatToClient_${chatData.roomId}`, chatData);
 
     const currentRoomCacheData =
       await this.cacheManager.get<LiveRoomChatSummary | null>(chatData.roomId);
 
-    await this.liveChatService.saveChatLog(chatData, currentRoomCacheData);
+    const result = await this.liveChatService.saveChatLog(
+      chatData,
+      currentRoomCacheData
+    );
+
+    this.server.emit(`chatToClient_${chatData.roomId}`, {
+      latestChatIndex: result.latestChatIndex,
+      receivedChatData: chatData,
+    });
   }
-
-  // afterInit(server: Server) {
-  //   this.logger.log("Init");
-  // }
-
-  // handleDisconnect(client: Socket) {
-  //   this.logger.log(`Client Disconnected : ${client}`);
-  // }
-
-  // handleConnection(client: Socket, ...args: any[]) {
-  //   this.logger.log(`Client Connected : ${client}`);
-  // }
 }

@@ -1,4 +1,6 @@
+import { LiveChat } from "./livechat.entity";
+
 export class LiveRoomChatSummary {
-  maxBundlePage: number;
-  bundleIdList: string[];
+  latestChatIndex: number;
+  data: LiveChat[];
 }
