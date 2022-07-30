@@ -22,6 +22,11 @@ const CACHE_TTL = {
   ttl: 3600,
 };
 
+interface GetPreviousChatDto {
+  latestChatIndex: number;
+  previousChatListData: LiveChat[];
+}
+
 @WebSocketGateway(8081, {
   namespace: "/live-chat",
   path: "/websocket/",
@@ -42,7 +47,8 @@ export class LiveChatGateway {
     data: {
       roomId: string;
       userId: string;
-      previousChatBundleIndex: "latest" | number;
+      limit: number;
+      targetTimeStamp: string | "latest";
     }
   ) {
     console.log(data);
@@ -51,9 +57,30 @@ export class LiveChatGateway {
       data.roomId
     );
 
-    this.server.emit(`previousChatList_${data.roomId}_${data.userId}`, {
-      data: previousChatList.data,
+    const targetChatIndex =
+      data.targetTimeStamp === "latest"
+        ? previousChatList.data.length
+        : previousChatList.data.findIndex(
+            (chatElement) => chatElement.createAt === data.targetTimeStamp
+          );
+
+    const startIndex =
+      targetChatIndex - data.limit < 0 ? 0 : targetChatIndex - data.limit;
+
+    const returnChatList = previousChatList.data.slice(
+      startIndex,
+      targetChatIndex
+    );
+
+    const result: GetPreviousChatDto = {
       latestChatIndex: previousChatList.latestChatIndex,
+      previousChatListData: previousChatList.data,
+    };
+
+    this.server.emit(`previousChatList_${data.roomId}_${data.userId}`, {
+      latestChatIndex: previousChatList.latestChatIndex,
+      previousChatListData: returnChatList,
+      targetTimeStamp: data.targetTimeStamp,
     });
   }
 
