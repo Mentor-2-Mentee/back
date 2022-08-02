@@ -59,6 +59,7 @@ export class LiveChatGateway {
       userId: string;
       limit: number;
       targetTimeStamp: string | "latest";
+      sendTime: number;
     }
   ) {
     console.log(data);
@@ -66,6 +67,16 @@ export class LiveChatGateway {
     const previousChatList = await this.cacheManager.get<LiveRoomChatSummary>(
       data.roomId
     );
+
+    if (!previousChatList || !previousChatList.data) {
+      this.server.emit(`previousChatList_${data.roomId}_${data.userId}`, {
+        latestChatIndex: -1,
+        previousChatListData: [],
+        targetTimeStamp: undefined,
+        sendTime: data.sendTime,
+      });
+      return;
+    }
 
     const targetChatIndex =
       data.targetTimeStamp === "latest"
@@ -91,6 +102,7 @@ export class LiveChatGateway {
       latestChatIndex: previousChatList.latestChatIndex,
       previousChatListData: returnChatList,
       targetTimeStamp: data.targetTimeStamp,
+      sendTime: data.sendTime,
     });
   }
 
