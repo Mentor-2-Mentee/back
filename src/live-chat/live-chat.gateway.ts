@@ -41,6 +41,16 @@ export class LiveChatGateway {
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger("AppGateway");
 
+  @SubscribeMessage("testServer")
+  test(@MessageBody() data: any) {
+    console.log(data);
+
+    this.server.emit("testClient", {
+      data,
+      message: "echo",
+    });
+  }
+
   @SubscribeMessage("getPreviousChatList")
   async sendChatLog(
     @MessageBody()
@@ -61,7 +71,7 @@ export class LiveChatGateway {
       data.targetTimeStamp === "latest"
         ? previousChatList.data.length
         : previousChatList.data.findIndex(
-            (chatElement) => chatElement.createAt === data.targetTimeStamp
+            (chatElement) => chatElement.createdAt === data.targetTimeStamp
           );
 
     const startIndex =
