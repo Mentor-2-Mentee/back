@@ -1,6 +1,6 @@
 import { LiveChat } from "./livechat.entity";
 
-export class LiveRoomChatSummary {
+export class MentoringRoomChatSummary {
   latestChatIndex: number;
   data: LiveChat[];
 }

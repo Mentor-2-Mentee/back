@@ -2,4 +2,4 @@ export * from "./liveroom.entity";
 export * from "./livechat.entity";
 export * from "./user.entitiy";
 export * from "./questionTag.entitiy";
-export * from "./liveRoomChatSummary.entitiy";
+export * from "./mentoringRoomChatSummary.entitiy";

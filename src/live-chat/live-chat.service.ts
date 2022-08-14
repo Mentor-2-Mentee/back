@@ -1,12 +1,11 @@
 import { CACHE_MANAGER, Inject, Injectable } from "@nestjs/common";
 import {
-  CreateLiveChatDto,
-  UpdateLiveChatDto,
   LiveChat,
-  LiveRoomChatSummary,
-  GetPastChatListDto,
+  MentoringRoomChatSummary,
+  SocketReCeiveMentoringRoomPrevChatListDto,
+  SocketEmitMentoringRoomPrevChatList,
+  SocketEmitMentoringRoomLiveChat,
 } from "src/models";
-import { v4 as uuidv4 } from "uuid";
 import { Cache } from "cache-manager";
 
 const CHAT_BUNDLE_SIZE = 20;
@@ -17,65 +16,83 @@ export class LiveChatService {
 
   async saveChatLog(
     chatData: LiveChat,
-    currentRoomCacheData: LiveRoomChatSummary | null
-  ) {
+    currentRoomCacheData: MentoringRoomChatSummary | null
+  ): Promise<SocketEmitMentoringRoomLiveChat> {
     if (!currentRoomCacheData) {
-      const configSummaryData: LiveRoomChatSummary = {
+      const configSummaryData: MentoringRoomChatSummary = {
         latestChatIndex: 0,
         data: [chatData],
       };
-      await this.cacheManager.set<LiveRoomChatSummary>(
+      await this.cacheManager.set<MentoringRoomChatSummary>(
         chatData.roomId,
         configSummaryData
       );
-      return configSummaryData;
+      return {
+        latestChatIndex: configSummaryData.latestChatIndex,
+        receivedChatData: chatData,
+      };
     }
 
-    const saveData: LiveRoomChatSummary = {
+    const saveData: MentoringRoomChatSummary = {
       latestChatIndex: currentRoomCacheData.latestChatIndex + 1,
       data: [...currentRoomCacheData.data, chatData],
     };
 
-    await this.cacheManager.set<LiveRoomChatSummary>(chatData.roomId, {
+    await this.cacheManager.set<MentoringRoomChatSummary>(chatData.roomId, {
       latestChatIndex: currentRoomCacheData.latestChatIndex + 1,
       data: [...currentRoomCacheData.data, chatData],
     });
 
-    return saveData;
+    return {
+      latestChatIndex: saveData.latestChatIndex,
+      receivedChatData: chatData,
+    };
   }
 
-  async getPastChatListByPage(getPastChatListDto: GetPastChatListDto) {
-    // const currentLiveRoomChatSummary =
-    //   await this.cacheManager.get<LiveRoomChatSummary>(
-    //     getPastChatListDto.roomId
-    //   );
-    // const pastChatListByPage = await this.cacheManager.get<LiveChat[]>(
-    //   currentLiveRoomChatSummary.bundleIdList[
-    //     getPastChatListDto.page === 0
-    //       ? currentLiveRoomChatSummary.maxBundlePage
-    //       : currentLiveRoomChatSummary.maxBundlePage - getPastChatListDto.page
-    //   ]
-    // );
-    // return {
-    //   pastChatListByPage: pastChatListByPage,
-    //   maxBundlePage: currentLiveRoomChatSummary.maxBundlePage,
-    // };
+  spliceChatList(
+    targetTimeStamp: string,
+    rawChatList: LiveChat[],
+    limit = 10
+  ): LiveChat[] {
+    const targetChatIndex =
+      targetTimeStamp === "latest"
+        ? rawChatList.length
+        : rawChatList.findIndex(
+            (chatElement) => chatElement.createdAt === targetTimeStamp
+          );
+
+    const startIndex =
+      targetChatIndex - limit < 0 ? 0 : targetChatIndex - limit;
+
+    return rawChatList.slice(startIndex, targetChatIndex);
   }
 
-  findAll() {
-    console.log("모든 채팅내역 전송");
-    return "asd";
-  }
+  async getMentoringRoomPrevChatList(
+    data: SocketReCeiveMentoringRoomPrevChatListDto
+  ): Promise<SocketEmitMentoringRoomPrevChatList> {
+    const mentoringRoomSummaryData =
+      await this.cacheManager.get<MentoringRoomChatSummary>(data.roomId);
 
-  findOne(id: number) {
-    return `This action returns a #${id} liveChat`;
-  }
+    if (!mentoringRoomSummaryData || !mentoringRoomSummaryData.data) {
+      return {
+        latestChatIndex: -1,
+        previousChatListData: [],
+        targetTimeStamp: undefined,
+        sendTime: data.sendTime,
+      };
+    }
 
-  update(id: number, updateLiveChatDto: UpdateLiveChatDto) {
-    return `This action updates a #${id} liveChat`;
-  }
+    const splicedChatList = this.spliceChatList(
+      data.targetTimeStamp,
+      mentoringRoomSummaryData.data,
+      data.limit
+    );
 
-  remove(id: number) {
-    return `This action removes a #${id} liveChat`;
+    return {
+      latestChatIndex: mentoringRoomSummaryData.latestChatIndex,
+      previousChatListData: splicedChatList,
+      targetTimeStamp: data.targetTimeStamp,
+      sendTime: data.sendTime,
+    };
   }
 }
