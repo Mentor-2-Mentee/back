@@ -17,6 +17,7 @@ import { LiveRoom, QuestionTag } from "src/models";
 
 import { SequelizeModule } from "@nestjs/sequelize";
 import { QuestionTagModule } from "./question-tag/question-tag.module";
+import { TestScheduleModule } from './test-schedule/test-schedule.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { QuestionTagModule } from "./question-tag/question-tag.module";
     LiveChatModule,
     OauthModule,
     QuestionTagModule,
+    TestScheduleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
