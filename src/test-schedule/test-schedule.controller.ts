@@ -41,14 +41,14 @@ export class TestScheduleController {
     const parsedEndDate: Date = new Date(endDate);
 
     const testScheduleMap = new Map();
-    testScheduleMap.set(new Date(2022, 7, 20).toJSON(), [
+    testScheduleMap.set("2022-08-20", [
       {
         scheduleId: 1,
         scheduleTitle: "이날시험",
         scheduleDate: new Date(2022, 7, 20),
       },
     ]);
-    testScheduleMap.set(new Date(2022, 7, 21).toJSON(), [
+    testScheduleMap.set("2022-08-21", [
       {
         scheduleId: 2,
         scheduleTitle: "이날 재시험",
