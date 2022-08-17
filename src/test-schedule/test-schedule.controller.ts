@@ -9,21 +9,17 @@ import {
   Query,
   UseGuards,
   Request,
+  BadRequestException,
+  UseInterceptors,
+  UploadedFiles,
 } from "@nestjs/common";
 import { TestScheduleService } from "./test-schedule.service";
-import { CreateTestScheduleDto } from "./dto/create-test-schedule.dto";
-import { UpdateTestScheduleDto } from "./dto/update-test-schedule.dto";
 import { OauthService } from "src/oauth/oauth.service";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
-// import { TestSchedule, TestScheduleMap } from "src/models";
+import { FilesInterceptor } from "@nestjs/platform-express";
+import { CreateTestScheduleDto } from "src/models";
 
-interface TestSchedule {
-  scheduleId: string;
-  scheduleTitle: string;
-  scheduledDate: Date;
-}
-
-type objectedMap = Array<[string, TestSchedule]>;
+const MAX_IMAGE_COUNT = 5;
 
 @Controller("testSchedule")
 export class TestScheduleController {
@@ -33,62 +29,85 @@ export class TestScheduleController {
   ) {}
 
   @Get()
-  findAll(
-    @Query("startDate") startDate: string,
+  async getScheduleByDateRange(
+    @Query("startDate") startDate: string, //
     @Query("endDate") endDate: string
   ) {
-    const parsedStartDate: Date = new Date(startDate);
-    const parsedEndDate: Date = new Date(endDate);
+    const YYYY_MM_DD_regExp = /\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])/;
+    const startDate_YYYY_MM_DD = YYYY_MM_DD_regExp.exec(startDate);
+    const endDate_YYYY_MM_DD = YYYY_MM_DD_regExp.exec(endDate);
 
-    const testScheduleMap = new Map();
-    testScheduleMap.set("2022-08-20", [
+    console.log(startDate_YYYY_MM_DD, endDate_YYYY_MM_DD);
+    if (!startDate_YYYY_MM_DD || !endDate_YYYY_MM_DD) {
+      throw new BadRequestException("bad request");
+    }
+
+    const searchList =
+      await this.testScheduleService.findTestScheduleByDateRange(
+        new Date(startDate),
+        new Date(endDate)
+      );
+
+    console.log("searchList", searchList);
+
+    const testScheduleList = [
       {
         scheduleId: 1,
-        scheduleTitle: "이날시험",
-        scheduleDate: new Date(2022, 7, 20),
+        scheduleTitle: "남동필기",
+        scheduledDate: "2022-08-20",
+        testField: "채용",
+        // testDescription: "남동발전 시험",
+        imageFiles: ["https://molru"],
       },
-    ]);
-    testScheduleMap.set("2022-08-21", [
       {
         scheduleId: 2,
-        scheduleTitle: "이날 재시험",
-        scheduleDate: new Date(2022, 7, 21),
+        scheduleTitle: "동서필기",
+        scheduledDate: "2022-08-25",
+        testField: "채용",
+        // testDescription: "동서발전 시험",
+        imageFiles: ["https://molru"],
       },
       {
         scheduleId: 3,
-        scheduleTitle: "새로운 시험",
-        scheduleDate: new Date(2022, 7, 21),
+        scheduleTitle: "기사 3차필기",
+        scheduledDate: "2022-08-25",
+        testField: "자격증",
+        // testDescription: "기사자격증 3차 시험",
+        imageFiles: ["https://molru"],
       },
-    ]);
+    ];
 
-    const testScheduleObjectEntries: objectedMap =
-      Object.fromEntries(testScheduleMap);
-
-    const result = {
-      testScheduleObjectEntries: testScheduleObjectEntries,
+    return {
+      testScheduleList: searchList,
     };
-    console.log("result", result);
-
-    return result;
   }
 
   @UseGuards(JwtAuthGuard)
   @Post()
+  @UseInterceptors(FilesInterceptor("image[]", MAX_IMAGE_COUNT))
   async createTestSchedule(
     @Request() req,
-    @Body() createTestScheduleDto: CreateTestScheduleDto
+    @Body() body: CreateTestScheduleDto,
+    @UploadedFiles() files: Express.Multer.File[]
   ) {
     const userData = await this.OauthService.getProfile(req.user);
     if (userData.userGrade === "user") {
       return "permission denied";
     }
+
+    console.log(body);
+
+    const result = await this.testScheduleService.createTestSchedule(
+      userData,
+      body,
+      files
+    );
+
+    return `received ${result}`;
   }
 
   @Patch(":id")
-  update(
-    @Param("id") id: string,
-    @Body() updateTestScheduleDto: UpdateTestScheduleDto
-  ) {
+  update(@Param("id") id: string, @Body() updateTestScheduleDto: any) {
     return this.testScheduleService.update(+id, updateTestScheduleDto);
   }
 

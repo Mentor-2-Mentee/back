@@ -13,11 +13,11 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 import * as redisStore from "cache-manager-ioredis";
 import { User } from "./models/entities/user.entitiy";
-import { LiveRoom, QuestionTag } from "src/models";
+import { LiveRoom, QuestionTag, TestSchedule } from "src/models";
 
 import { SequelizeModule } from "@nestjs/sequelize";
 import { QuestionTagModule } from "./question-tag/question-tag.module";
-import { TestScheduleModule } from './test-schedule/test-schedule.module';
+import { TestScheduleModule } from "./test-schedule/test-schedule.module";
 
 @Module({
   imports: [
@@ -38,7 +38,7 @@ import { TestScheduleModule } from './test-schedule/test-schedule.module';
         username: configService.get<string>("MARIADB_USER"),
         password: configService.get<string>("MARIADB_PASSWORD"),
         database: "M2M",
-        models: [LiveRoom, User, QuestionTag],
+        models: [LiveRoom, User, QuestionTag, TestSchedule],
       }),
     }),
     CacheModule.registerAsync({

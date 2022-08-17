@@ -6,7 +6,7 @@ export default class DateFormatting {
 
   get YYYY_MM_DD(): string {
     const YYYY = this.date.getFullYear().toString();
-    const MM = this.date.getMonth().toString().padStart(2, "0");
+    const MM = (this.date.getMonth() + 1).toString().padStart(2, "0");
     const DD = this.date.getDate().toString().padStart(2, "0");
     return `${YYYY}-${MM}-${DD}`;
   }

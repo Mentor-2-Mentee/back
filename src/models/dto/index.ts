@@ -21,3 +21,5 @@ export * from "./user.kakao.dto";
 export * from "./user.m2m.dto";
 
 export * from "./get-pastChatList.dto";
+
+export * from "./create-testSchedule.dto";

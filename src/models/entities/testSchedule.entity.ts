@@ -1,7 +1,13 @@
-import { Table, Model, AutoIncrement, Column } from "sequelize-typescript";
+import {
+  Table,
+  Model,
+  AutoIncrement,
+  Column,
+  DataType,
+} from "sequelize-typescript";
 
 @Table({
-  tableName: "TableSchedule",
+  tableName: "TestSchedule",
   timestamps: true,
   createdAt: true,
   updatedAt: "updatedAt",
@@ -11,17 +17,23 @@ export class TestSchedule extends Model {
   @Column({
     primaryKey: true,
   })
-  scheduleId: number;
+  testScheduleId: number;
 
   @Column({ allowNull: false })
-  scheduleTitle: string;
+  testScheduleTitle: string;
 
   @Column({ allowNull: false })
-  scheduleDate: Date;
+  testUrl: string;
+
+  @Column({ allowNull: false, type: DataType.DATE })
+  testDate: Date;
+
+  @Column({ allowNull: false })
+  testField: string;
+
+  @Column({ allowNull: false })
+  testDescription: string;
+
+  @Column({ allowNull: false, type: DataType.JSON })
+  imageFiles: string;
 }
-
-/**
- * @TestScheduleMap : Map<Date().toString(), TestSchedule[]>
- * 특정 일에 실행예정인 스케쥴 리스트를 Map으로 반환
- */
-export type TestScheduleMap = Map<string, TestSchedule[]>;
