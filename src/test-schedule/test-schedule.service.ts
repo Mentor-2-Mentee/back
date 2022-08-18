@@ -16,40 +16,27 @@ export class TestScheduleService {
     createTestScheduleDto: CreateTestScheduleDto,
     imageFiles: Express.Multer.File[]
   ) {
-    let scheduleId: number;
     const imagesPath = [];
 
-    console.log("123");
     imageFiles.map((imageFile) => {
       const rootDirName = new RegExp("public/");
       const savedPath = imageFile.path.replace(rootDirName, "");
       imagesPath.push(savedPath);
     });
+    Object.entries(createTestScheduleDto).map(([key, value]) => {
+      createTestScheduleDto[key] = JSON.parse(value);
+    });
 
-    console.log("1234");
-    console.log({
-      testScheduleTitle: JSON.parse(createTestScheduleDto.testScheduleTitle),
-      testUrl: JSON.parse(createTestScheduleDto.testUrl),
-      testDate: JSON.parse(createTestScheduleDto.testDate),
-      testField: JSON.parse(createTestScheduleDto.testField),
-      testDescription: JSON.parse(createTestScheduleDto.testDescription),
+    const savedTestSchedule = await this.testScheduleModel.create({
+      testScheduleTitle: createTestScheduleDto.testScheduleTitle,
+      testUrl: createTestScheduleDto.testUrl,
+      testDate: createTestScheduleDto.testDate,
+      testField: createTestScheduleDto.testField,
+      testDescription: createTestScheduleDto.testDescription,
       imageFiles: imagesPath,
     });
 
-    console.log("12345");
-
-    await this.testScheduleModel.create({
-      testScheduleTitle: JSON.parse(createTestScheduleDto.testScheduleTitle),
-      testUrl: JSON.parse(createTestScheduleDto.testUrl),
-      testDate: JSON.parse(createTestScheduleDto.testDate),
-      testField: JSON.parse(createTestScheduleDto.testField),
-      testDescription: JSON.parse(createTestScheduleDto.testDescription),
-      imageFiles: imagesPath,
-    });
-
-    console.log("created");
-
-    return "This action adds a new testSchedule";
+    return savedTestSchedule;
   }
 
   async findTestScheduleByDateRange(

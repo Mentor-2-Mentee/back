@@ -22,7 +22,7 @@ export class TestSchedule extends Model {
   @Column({ allowNull: false })
   testScheduleTitle: string;
 
-  @Column({ allowNull: false })
+  @Column({ allowNull: true })
   testUrl: string;
 
   @Column({ allowNull: false, type: DataType.DATE })
@@ -31,9 +31,9 @@ export class TestSchedule extends Model {
   @Column({ allowNull: false })
   testField: string;
 
-  @Column({ allowNull: false })
+  @Column({ allowNull: true })
   testDescription: string;
 
-  @Column({ allowNull: false, type: DataType.JSON })
+  @Column({ allowNull: true, type: DataType.JSON })
   imageFiles: string;
 }

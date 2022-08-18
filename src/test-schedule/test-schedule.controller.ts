@@ -19,7 +19,7 @@ import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { CreateTestScheduleDto } from "src/models";
 
-const MAX_IMAGE_COUNT = 5;
+const MAX_IMAGE_COUNT = 10;
 
 @Controller("testSchedule")
 export class TestScheduleController {
@@ -37,7 +37,6 @@ export class TestScheduleController {
     const startDate_YYYY_MM_DD = YYYY_MM_DD_regExp.exec(startDate);
     const endDate_YYYY_MM_DD = YYYY_MM_DD_regExp.exec(endDate);
 
-    console.log(startDate_YYYY_MM_DD, endDate_YYYY_MM_DD);
     if (!startDate_YYYY_MM_DD || !endDate_YYYY_MM_DD) {
       throw new BadRequestException("bad request");
     }
@@ -47,35 +46,6 @@ export class TestScheduleController {
         new Date(startDate),
         new Date(endDate)
       );
-
-    console.log("searchList", searchList);
-
-    const testScheduleList = [
-      {
-        scheduleId: 1,
-        scheduleTitle: "남동필기",
-        scheduledDate: "2022-08-20",
-        testField: "채용",
-        // testDescription: "남동발전 시험",
-        imageFiles: ["https://molru"],
-      },
-      {
-        scheduleId: 2,
-        scheduleTitle: "동서필기",
-        scheduledDate: "2022-08-25",
-        testField: "채용",
-        // testDescription: "동서발전 시험",
-        imageFiles: ["https://molru"],
-      },
-      {
-        scheduleId: 3,
-        scheduleTitle: "기사 3차필기",
-        scheduledDate: "2022-08-25",
-        testField: "자격증",
-        // testDescription: "기사자격증 3차 시험",
-        imageFiles: ["https://molru"],
-      },
-    ];
 
     return {
       testScheduleList: searchList,
@@ -95,15 +65,15 @@ export class TestScheduleController {
       return "permission denied";
     }
 
-    console.log(body);
-
-    const result = await this.testScheduleService.createTestSchedule(
+    const savedTestSchedule = await this.testScheduleService.createTestSchedule(
       userData,
       body,
       files
     );
 
-    return `received ${result}`;
+    return {
+      data: savedTestSchedule,
+    };
   }
 
   @Patch(":id")
@@ -111,8 +81,19 @@ export class TestScheduleController {
     return this.testScheduleService.update(+id, updateTestScheduleDto);
   }
 
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.testScheduleService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  async deleteTestSchedule(
+    @Request() req,
+    @Query("testScheduleId") testScheduleId: string
+  ) {
+    const userData = await this.OauthService.getProfile(req.user);
+    if (userData.userGrade === "user") {
+      return "permission denied";
+    }
+
+    console.log(testScheduleId);
+
+    return "ok";
   }
 }
