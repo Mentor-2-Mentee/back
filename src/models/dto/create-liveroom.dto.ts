@@ -1,5 +1,5 @@
 export class CreateLiveRoomDto {
-  roomTitle: string;
+  mentoringRoomTitle: string;
   appliedTagOptions: string;
-  explainRoomText?: string;
+  mentoringRoomDescription: string;
 }

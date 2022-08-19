@@ -23,3 +23,4 @@ export * from "./user.m2m.dto";
 export * from "./get-pastChatList.dto";
 
 export * from "./create-testSchedule.dto";
+export * from "./update-testSchedule.dto";

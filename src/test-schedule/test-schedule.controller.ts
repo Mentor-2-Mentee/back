@@ -12,6 +12,7 @@ import {
   BadRequestException,
   UseInterceptors,
   UploadedFiles,
+  Put,
 } from "@nestjs/common";
 import { TestScheduleService } from "./test-schedule.service";
 import { OauthService } from "src/oauth/oauth.service";
@@ -72,13 +73,32 @@ export class TestScheduleController {
     );
 
     return {
+      message: `create ${body.testScheduleTitle} schedule success`,
       data: savedTestSchedule,
     };
   }
 
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateTestScheduleDto: any) {
-    return this.testScheduleService.update(+id, updateTestScheduleDto);
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  @UseInterceptors(FilesInterceptor("image[]", MAX_IMAGE_COUNT))
+  async update(
+    @Request() req,
+    @Query("testScheduleId") testScheduleId: string,
+    @Body() body: any,
+    @UploadedFiles() files: Express.Multer.File[]
+  ) {
+    const userData = await this.OauthService.getProfile(req.user);
+    if (userData.userGrade === "user") {
+      return "permission denied";
+    }
+
+    const updatedTestSchedule =
+      await this.testScheduleService.updateTestSchedule(userData, body, files);
+
+    return {
+      message: `update ${body.testScheduleTitle} schedule success`,
+      data: updatedTestSchedule,
+    };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -95,5 +115,15 @@ export class TestScheduleController {
     console.log(testScheduleId);
 
     return "ok";
+  }
+
+  @Post("/test")
+  test(@Body() body: any) {
+    console.log(body);
+
+    return {
+      message: "echo!",
+      ...body,
+    };
   }
 }

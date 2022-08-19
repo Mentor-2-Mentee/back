@@ -19,13 +19,13 @@ export class LiveRoom extends Model {
   id: number;
 
   @Column({ allowNull: false })
-  roomId: string;
+  mentoringRoomId: string;
 
   @Column({ allowNull: false })
-  roomTitle: string;
+  mentoringRoomTitle: string;
 
   @Column({ allowNull: true })
-  explainRoomText: string;
+  mentoringRoomDescription: string;
 
   @Column({ allowNull: false })
   author: string;

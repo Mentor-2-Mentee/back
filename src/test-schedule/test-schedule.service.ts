@@ -1,7 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Order, WhereOptions } from "sequelize/types";
-import { CreateTestScheduleDto, TestSchedule, User } from "src/models";
+import {
+  CreateTestScheduleDto,
+  TestSchedule,
+  UpdateTestScheduleDto,
+  User,
+} from "src/models";
 import { Sequelize, Op } from "sequelize";
 
 @Injectable()
@@ -39,24 +44,8 @@ export class TestScheduleService {
     return savedTestSchedule;
   }
 
-  async findTestScheduleByDateRange(
-    startDate: Date,
-    endDate: Date,
-    option = "INCREASE"
-  ) {
+  async findTestScheduleByDateRange(startDate: Date, endDate: Date) {
     const searchTestScheduleQuerys: WhereOptions = [];
-    const orderOption: Order = [];
-
-    switch (option) {
-      case "INCREASE":
-        orderOption.push(["createdAt", "ASC"]);
-        break;
-      case "DECREASE":
-        orderOption.push(["createdAt", "DESC"]);
-      default:
-        orderOption.push(["createdAt", "DESC"]);
-        break;
-    }
 
     searchTestScheduleQuerys.push({
       ["testDate"]: {
@@ -71,10 +60,54 @@ export class TestScheduleService {
       where: {
         [Op.and]: searchTestScheduleQuerys,
       },
-      order: orderOption,
     });
 
     return testScheduleList;
+  }
+
+  async updateTestSchedule(
+    userData: Pick<User, "userId" | "username" | "userGrade">,
+    updateTestScheduleDto: UpdateTestScheduleDto,
+    imageFiles: Express.Multer.File[]
+  ) {
+    const searchTestScheduleQuerys: WhereOptions = [];
+
+    searchTestScheduleQuerys.push({
+      ["testScheduleId"]: {
+        [Op.and]: {
+          [Op.eq]: updateTestScheduleDto.testScheduleId,
+        },
+      },
+    });
+
+    const imagesPath = [];
+
+    imageFiles.map((imageFile) => {
+      const rootDirName = new RegExp("public/");
+      const savedPath = imageFile.path.replace(rootDirName, "");
+      imagesPath.push(savedPath);
+    });
+    Object.entries(updateTestScheduleDto).map(([key, value]) => {
+      updateTestScheduleDto[key] = JSON.parse(value);
+    });
+
+    const updatedTestSchedule = await this.testScheduleModel.update(
+      {
+        testScheduleTitle: updateTestScheduleDto.testScheduleTitle,
+        testUrl: updateTestScheduleDto.testUrl,
+        testDate: updateTestScheduleDto.testDate,
+        testField: updateTestScheduleDto.testField,
+        testDescription: updateTestScheduleDto.testDescription,
+        imageFiles: imagesPath,
+      },
+      {
+        where: {
+          [Op.and]: searchTestScheduleQuerys,
+        },
+      }
+    );
+
+    return updatedTestSchedule;
   }
 
   findAll() {

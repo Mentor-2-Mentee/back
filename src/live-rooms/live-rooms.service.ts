@@ -35,9 +35,9 @@ export class LiveRoomsService {
   ): Promise<string> {
     console.log(
       userData,
-      createLiveRoomDto.roomTitle,
+      createLiveRoomDto.mentoringRoomTitle,
       JSON.parse(createLiveRoomDto.appliedTagOptions),
-      createLiveRoomDto.explainRoomText
+      createLiveRoomDto.mentoringRoomDescription
     );
     const roomPath = String(uuidv4());
     const imagesPath = [];
@@ -51,15 +51,14 @@ export class LiveRoomsService {
     const parsedAppliedTagOptions: AppliedTagOptionsDto = JSON.parse(
       createLiveRoomDto.appliedTagOptions
     );
-    const parsedExplainRoomText: string =
-      createLiveRoomDto.explainRoomText === undefined
-        ? JSON.parse(createLiveRoomDto.explainRoomText)
-        : null;
+    const parsedExplainRoomText: string = JSON.parse(
+      createLiveRoomDto.mentoringRoomDescription
+    );
 
     await this.liveRoomModel.create({
-      roomId: roomPath,
-      roomTitle: JSON.parse(createLiveRoomDto.roomTitle),
-      explainRoomText: parsedExplainRoomText,
+      mentoringRoomId: roomPath,
+      mentoringRoomTitle: JSON.parse(createLiveRoomDto.mentoringRoomTitle),
+      mentoringRoomDescription: parsedExplainRoomText,
       author: userData.username,
       imageFiles: imagesPath,
       rootFilterTag:
