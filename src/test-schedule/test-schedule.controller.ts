@@ -18,7 +18,7 @@ import { TestScheduleService } from "./test-schedule.service";
 import { OauthService } from "src/oauth/oauth.service";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { FilesInterceptor } from "@nestjs/platform-express";
-import { CreateTestScheduleDto } from "src/models";
+import { CreateTestScheduleDto, UpdateTestScheduleDto } from "src/models";
 
 const MAX_IMAGE_COUNT = 10;
 
@@ -83,8 +83,7 @@ export class TestScheduleController {
   @UseInterceptors(FilesInterceptor("image[]", MAX_IMAGE_COUNT))
   async update(
     @Request() req,
-    @Query("testScheduleId") testScheduleId: string,
-    @Body() body: any,
+    @Body() body: UpdateTestScheduleDto,
     @UploadedFiles() files: Express.Multer.File[]
   ) {
     const userData = await this.OauthService.getProfile(req.user);
@@ -92,12 +91,11 @@ export class TestScheduleController {
       return "permission denied";
     }
 
-    const updatedTestSchedule =
-      await this.testScheduleService.updateTestSchedule(userData, body, files);
+    await this.testScheduleService.updateTestSchedule(userData, body, files);
 
     return {
       message: `update ${body.testScheduleTitle} schedule success`,
-      data: updatedTestSchedule,
+      data: body,
     };
   }
 
@@ -112,18 +110,16 @@ export class TestScheduleController {
       return "permission denied";
     }
 
+    await this.testScheduleService.deleteTestSchedule(
+      userData,
+      Number(testScheduleId)
+    );
+
     console.log(testScheduleId);
 
-    return "ok";
-  }
-
-  @Post("/test")
-  test(@Body() body: any) {
-    console.log(body);
-
     return {
-      message: "echo!",
-      ...body,
+      message: `delete ${testScheduleId} schedule success`,
+      data: testScheduleId,
     };
   }
 }

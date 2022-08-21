@@ -91,7 +91,7 @@ export class TestScheduleService {
       updateTestScheduleDto[key] = JSON.parse(value);
     });
 
-    const updatedTestSchedule = await this.testScheduleModel.update(
+    await this.testScheduleModel.update(
       {
         testScheduleTitle: updateTestScheduleDto.testScheduleTitle,
         testUrl: updateTestScheduleDto.testUrl,
@@ -106,23 +106,25 @@ export class TestScheduleService {
         },
       }
     );
-
-    return updatedTestSchedule;
   }
 
-  findAll() {
-    return `This action returns all testSchedule`;
-  }
+  async deleteTestSchedule(
+    userData: Pick<User, "userId" | "username" | "userGrade">,
+    testScheduleId: number
+  ) {
+    const searchTestScheduleQuerys: WhereOptions = [];
+    searchTestScheduleQuerys.push({
+      ["testScheduleId"]: {
+        [Op.and]: {
+          [Op.eq]: testScheduleId,
+        },
+      },
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} testSchedule`;
-  }
-
-  update(id: number, updateTestScheduleDto: any) {
-    return `This action updates a #${id} testSchedule`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} testSchedule`;
+    await this.testScheduleModel.destroy({
+      where: {
+        [Op.and]: searchTestScheduleQuerys,
+      },
+    });
   }
 }
