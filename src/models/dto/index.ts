@@ -24,3 +24,6 @@ export * from "./get-pastChatList.dto";
 
 export * from "./create-testSchedule.dto";
 export * from "./update-testSchedule.dto";
+
+export * from "./create-createTestMentoringRoomRequest.dto";
+export * from "./get-createTestMentoringRoomRequest.dto";

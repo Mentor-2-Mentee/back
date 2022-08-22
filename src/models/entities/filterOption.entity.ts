@@ -1,4 +1,4 @@
-import { QuestionTag } from "./questionTag.entitiy";
+import { QuestionTag } from "./questionTag.entity";
 
 export class FilterOption {
   rootFilterTag?: string;

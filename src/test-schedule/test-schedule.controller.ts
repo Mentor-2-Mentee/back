@@ -13,12 +13,14 @@ import {
   UseInterceptors,
   UploadedFiles,
   Put,
+  Res,
 } from "@nestjs/common";
 import { TestScheduleService } from "./test-schedule.service";
 import { OauthService } from "src/oauth/oauth.service";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { CreateTestScheduleDto, UpdateTestScheduleDto } from "src/models";
+import { Response } from "express";
 
 const MAX_IMAGE_COUNT = 10;
 
@@ -121,5 +123,18 @@ export class TestScheduleController {
       message: `delete ${testScheduleId} schedule success`,
       data: testScheduleId,
     };
+  }
+
+  @Get("/test")
+  async test(@Res() res: Response) {
+    const buffer = await this.testScheduleService.generatePDF();
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": "attachment; filename=example.pdf",
+      "Content-Length": buffer.length,
+    });
+
+    res.end(buffer);
   }
 }

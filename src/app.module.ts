@@ -12,12 +12,18 @@ import configuration from "./common/config/configuration";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 import * as redisStore from "cache-manager-ioredis";
-import { User } from "./models/entities/user.entitiy";
-import { LiveRoom, QuestionTag, TestSchedule } from "src/models";
+import { User } from "./models/entities/user.entity";
+import {
+  CreateTestMentoringRoomRequest,
+  LiveRoom,
+  QuestionTag,
+  TestSchedule,
+} from "src/models";
 
 import { SequelizeModule } from "@nestjs/sequelize";
 import { QuestionTagModule } from "./question-tag/question-tag.module";
 import { TestScheduleModule } from "./test-schedule/test-schedule.module";
+import { TestMentoringRoomModule } from "./test-mentoring-room/test-mentoring-room.module";
 
 @Module({
   imports: [
@@ -38,7 +44,13 @@ import { TestScheduleModule } from "./test-schedule/test-schedule.module";
         username: configService.get<string>("MARIADB_USER"),
         password: configService.get<string>("MARIADB_PASSWORD"),
         database: "M2M",
-        models: [LiveRoom, User, QuestionTag, TestSchedule],
+        models: [
+          LiveRoom,
+          User,
+          QuestionTag,
+          TestSchedule,
+          CreateTestMentoringRoomRequest,
+        ],
       }),
     }),
     CacheModule.registerAsync({
@@ -56,6 +68,7 @@ import { TestScheduleModule } from "./test-schedule/test-schedule.module";
     OauthModule,
     QuestionTagModule,
     TestScheduleModule,
+    TestMentoringRoomModule,
   ],
   controllers: [AppController],
   providers: [AppService],
