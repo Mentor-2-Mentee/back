@@ -17,6 +17,7 @@ import {
   CreateTestMentoringRoomRequest,
   LiveRoom,
   QuestionTag,
+  TestMentoringRoom,
   TestSchedule,
 } from "src/models";
 
@@ -50,6 +51,7 @@ import { TestMentoringRoomModule } from "./test-mentoring-room/test-mentoring-ro
           QuestionTag,
           TestSchedule,
           CreateTestMentoringRoomRequest,
+          TestMentoringRoom,
         ],
       }),
     }),

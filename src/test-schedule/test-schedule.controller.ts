@@ -14,12 +14,17 @@ import {
   UploadedFiles,
   Put,
   Res,
+  Req,
 } from "@nestjs/common";
 import { TestScheduleService } from "./test-schedule.service";
 import { OauthService } from "src/oauth/oauth.service";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { FilesInterceptor } from "@nestjs/platform-express";
-import { CreateTestScheduleDto, UpdateTestScheduleDto } from "src/models";
+import {
+  AuthUserRequestDto,
+  CreateTestScheduleDto,
+  UpdateTestScheduleDto,
+} from "src/models";
 import { Response } from "express";
 
 const MAX_IMAGE_COUNT = 10;
@@ -55,15 +60,32 @@ export class TestScheduleController {
     };
   }
 
+  @Get(":testScheduleId")
+  async getScheduleById(@Param("testScheduleId") testScheduleId: number) {
+    console.log(testScheduleId);
+    const targetTestSchedule =
+      await this.testScheduleService.findTestScheduleById(testScheduleId);
+
+    console.log({
+      message: `${testScheduleId} data`,
+      testScheduleList: targetTestSchedule,
+    });
+
+    return {
+      message: `${testScheduleId} data`,
+      testScheduleList: targetTestSchedule,
+    };
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(FilesInterceptor("image[]", MAX_IMAGE_COUNT))
   async createTestSchedule(
-    @Request() req,
+    @Req() request: AuthUserRequestDto,
     @Body() body: CreateTestScheduleDto,
     @UploadedFiles() files: Express.Multer.File[]
   ) {
-    const userData = await this.OauthService.getProfile(req.user);
+    const userData = await this.OauthService.getProfile(request.user.userId);
     if (userData.userGrade === "user") {
       return "permission denied";
     }
@@ -84,11 +106,11 @@ export class TestScheduleController {
   @Put()
   @UseInterceptors(FilesInterceptor("image[]", MAX_IMAGE_COUNT))
   async update(
-    @Request() req,
+    @Req() request: AuthUserRequestDto,
     @Body() body: UpdateTestScheduleDto,
     @UploadedFiles() files: Express.Multer.File[]
   ) {
-    const userData = await this.OauthService.getProfile(req.user);
+    const userData = await this.OauthService.getProfile(request.user.userId);
     if (userData.userGrade === "user") {
       return "permission denied";
     }
@@ -104,10 +126,10 @@ export class TestScheduleController {
   @UseGuards(JwtAuthGuard)
   @Delete()
   async deleteTestSchedule(
-    @Request() req,
+    @Req() request: AuthUserRequestDto,
     @Query("testScheduleId") testScheduleId: string
   ) {
-    const userData = await this.OauthService.getProfile(req.user);
+    const userData = await this.OauthService.getProfile(request.user.userId);
     if (userData.userGrade === "user") {
       return "permission denied";
     }

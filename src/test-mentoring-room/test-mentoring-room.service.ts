@@ -2,10 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import {
   CreateCreateTestMentoringRoomRequestDto,
+  CreateTestMentoringRoomDto,
   GetCreateTestMentoringRoomRequest,
   User,
 } from "src/models";
-import { CreateTestMentoringRoomRequest } from "src/models/entities";
+import {
+  CreateTestMentoringRoomRequest,
+  TestMentoringRoom,
+} from "src/models/entities";
 import {
   Sequelize,
   IncludeOptions,
@@ -14,12 +18,17 @@ import {
   Op,
   Order,
 } from "sequelize";
+import { OauthService } from "src/oauth/oauth.service";
+import { v4 as uuidv4 } from "uuid";
 
 @Injectable()
 export class TestMentoringRoomService {
   constructor(
+    private readonly OauthService: OauthService,
     @InjectModel(CreateTestMentoringRoomRequest)
-    private createTestMentoringRoomRequestModel: typeof CreateTestMentoringRoomRequest
+    private createTestMentoringRoomRequestModel: typeof CreateTestMentoringRoomRequest,
+    @InjectModel(TestMentoringRoom)
+    private testMentoringRoomModel: typeof TestMentoringRoom
   ) {}
 
   async createTestMentoringRoomRequest(
@@ -34,9 +43,9 @@ export class TestMentoringRoomService {
           [Op.eq]: createCreateTestMentoringRoomRequestDto.testScheduleId,
         },
       },
-      ["requestWorkField"]: {
+      ["requestTestField"]: {
         [Op.and]: {
-          [Op.eq]: createCreateTestMentoringRoomRequestDto.requestWorkField,
+          [Op.eq]: createCreateTestMentoringRoomRequestDto.requestTestField,
         },
       },
     });
@@ -49,8 +58,8 @@ export class TestMentoringRoomService {
         defaults: {
           testScheduleId:
             createCreateTestMentoringRoomRequestDto.testScheduleId,
-          requestWorkField:
-            createCreateTestMentoringRoomRequestDto.requestWorkField,
+          requestTestField:
+            createCreateTestMentoringRoomRequestDto.requestTestField,
           requestUserList: [userData],
         },
       });
@@ -66,8 +75,8 @@ export class TestMentoringRoomService {
         {
           testScheduleId:
             createCreateTestMentoringRoomRequestDto.testScheduleId,
-          requestWorkField:
-            createCreateTestMentoringRoomRequestDto.requestWorkField,
+          requestTestField:
+            createCreateTestMentoringRoomRequestDto.requestTestField,
           requestUserList: [...target.requestUserList, userData],
         },
         {
@@ -99,5 +108,83 @@ export class TestMentoringRoomService {
     });
 
     return requestList;
+  }
+
+  async createTestMentoringRoom(
+    createTestMentoringRoomDto: CreateTestMentoringRoomDto
+  ) {
+    const searchByTestScheduleIdAndTestField: WhereOptions = [];
+    searchByTestScheduleIdAndTestField.push({
+      ["testScheduleId"]: {
+        [Op.and]: {
+          [Op.eq]: createTestMentoringRoomDto.testScheduleId,
+        },
+      },
+      ["testField"]: {
+        [Op.and]: {
+          [Op.eq]: createTestMentoringRoomDto.requestTestField,
+        },
+      },
+    });
+
+    const newTestMentoringRoomId = uuidv4();
+
+    const [target, isCreated] = await this.testMentoringRoomModel.findOrCreate({
+      where: {
+        [Op.and]: searchByTestScheduleIdAndTestField,
+      },
+      defaults: {
+        testMentoringRoomId: newTestMentoringRoomId,
+        testScheduleId: createTestMentoringRoomDto.testScheduleId,
+        testField: createTestMentoringRoomDto.requestTestField,
+        userList: [
+          ...createTestMentoringRoomDto.userList.map((user) => user.userId),
+        ],
+        chatListBundle: [],
+        testQuestionList: [],
+      },
+    });
+
+    if (isCreated) {
+      const searchDestoryRequest: WhereOptions = [];
+      searchDestoryRequest.push({
+        ["testScheduleId"]: {
+          [Op.and]: {
+            [Op.eq]: createTestMentoringRoomDto.testScheduleId,
+          },
+        },
+        ["requestTestField"]: {
+          [Op.and]: {
+            [Op.eq]: createTestMentoringRoomDto.requestTestField,
+          },
+        },
+      });
+      await this.createTestMentoringRoomRequestModel.destroy({
+        where: {
+          [Op.and]: searchDestoryRequest,
+        },
+      });
+    }
+
+    return [target, isCreated];
+  }
+
+  async getTestMentoringRoomByTestScheduleId(testScheduleId: number) {
+    const searchByTestScheduleId: WhereOptions = [];
+    searchByTestScheduleId.push({
+      ["testScheduleId"]: {
+        [Op.and]: {
+          [Op.eq]: testScheduleId,
+        },
+      },
+    });
+
+    const testMentoringRoomList = await this.testMentoringRoomModel.findAll({
+      where: {
+        [Op.and]: searchByTestScheduleId,
+      },
+    });
+
+    return testMentoringRoomList;
   }
 }

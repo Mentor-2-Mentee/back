@@ -27,3 +27,7 @@ export * from "./update-testSchedule.dto";
 
 export * from "./create-createTestMentoringRoomRequest.dto";
 export * from "./get-createTestMentoringRoomRequest.dto";
+
+export * from "./auth-userRequest.dto";
+
+export * from "./create-testMentoringRoom.dto";

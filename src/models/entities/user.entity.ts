@@ -5,7 +5,7 @@ import { Column, Model, Table, AutoIncrement } from "sequelize-typescript";
   createdAt: true,
   updatedAt: "updatedAt",
 })
-export class User extends Model<User> {
+export class User extends Model {
   @AutoIncrement
   @Column({
     primaryKey: true,

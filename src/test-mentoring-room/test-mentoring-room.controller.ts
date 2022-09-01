@@ -3,17 +3,15 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
   Delete,
   UseGuards,
-  Request,
   Query,
+  Req,
 } from "@nestjs/common";
 import {
+  AuthUserRequestDto,
   CreateCreateTestMentoringRoomRequestDto,
-  GetCreateTestMentoringRoomRequest,
-  User,
+  CreateTestMentoringRoomDto,
 } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { OauthService } from "src/oauth/oauth.service";
@@ -26,15 +24,46 @@ export class TestMentoringRoomController {
     private readonly OauthService: OauthService
   ) {}
 
+  @Get()
+  async getTestMentoringRoomListByTestScheduleId(
+    @Query("testScheduleId") testScheduleId: number
+  ) {
+    const testMentoringRoomList =
+      await this.testMentoringRoomService.getTestMentoringRoomByTestScheduleId(
+        testScheduleId
+      );
+
+    return {
+      message: "OK",
+      data: testMentoringRoomList,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  async createTestMentoringRoom(
+    @Req() request: AuthUserRequestDto,
+    @Body() body: CreateTestMentoringRoomDto
+  ) {
+    const [target, isCreated] =
+      await this.testMentoringRoomService.createTestMentoringRoom(body);
+
+    return {
+      message: `received ${body}`,
+      data: {
+        testMentoringRoom: target,
+        isCreated,
+      },
+    };
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post("/create-request")
   async createTestMentoringRoomRequest(
-    @Request() req,
+    @Req() request: AuthUserRequestDto,
     @Body() body: CreateCreateTestMentoringRoomRequestDto
   ) {
-    const userData = await this.OauthService.getProfile(req.user);
-    console.log(userData, body);
-
+    const userData = await this.OauthService.getProfile(request.user.userId);
     await this.testMentoringRoomService.createTestMentoringRoomRequest(
       userData,
       body
@@ -49,7 +78,28 @@ export class TestMentoringRoomController {
   async getCreateTestMentoringRoomRequestList(
     @Query("testScheduleId") testScheduleId: number
   ) {
-    console.log("testScheduleId", testScheduleId);
+    const requestList =
+      await this.testMentoringRoomService.getCreateTestMentoringRoomRequestList(
+        {
+          testScheduleId,
+        }
+      );
+
+    return {
+      message: `${testScheduleId} requestList`,
+      data: requestList,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete("/create-request")
+  async deleteTestMentoringRoomRequest(
+    @Req() request: AuthUserRequestDto,
+    @Query("testScheduleId") testScheduleId: number
+  ) {
+    const userData = await this.OauthService.getProfile(request.user.userId);
+
+    console.log("userData", userData, "testScheduleId", testScheduleId);
     const requestList =
       await this.testMentoringRoomService.getCreateTestMentoringRoomRequestList(
         {

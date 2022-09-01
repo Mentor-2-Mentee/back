@@ -3,8 +3,9 @@ import { JwtService } from "@nestjs/jwt";
 import { Cache } from "cache-manager";
 import { User } from "src/models";
 import configuration from "../common/config/configuration";
-import { UserKakaoDto, UserM2MDto } from "src/models/dto";
+import { AuthUserRequestDto, UserKakaoDto, UserM2MDto } from "src/models/dto";
 import { InjectModel } from "@nestjs/sequelize";
+import { Op } from "sequelize";
 
 interface UserPayload {
   isFirstSignIn: boolean;
@@ -101,13 +102,16 @@ export class OauthService {
     };
   }
 
-  async getProfile({
-    userId,
-    username,
-  }: UserM2MDto): Promise<Pick<User, "userId" | "username" | "userGrade">> {
+  async getProfile(
+    userId: number
+  ): Promise<Pick<User, "userId" | "username" | "userGrade">> {
     const targetUser: User = await this.userModel.findOne({
       where: {
-        userId: userId,
+        [Op.and]: {
+          ["userId"]: {
+            [Op.eq]: userId,
+          },
+        },
       },
     });
 
@@ -159,7 +163,6 @@ export class OauthService {
   }
 
   async sendToken(tokenKeyCode: string) {
-    const tokens = await this.cacheManager.get<string>(tokenKeyCode);
-    return tokens;
+    return await this.cacheManager.get<string>(tokenKeyCode);
   }
 }

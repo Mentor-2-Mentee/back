@@ -66,6 +66,23 @@ export class TestScheduleService {
     return testScheduleList;
   }
 
+  async findTestScheduleById(testScheduleId: number) {
+    const searchTestScheduleQuerys: WhereOptions = [];
+    searchTestScheduleQuerys.push({
+      ["testScheduleId"]: {
+        [Op.eq]: testScheduleId,
+      },
+    });
+
+    const testSchedule = await this.testScheduleModel.findOne({
+      where: {
+        [Op.and]: searchTestScheduleQuerys,
+      },
+    });
+
+    return testSchedule;
+  }
+
   async updateTestSchedule(
     userData: Pick<User, "userId" | "username" | "userGrade">,
     updateTestScheduleDto: UpdateTestScheduleDto,

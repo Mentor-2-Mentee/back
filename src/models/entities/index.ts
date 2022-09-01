@@ -5,3 +5,4 @@ export * from "./questionTag.entity";
 export * from "./mentoringRoomChatSummary.entity";
 export * from "./testSchedule.entity";
 export * from "./createTestMentoringRoomRequest.entity";
+export * from "./testMentoringRoom";

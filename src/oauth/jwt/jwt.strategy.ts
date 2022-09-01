@@ -17,9 +17,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   //jwt토큰 해싱한 payload를 가져와서 반환한다
   async validate(payload: JwtPayloadDto) {
-    return {
-      userId: payload.userId,
-      // username: payload.username,
-    };
+    return payload;
   }
 }

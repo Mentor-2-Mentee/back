@@ -115,7 +115,11 @@ export class LiveRoomsService {
     if (filter.filterKeywords !== []) {
       filter.filterKeywords.map((filterKeyword) => {
         searchFilterQuerys.push(
-          generateLiveRoomWhereOption(filterKeyword, "roomTitle", "string")
+          generateLiveRoomWhereOption(
+            filterKeyword,
+            "mentoringRoomTitle",
+            "string"
+          )
         );
       });
     }
@@ -128,8 +132,6 @@ export class LiveRoomsService {
       limit: limit,
       order: orderOption,
     });
-
-    const countAllRooms = await this.liveRoomModel.count();
 
     return result;
   }
