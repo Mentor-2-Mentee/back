@@ -68,12 +68,12 @@ export class TestScheduleController {
 
     console.log({
       message: `${testScheduleId} data`,
-      testScheduleList: targetTestSchedule,
+      testSchedule: targetTestSchedule,
     });
 
     return {
       message: `${testScheduleId} data`,
-      testScheduleList: targetTestSchedule,
+      testSchedule: targetTestSchedule,
     };
   }
 
