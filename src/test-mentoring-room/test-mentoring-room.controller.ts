@@ -35,7 +35,7 @@ export class TestMentoringRoomController {
 
     return {
       message: "OK",
-      data: testMentoringRoomList,
+      testMentoringRoomList,
     };
   }
 
@@ -85,9 +85,11 @@ export class TestMentoringRoomController {
         }
       );
 
+    console.log("requestList", requestList);
+
     return {
       message: `${testScheduleId} requestList`,
-      data: requestList,
+      requestList,
     };
   }
 
