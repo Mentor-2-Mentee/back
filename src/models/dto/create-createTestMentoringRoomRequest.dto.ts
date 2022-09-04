@@ -1,4 +1,4 @@
 export class CreateCreateTestMentoringRoomRequestDto {
   testScheduleId: number;
-  requestTestField: string;
+  testField: string;
 }

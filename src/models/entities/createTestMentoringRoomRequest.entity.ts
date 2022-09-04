@@ -22,7 +22,7 @@ export class CreateTestMentoringRoomRequest extends Model {
   testScheduleId: number;
 
   @Column({ allowNull: false })
-  requestTestField: string;
+  testField: string;
 
   @Column({ allowNull: false, type: DataType.JSON })
   requestUserList: string;

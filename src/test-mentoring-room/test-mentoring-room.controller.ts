@@ -50,10 +50,8 @@ export class TestMentoringRoomController {
 
     return {
       message: `received ${body}`,
-      data: {
-        testMentoringRoom: target,
-        isCreated,
-      },
+      testMentoringRoom: target,
+      isCreated,
     };
   }
 
@@ -64,6 +62,7 @@ export class TestMentoringRoomController {
     @Body() body: CreateCreateTestMentoringRoomRequestDto
   ) {
     const userData = await this.OauthService.getProfile(request.user.userId);
+
     await this.testMentoringRoomService.createTestMentoringRoomRequest(
       userData,
       body
@@ -97,16 +96,24 @@ export class TestMentoringRoomController {
   @Delete("/create-request")
   async deleteTestMentoringRoomRequest(
     @Req() request: AuthUserRequestDto,
-    @Query("testScheduleId") testScheduleId: number
+    @Query("testScheduleId") testScheduleId: number,
+    @Query("testField") testField: string
   ) {
     const userData = await this.OauthService.getProfile(request.user.userId);
 
-    console.log("userData", userData, "testScheduleId", testScheduleId);
+    console.log(
+      "userData",
+      userData,
+      "testScheduleId",
+      testScheduleId,
+      "testField",
+      testField
+    );
     const requestList =
-      await this.testMentoringRoomService.getCreateTestMentoringRoomRequestList(
-        {
-          testScheduleId,
-        }
+      await this.testMentoringRoomService.deleteTestMentoringRoomRequest(
+        userData,
+        testScheduleId,
+        testField
       );
 
     return {

@@ -43,9 +43,9 @@ export class TestMentoringRoomService {
           [Op.eq]: createCreateTestMentoringRoomRequestDto.testScheduleId,
         },
       },
-      ["requestTestField"]: {
+      ["testField"]: {
         [Op.and]: {
-          [Op.eq]: createCreateTestMentoringRoomRequestDto.requestTestField,
+          [Op.eq]: createCreateTestMentoringRoomRequestDto.testField,
         },
       },
     });
@@ -58,8 +58,7 @@ export class TestMentoringRoomService {
         defaults: {
           testScheduleId:
             createCreateTestMentoringRoomRequestDto.testScheduleId,
-          requestTestField:
-            createCreateTestMentoringRoomRequestDto.requestTestField,
+          testField: createCreateTestMentoringRoomRequestDto.testField,
           requestUserList: [userData],
         },
       });
@@ -75,8 +74,7 @@ export class TestMentoringRoomService {
         {
           testScheduleId:
             createCreateTestMentoringRoomRequestDto.testScheduleId,
-          requestTestField:
-            createCreateTestMentoringRoomRequestDto.requestTestField,
+          testField: createCreateTestMentoringRoomRequestDto.testField,
           requestUserList: [...target.requestUserList, userData],
         },
         {
@@ -110,6 +108,48 @@ export class TestMentoringRoomService {
     return requestList;
   }
 
+  async deleteTestMentoringRoomRequest(
+    userData: Pick<User, "userId" | "username" | "userGrade">,
+    testScheduleId: number,
+    testField: string
+  ) {
+    const searchTestMentoringRoomRequest: WhereOptions = [];
+    searchTestMentoringRoomRequest.push({
+      ["testScheduleId"]: {
+        [Op.and]: {
+          [Op.eq]: testScheduleId,
+        },
+      },
+      ["testField"]: {
+        [Op.and]: {
+          [Op.eq]: testField,
+        },
+      },
+    });
+
+    const targetRequest =
+      await this.createTestMentoringRoomRequestModel.findOne({
+        where: searchTestMentoringRoomRequest,
+      });
+
+    const currentUserList: any[] = [...targetRequest.requestUserList];
+
+    console.log("*****");
+    console.log("requestUserList", [...targetRequest.requestUserList]);
+    if (!targetRequest) return;
+
+    await this.createTestMentoringRoomRequestModel.update(
+      {
+        requestUserList: currentUserList.filter(
+          (user) => user.userId !== userData.userId
+        ),
+      },
+      {
+        where: searchTestMentoringRoomRequest,
+      }
+    );
+  }
+
   async createTestMentoringRoom(
     createTestMentoringRoomDto: CreateTestMentoringRoomDto
   ) {
@@ -122,7 +162,7 @@ export class TestMentoringRoomService {
       },
       ["testField"]: {
         [Op.and]: {
-          [Op.eq]: createTestMentoringRoomDto.requestTestField,
+          [Op.eq]: createTestMentoringRoomDto.testField,
         },
       },
     });
@@ -136,7 +176,7 @@ export class TestMentoringRoomService {
       defaults: {
         testMentoringRoomId: newTestMentoringRoomId,
         testScheduleId: createTestMentoringRoomDto.testScheduleId,
-        testField: createTestMentoringRoomDto.requestTestField,
+        testField: createTestMentoringRoomDto.testField,
         userList: [
           ...createTestMentoringRoomDto.userList.map((user) => user.userId),
         ],
@@ -153,9 +193,9 @@ export class TestMentoringRoomService {
             [Op.eq]: createTestMentoringRoomDto.testScheduleId,
           },
         },
-        ["requestTestField"]: {
+        ["testField"]: {
           [Op.and]: {
-            [Op.eq]: createTestMentoringRoomDto.requestTestField,
+            [Op.eq]: createTestMentoringRoomDto.testField,
           },
         },
       });

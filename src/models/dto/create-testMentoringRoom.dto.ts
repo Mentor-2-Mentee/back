@@ -2,6 +2,6 @@ import { User } from "../entities";
 
 export class CreateTestMentoringRoomDto {
   testScheduleId: number;
-  requestTestField: string;
+  testField: string;
   userList: User[];
 }
