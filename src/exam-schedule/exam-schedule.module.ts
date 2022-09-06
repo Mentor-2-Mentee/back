@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
-import { TestScheduleService } from "./test-schedule.service";
-import { TestScheduleController } from "./test-schedule.controller";
+import { ExamScheduleService } from "./exam-schedule.service";
+import { ExamScheduleController } from "./exam-schedule.controller";
 import { SequelizeModule } from "@nestjs/sequelize";
-import { TestSchedule } from "src/models";
+import { ExamSchedule } from "src/models";
 import { OauthModule } from "src/oauth/oauth.module";
 import { MulterModule } from "@nestjs/platform-express";
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -15,7 +15,7 @@ import { extname } from "path";
 @Module({
   imports: [
     OauthModule,
-    SequelizeModule.forFeature([TestSchedule]),
+    SequelizeModule.forFeature([ExamSchedule]),
     MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -43,7 +43,7 @@ import { extname } from "path";
       }),
     }),
   ],
-  controllers: [TestScheduleController],
-  providers: [TestScheduleService],
+  controllers: [ExamScheduleController],
+  providers: [ExamScheduleService],
 })
-export class TestScheduleModule {}
+export class ExamScheduleModule {}

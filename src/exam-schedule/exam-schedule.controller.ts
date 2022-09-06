@@ -16,23 +16,23 @@ import {
   Res,
   Req,
 } from "@nestjs/common";
-import { TestScheduleService } from "./test-schedule.service";
+import { ExamScheduleService } from "./exam-schedule.service";
 import { OauthService } from "src/oauth/oauth.service";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import {
   AuthUserRequestDto,
-  CreateTestScheduleDto,
-  UpdateTestScheduleDto,
+  CreateExamScheduleDto,
+  UpdateExamScheduleDto,
 } from "src/models";
 import { Response } from "express";
 
 const MAX_IMAGE_COUNT = 10;
 
-@Controller("testSchedule")
-export class TestScheduleController {
+@Controller("examSchedule")
+export class ExamScheduleController {
   constructor(
-    private readonly testScheduleService: TestScheduleService,
+    private readonly examScheduleService: ExamScheduleService,
     private readonly OauthService: OauthService
   ) {}
 
@@ -50,39 +50,39 @@ export class TestScheduleController {
     }
 
     const searchList =
-      await this.testScheduleService.findTestScheduleByDateRange(
+      await this.examScheduleService.findExamScheduleByDateRange(
         new Date(startDate),
         new Date(endDate)
       );
 
     return {
-      testScheduleList: searchList,
+      examScheduleList: searchList,
     };
   }
 
-  @Get(":testScheduleId")
-  async getScheduleById(@Param("testScheduleId") testScheduleId: number) {
-    console.log(testScheduleId);
-    const targetTestSchedule =
-      await this.testScheduleService.findTestScheduleById(testScheduleId);
+  @Get(":examScheduleId")
+  async getScheduleById(@Param("examScheduleId") examScheduleId: number) {
+    console.log(examScheduleId);
+    const targetExamSchedule =
+      await this.examScheduleService.findExamScheduleById(examScheduleId);
 
     console.log({
-      message: `${testScheduleId} data`,
-      testSchedule: targetTestSchedule,
+      message: `${examScheduleId} data`,
+      examSchedule: targetExamSchedule,
     });
 
     return {
-      message: `${testScheduleId} data`,
-      testSchedule: targetTestSchedule,
+      message: `${examScheduleId} data`,
+      examSchedule: targetExamSchedule,
     };
   }
 
   @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(FilesInterceptor("image[]", MAX_IMAGE_COUNT))
-  async createTestSchedule(
+  async createExamSchedule(
     @Req() request: AuthUserRequestDto,
-    @Body() body: CreateTestScheduleDto,
+    @Body() body: CreateExamScheduleDto,
     @UploadedFiles() files: Express.Multer.File[]
   ) {
     const userData = await this.OauthService.getProfile(request.user.userId);
@@ -90,15 +90,15 @@ export class TestScheduleController {
       return "permission denied";
     }
 
-    const savedTestSchedule = await this.testScheduleService.createTestSchedule(
+    const savedExamSchedule = await this.examScheduleService.createExamSchedule(
       userData,
       body,
       files
     );
 
     return {
-      message: `create ${body.testScheduleTitle} schedule success`,
-      data: savedTestSchedule,
+      message: `create ${body.examScheduleTitle} schedule success`,
+      data: savedExamSchedule,
     };
   }
 
@@ -107,7 +107,7 @@ export class TestScheduleController {
   @UseInterceptors(FilesInterceptor("image[]", MAX_IMAGE_COUNT))
   async update(
     @Req() request: AuthUserRequestDto,
-    @Body() body: UpdateTestScheduleDto,
+    @Body() body: UpdateExamScheduleDto,
     @UploadedFiles() files: Express.Multer.File[]
   ) {
     const userData = await this.OauthService.getProfile(request.user.userId);
@@ -115,48 +115,35 @@ export class TestScheduleController {
       return "permission denied";
     }
 
-    await this.testScheduleService.updateTestSchedule(userData, body, files);
+    await this.examScheduleService.updateExamSchedule(userData, body, files);
 
     return {
-      message: `update ${body.testScheduleTitle} schedule success`,
+      message: `update ${body.examScheduleTitle} schedule success`,
       data: body,
     };
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete()
-  async deleteTestSchedule(
+  async deleteExamSchedule(
     @Req() request: AuthUserRequestDto,
-    @Query("testScheduleId") testScheduleId: string
+    @Query("examScheduleId") examScheduleId: string
   ) {
     const userData = await this.OauthService.getProfile(request.user.userId);
     if (userData.userGrade === "user") {
       return "permission denied";
     }
 
-    await this.testScheduleService.deleteTestSchedule(
+    await this.examScheduleService.deleteExamSchedule(
       userData,
-      Number(testScheduleId)
+      Number(examScheduleId)
     );
 
-    console.log(testScheduleId);
+    console.log(examScheduleId);
 
     return {
-      message: `delete ${testScheduleId} schedule success`,
-      data: testScheduleId,
+      message: `delete ${examScheduleId} schedule success`,
+      data: examScheduleId,
     };
-  }
-
-  @Get("/test")
-  async test(@Res() res: Response) {
-    const buffer = await this.testScheduleService.generatePDF();
-
-    res.set({
-      "Content-Type": "application/pdf",
-      "Content-Disposition": "attachment; filename=example.pdf",
-      "Content-Length": buffer.length,
-    });
-
-    res.end(buffer);
   }
 }

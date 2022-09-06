@@ -22,12 +22,12 @@ export * from "./user.m2m.dto";
 
 export * from "./get-pastChatList.dto";
 
-export * from "./create-testSchedule.dto";
-export * from "./update-testSchedule.dto";
+export * from "./create-examSchedule.dto";
+export * from "./update-examSchedule.dto";
 
-export * from "./create-createTestMentoringRoomRequest.dto";
-export * from "./get-createTestMentoringRoomRequest.dto";
+export * from "./create-createExamMentoringRoomRequest.dto";
+export * from "./get-createExamMentoringRoomRequest.dto";
 
 export * from "./auth-userRequest.dto";
 
-export * from "./create-testMentoringRoom.dto";
+export * from "./create-ExamMentoringRoom.dto";

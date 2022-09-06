@@ -14,17 +14,17 @@ import { join } from "path";
 import * as redisStore from "cache-manager-ioredis";
 import { User } from "./models/entities/user.entity";
 import {
-  CreateTestMentoringRoomRequest,
+  CreateExamMentoringRoomRequest,
   LiveRoom,
   QuestionTag,
-  TestMentoringRoom,
-  TestSchedule,
+  ExamMentoringRoom,
+  ExamSchedule,
 } from "src/models";
 
 import { SequelizeModule } from "@nestjs/sequelize";
 import { QuestionTagModule } from "./question-tag/question-tag.module";
-import { TestScheduleModule } from "./test-schedule/test-schedule.module";
-import { TestMentoringRoomModule } from "./test-mentoring-room/test-mentoring-room.module";
+import { ExamScheduleModule } from "./exam-schedule/exam-schedule.module";
+import { ExamMentoringRoomModule } from "./exam-mentoring-room/exam-mentoring-room.module";
 
 @Module({
   imports: [
@@ -49,9 +49,9 @@ import { TestMentoringRoomModule } from "./test-mentoring-room/test-mentoring-ro
           LiveRoom,
           User,
           QuestionTag,
-          TestSchedule,
-          CreateTestMentoringRoomRequest,
-          TestMentoringRoom,
+          ExamSchedule,
+          CreateExamMentoringRoomRequest,
+          ExamMentoringRoom,
         ],
       }),
     }),
@@ -69,8 +69,8 @@ import { TestMentoringRoomModule } from "./test-mentoring-room/test-mentoring-ro
     LiveChatModule,
     OauthModule,
     QuestionTagModule,
-    TestScheduleModule,
-    TestMentoringRoomModule,
+    ExamScheduleModule,
+    ExamMentoringRoomModule,
   ],
   controllers: [AppController],
   providers: [AppService],

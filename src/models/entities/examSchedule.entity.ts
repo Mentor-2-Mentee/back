@@ -7,32 +7,32 @@ import {
 } from "sequelize-typescript";
 
 @Table({
-  tableName: "TestSchedule",
+  tableName: "ExamSchedule",
   timestamps: true,
   createdAt: true,
   updatedAt: "updatedAt",
 })
-export class TestSchedule extends Model {
+export class ExamSchedule extends Model {
   @AutoIncrement
   @Column({
     primaryKey: true,
   })
-  testScheduleId: number;
+  examScheduleId: number;
 
   @Column({ allowNull: false })
-  testScheduleTitle: string;
+  examScheduleTitle: string;
 
   @Column({ allowNull: true })
-  testUrl: string;
+  examUrl: string;
 
   @Column({ allowNull: false, type: DataType.DATE })
-  testDate: Date;
+  examDate: Date;
 
   @Column({ allowNull: false })
-  testField: string;
+  examField: string;
 
   @Column({ allowNull: true })
-  testDescription: string;
+  examDescription: string;
 
   @Column({ allowNull: true, type: DataType.JSON })
   imageFiles: string;
