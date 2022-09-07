@@ -11,7 +11,7 @@ import { Cache } from "cache-manager";
 const CHAT_BUNDLE_SIZE = 20;
 
 @Injectable()
-export class LiveChatService {
+export class LiveContentsService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
   async saveChatLog(

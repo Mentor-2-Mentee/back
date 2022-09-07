@@ -4,7 +4,7 @@ import {
   MessageBody,
   WebSocketServer,
 } from "@nestjs/websockets";
-import { LiveChatService } from "./live-chat.service";
+import { LiveContentsService } from "./live-contents.service";
 import {
   LiveChat,
   MentoringRoomChatSummary,
@@ -21,9 +21,9 @@ import { Cache } from "cache-manager";
   path: "/websocket/",
   transports: ["websocket"],
 })
-export class LiveChatGateway {
+export class LiveContentsGateway {
   constructor(
-    private readonly liveChatService: LiveChatService,
+    private readonly liveChatService: LiveContentsService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 
