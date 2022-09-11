@@ -68,7 +68,7 @@ export class ExamQuestionService {
       },
     });
 
-    await this.examQuestionModel.update(
+    const updateResult = await this.examQuestionModel.update(
       {
         ...updateExamQuestionDto,
       },
@@ -78,5 +78,12 @@ export class ExamQuestionService {
         },
       }
     );
+
+    return this.findQuestionById(updateExamQuestionDto.examQuestionId);
+  }
+
+  async findQuestionById(examQuestionId: number) {
+    const result = await this.examQuestionModel.findByPk(examQuestionId);
+    return result;
   }
 }

@@ -108,14 +108,16 @@ export class LiveContentsGateway {
 
     const targetChannel = `examMentoringRoom_question_live-${data.examScheduleId}_${data.examField}`;
 
-    await this.examQuestionService.updateQuestion(data.updateExamQuestionData);
+    const updatedExamQuestion = await this.examQuestionService.updateQuestion(
+      data.updateExamQuestionData
+    );
 
     const result = {
       userId: data.userId,
       examScheduleId: data.examScheduleId,
       examField: data.examField,
       nowQuestionIndex: data.nowQuestionIndex,
-      examQuestion: TEST_DATA[data.nowQuestionIndex],
+      examQuestionData: updatedExamQuestion,
     };
 
     this.server.emit(targetChannel, result);
