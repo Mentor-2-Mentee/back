@@ -110,18 +110,6 @@ export class LiveContentsGateway {
 
     await this.examQuestionService.updateQuestion(data.updateExamQuestionData);
 
-    // TEST_DATA[data.nowQuestionIndex] = {
-    //   ...TEST_DATA[data.nowQuestionIndex],
-    //   questionText: data.examQuestionData.questionText,
-    //   answerExampleList: data.examQuestionData.answerExampleList,
-    //   answer: data.examQuestionData.answer,
-    //   questionImagesUrl: data.examQuestionData.questionImagesUrl,
-    //   solution: data.examQuestionData.solution,
-    //   questionType: data.examQuestionData.questionType,
-    // };
-
-    // console.log("changed data", TEST_DATA);
-
     const result = {
       userId: data.userId,
       examScheduleId: data.examScheduleId,
