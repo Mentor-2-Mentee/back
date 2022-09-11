@@ -21,6 +21,9 @@ export class ExamMentoringRoom extends Model {
   examMentoringRoomId: string;
 
   @Column({ allowNull: false })
+  examScheduleTitle: string;
+
+  @Column({ allowNull: false })
   examScheduleId: number;
 
   @Column({ allowNull: false })

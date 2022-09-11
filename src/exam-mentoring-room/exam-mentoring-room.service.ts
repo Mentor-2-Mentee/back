@@ -19,13 +19,17 @@ import {
   Order,
 } from "sequelize";
 import { OauthService } from "src/oauth/oauth.service";
+import { ExamQuestionService } from "src/exam-question/exam-question.service";
 import { v4 as uuidv4 } from "uuid";
 import * as PDFDocument from "pdfkit";
+
+const INITIAL_QUESTION_COUNT = 5;
 
 @Injectable()
 export class ExamMentoringRoomService {
   constructor(
     private readonly OauthService: OauthService,
+    private readonly ExamQuestionService: ExamQuestionService,
     @InjectModel(CreateExamMentoringRoomRequest)
     private createExamMentoringRoomRequestModel: typeof CreateExamMentoringRoomRequest,
     @InjectModel(ExamMentoringRoom)
@@ -176,13 +180,18 @@ export class ExamMentoringRoomService {
       },
       defaults: {
         examMentoringRoomId: newExamMentoringRoomId,
+        examScheduleTitle: createExamMentoringRoomDto.examScheduleTitle,
         examScheduleId: createExamMentoringRoomDto.examScheduleId,
         examField: createExamMentoringRoomDto.examField,
         userList: [
           ...createExamMentoringRoomDto.userList.map((user) => user.userId),
         ],
         chatListBundle: [],
-        examQuestionList: [],
+        examQuestionList: await this.ExamQuestionService.createBulkQuestion({
+          examScheduleId: createExamMentoringRoomDto.examScheduleId,
+          examField: createExamMentoringRoomDto.examField,
+          bulkCount: 5,
+        }),
       },
     });
 

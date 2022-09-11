@@ -1,4 +1,4 @@
-export class SocketReCeiveMentoringRoomPrevChatListDto {
+export class SocketReceiveMentoringRoomPrevChatListDto {
   roomId: string;
   userId: string;
   limit: number;

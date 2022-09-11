@@ -5,10 +5,12 @@ import { OauthModule } from "src/oauth/oauth.module";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { CreateExamMentoringRoomRequest } from "src/models/entities/createExamMentoringRoomRequest.entity";
 import { ExamMentoringRoom } from "src/models";
+import { ExamQuestionModule } from "src/exam-question/exam-question.module";
 
 @Module({
   imports: [
     OauthModule,
+    ExamQuestionModule,
     SequelizeModule.forFeature([
       CreateExamMentoringRoomRequest,
       ExamMentoringRoom,

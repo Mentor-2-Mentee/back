@@ -27,13 +27,31 @@ export class ExamMentoringRoomController {
   ) {}
 
   @Get()
-  async getExamMentoringRoomListByExamScheduleId(
-    @Query("examScheduleId") examScheduleId: number
+  async findExamMentoringRoomListByExamScheduleId(
+    @Query("examScheduleId") examScheduleId: number,
+    @Query("examField") examField: string
   ) {
+    console.log(
+      "findExamMentoringRoomListByExamScheduleId",
+      examScheduleId,
+      examField
+    );
     const examMentoringRoomList =
       await this.examMentoringRoomService.getExamMentoringRoomByExamScheduleId(
         examScheduleId
       );
+
+    if (examField !== undefined) {
+      const target = examMentoringRoomList.find(
+        (examMentoringRoom) => examMentoringRoom.examField === examField
+      );
+      return {
+        message: `find ${examField}`,
+        examMentoringRoom: target,
+      };
+    }
+
+    console.log("examMentoringRoomList", examMentoringRoomList);
 
     return {
       message: "OK",
@@ -96,7 +114,7 @@ export class ExamMentoringRoomController {
 
   @UseGuards(JwtAuthGuard)
   @Delete("/create-request")
-  async deleteExamMentoringRoomRequest(
+  async cancelExamMentoringRoomRequest(
     @Req() request: AuthUserRequestDto,
     @Query("examScheduleId") examScheduleId: number,
     @Query("examField") examField: string

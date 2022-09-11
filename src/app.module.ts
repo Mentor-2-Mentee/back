@@ -19,12 +19,14 @@ import {
   QuestionTag,
   ExamMentoringRoom,
   ExamSchedule,
+  ExamQuestion,
 } from "src/models";
 
 import { SequelizeModule } from "@nestjs/sequelize";
 import { QuestionTagModule } from "./question-tag/question-tag.module";
 import { ExamScheduleModule } from "./exam-schedule/exam-schedule.module";
 import { ExamMentoringRoomModule } from "./exam-mentoring-room/exam-mentoring-room.module";
+import { ExamQuestionModule } from "./exam-question/exam-question.module";
 
 @Module({
   imports: [
@@ -52,6 +54,7 @@ import { ExamMentoringRoomModule } from "./exam-mentoring-room/exam-mentoring-ro
           ExamSchedule,
           CreateExamMentoringRoomRequest,
           ExamMentoringRoom,
+          ExamQuestion,
         ],
       }),
     }),
@@ -71,6 +74,7 @@ import { ExamMentoringRoomModule } from "./exam-mentoring-room/exam-mentoring-ro
     QuestionTagModule,
     ExamScheduleModule,
     ExamMentoringRoomModule,
+    ExamQuestionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

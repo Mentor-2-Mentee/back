@@ -30,4 +30,10 @@ export * from "./get-createExamMentoringRoomRequest.dto";
 
 export * from "./auth-userRequest.dto";
 
-export * from "./create-ExamMentoringRoom.dto";
+export * from "./create-examMentoringRoom.dto";
+
+export * from "./create-bulkExamQuestion.dto";
+
+export * from "./socketReceive-liveExamQuestion.dto";
+
+export * from "./update-examQuestion.dto";

@@ -2,7 +2,7 @@ import { CACHE_MANAGER, Inject, Injectable } from "@nestjs/common";
 import {
   LiveChat,
   MentoringRoomChatSummary,
-  SocketReCeiveMentoringRoomPrevChatListDto,
+  SocketReceiveMentoringRoomPrevChatListDto,
   SocketEmitMentoringRoomPrevChatList,
   SocketEmitMentoringRoomLiveChat,
 } from "src/models";
@@ -68,7 +68,7 @@ export class LiveContentsService {
   }
 
   async getMentoringRoomPrevChatList(
-    data: SocketReCeiveMentoringRoomPrevChatListDto
+    data: SocketReceiveMentoringRoomPrevChatListDto
   ): Promise<SocketEmitMentoringRoomPrevChatList> {
     const mentoringRoomSummaryData =
       await this.cacheManager.get<MentoringRoomChatSummary>(data.roomId);
