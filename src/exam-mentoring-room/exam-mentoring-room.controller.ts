@@ -37,7 +37,7 @@ export class ExamMentoringRoomController {
       examField
     );
     const examMentoringRoomList =
-      await this.examMentoringRoomService.getExamMentoringRoomByExamScheduleId(
+      await this.examMentoringRoomService.findExamMentoringRoomList(
         examScheduleId
       );
 

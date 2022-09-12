@@ -18,5 +18,6 @@ import { ExamQuestionModule } from "src/exam-question/exam-question.module";
   ],
   controllers: [ExamMentoringRoomController],
   providers: [ExamMentoringRoomService],
+  exports: [ExamMentoringRoomService],
 })
 export class ExamMentoringRoomModule {}

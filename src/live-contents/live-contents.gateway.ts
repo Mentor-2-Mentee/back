@@ -8,6 +8,7 @@ import { LiveContentsService } from "./live-contents.service";
 import {
   LiveChat,
   MentoringRoomChatSummary,
+  SocketReceiveExamMentoringRoomDto,
   SocketReceiveLiveExamQuestionDto,
   SocketReceiveMentoringRoomLiveCanvasStroke,
   SocketReceiveMentoringRoomPrevCanvasStrokeList,
@@ -17,6 +18,7 @@ import { Server } from "http";
 import { CACHE_MANAGER, Inject, Logger } from "@nestjs/common";
 import { Cache } from "cache-manager";
 import { ExamQuestionService } from "src/exam-question/exam-question.service";
+import { ExamMentoringRoomService } from "src/exam-mentoring-room/exam-mentoring-room.service";
 
 @WebSocketGateway(8081, {
   namespace: "/live-contents",
@@ -27,6 +29,7 @@ export class LiveContentsGateway {
   constructor(
     private readonly liveChatService: LiveContentsService,
     private readonly examQuestionService: ExamQuestionService,
+    private readonly examMentoringRoomService: ExamMentoringRoomService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 
@@ -124,47 +127,89 @@ export class LiveContentsGateway {
   }
 
   @SubscribeMessage("examMentoringRoom_question_prev")
-  async emitExamMentoringRoomCurrentQuestion(@MessageBody() data: any) {
+  async emitExamMentoringRoomCurrentQuestion(
+    @MessageBody() data: SocketReceiveExamMentoringRoomDto
+  ) {
     console.log("examMentoringRoom_question_prev received data", data);
 
     const targetChannel = `examMentoringRoom_question_prev-${data.examScheduleId}_${data.examField}_${data.userId}`;
 
+    const roomData =
+      await this.examMentoringRoomService.findExamMentoringRoomOne(
+        data.examScheduleId,
+        data.examField
+      );
+    const examList = await this.examQuestionService.findQuestionAll(
+      roomData.examQuestionList
+    );
+
     const result = {
-      examQuestionList: TEST_DATA,
+      examQuestionList: examList,
       liveWrittingUser: [],
       timer: data.timer,
     };
 
     this.server.emit(targetChannel, result);
   }
-}
 
-const TEST_DATA = [
-  {
-    examQuestionId: 41,
-    questionText: "4+5는?",
-    answerExampleList: ["5", "7", "9", "11", "13"],
-    answer: "3번",
-    questionImagesUrl: [],
-    solution: "4에다가 5를 더하면 9가된다.",
-    questionType: "MULTIPLE_CHOICE",
-  },
-  {
-    examQuestionId: 42,
-    questionText: "아몬드가 죽으면?",
-    answerExampleList: [""],
-    answer: "다이아몬드",
-    questionImagesUrl: [],
-    solution: "die + amond 깔깔깔깔",
-    questionType: "ESSAY_QUESTION",
-  },
-  {
-    examQuestionId: 43,
-    questionText: "파이의 근사값중 가장 가까운것은?",
-    answerExampleList: ["3", "3.1", "3.14", "3.141592"],
-    answer: "4번",
-    questionImagesUrl: [],
-    solution: "파이 = 3.1415926507....",
-    questionType: "MULTIPLE_CHOICE",
-  },
-];
+  @SubscribeMessage("examMentoringRoom_question_option")
+  async emitUpdatedExamMentoringRoomQuestionOption(@MessageBody() data: any) {
+    console.log("examMentoringRoom_question_option", data);
+
+    const targetChannel = `examMentoringRoom_question_option-${data.examScheduleId}_${data.examField}`;
+
+    const roomData =
+      await this.examMentoringRoomService.findExamMentoringRoomOne(
+        data.examScheduleId,
+        data.examField
+      );
+
+    if (data.currentCount > data.newCount) {
+      const deleteQuestionIdList = roomData.examQuestionList.slice(
+        data.newCount
+      );
+      const remainedQuestionIdList = roomData.examQuestionList.slice(
+        0,
+        data.newCount
+      );
+
+      for (const deleteQuestionId of deleteQuestionIdList) {
+        await this.examQuestionService.deleteQuestion(deleteQuestionId);
+      }
+      const updatedRoom =
+        await this.examMentoringRoomService.updateExamMentoringRoomOne(
+          data.examScheduleId,
+          data.examField,
+          {
+            examQuestionList: remainedQuestionIdList,
+          }
+        );
+
+      const examList = await this.examQuestionService.findQuestionAll(
+        updatedRoom.examQuestionList
+      );
+
+      const result = {
+        examQuestionList: examList,
+        liveWrittingUser: [],
+      };
+
+      this.server.emit(targetChannel, result);
+      return;
+    }
+
+    const updatedExamQuestion = await this.examQuestionService.findQuestionAll(
+      roomData.examQuestionList
+    );
+
+    const result = {
+      userId: data.userId,
+      examScheduleId: data.examScheduleId,
+      examField: data.examField,
+
+      examQuestionList: updatedExamQuestion,
+    };
+
+    this.server.emit(targetChannel, result);
+  }
+}

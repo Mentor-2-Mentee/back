@@ -36,5 +36,5 @@ export class ExamMentoringRoom extends Model {
   chatListBundle: string;
 
   @Column({ allowNull: false, type: DataType.JSON })
-  examQuestionList: string;
+  examQuestionList: number[];
 }

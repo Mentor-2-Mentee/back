@@ -7,8 +7,6 @@ import {
   UpdateExamQuestionDto,
 } from "src/models";
 
-const INITIAL_QUESTION = {};
-
 @Injectable()
 export class ExamQuestionService {
   constructor(
@@ -57,6 +55,23 @@ export class ExamQuestionService {
     return questionIdList;
   }
 
+  async deleteQuestion(examQuestionId: number) {
+    const searchQuestionOption: WhereOptions = [];
+    searchQuestionOption.push({
+      ["examQuestionId"]: {
+        [Op.and]: {
+          [Op.eq]: examQuestionId,
+        },
+      },
+    });
+
+    await this.examQuestionModel.destroy({
+      where: {
+        [Op.and]: searchQuestionOption,
+      },
+    });
+  }
+
   async updateQuestion(updateExamQuestionDto: UpdateExamQuestionDto) {
     console.log("updateExamQuestionDto", updateExamQuestionDto);
     const searchQuestionOption: WhereOptions = [];
@@ -68,7 +83,7 @@ export class ExamQuestionService {
       },
     });
 
-    const updateResult = await this.examQuestionModel.update(
+    await this.examQuestionModel.update(
       {
         ...updateExamQuestionDto,
       },
@@ -80,6 +95,17 @@ export class ExamQuestionService {
     );
 
     return this.findQuestionById(updateExamQuestionDto.examQuestionId);
+  }
+
+  async findQuestionAll(examQuestionIdList: number[]) {
+    const result: ExamQuestion[] = [];
+
+    for (const examQuestionId of examQuestionIdList) {
+      const question = await this.examQuestionModel.findByPk(examQuestionId);
+      result.push(question);
+    }
+
+    return result;
   }
 
   async findQuestionById(examQuestionId: number) {

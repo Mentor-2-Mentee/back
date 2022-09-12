@@ -219,7 +219,7 @@ export class ExamMentoringRoomService {
     return [target, isCreated];
   }
 
-  async getExamMentoringRoomByExamScheduleId(examScheduleId: number) {
+  async findExamMentoringRoomList(examScheduleId: number) {
     const searchByExamScheduleId: WhereOptions = [];
     searchByExamScheduleId.push({
       ["examScheduleId"]: {
@@ -236,6 +236,59 @@ export class ExamMentoringRoomService {
     });
 
     return examMentoringRoomList;
+  }
+
+  async findExamMentoringRoomOne(examScheduleId: number, examField: string) {
+    const searchExamMentoringRoom: WhereOptions = [];
+    searchExamMentoringRoom.push({
+      ["examScheduleId"]: {
+        [Op.and]: {
+          [Op.eq]: examScheduleId,
+        },
+      },
+      ["examField"]: {
+        [Op.and]: {
+          [Op.eq]: examField,
+        },
+      },
+    });
+
+    return await this.examMentoringRoomModel.findOne({
+      where: searchExamMentoringRoom,
+    });
+  }
+
+  async updateExamMentoringRoomOne(
+    examScheduleId: number,
+    examField: string,
+    updateData?: any
+  ) {
+    const searchExamMentoringRoom: WhereOptions = [];
+    searchExamMentoringRoom.push({
+      ["examScheduleId"]: {
+        [Op.and]: {
+          [Op.eq]: examScheduleId,
+        },
+      },
+      ["examField"]: {
+        [Op.and]: {
+          [Op.eq]: examField,
+        },
+      },
+    });
+
+    await this.examMentoringRoomModel.update(
+      {
+        ...updateData,
+      },
+      {
+        where: searchExamMentoringRoom,
+      }
+    );
+
+    return await this.examMentoringRoomModel.findOne({
+      where: searchExamMentoringRoom,
+    });
   }
 
   async generatePDF(): Promise<Buffer> {
