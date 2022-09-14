@@ -60,7 +60,9 @@ export class LiveContentsGateway {
    */
   @SubscribeMessage("mentoringRoom_chat_live")
   async emitMentoringRoomLiveChat(@MessageBody() chatData: LiveChat) {
-    console.log(`${chatData.nickName} : ${chatData.text}`);
+    console.log(
+      `${decodeURI(chatData.roomId)} | ${chatData.nickName} : ${chatData.text}`
+    );
     const targetChannel = `mentoringRoom_chat_live-${chatData.roomId}`;
     const currentRoomCacheData =
       await this.cacheManager.get<MentoringRoomChatSummary | null>(
