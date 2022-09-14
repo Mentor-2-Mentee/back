@@ -142,10 +142,48 @@ export class ExamMentoringRoomController {
     };
   }
 
-  @Get("/pdfExam")
-  async exam(@Res() res: Response) {
-    const buffer = await this.examMentoringRoomService.generatePDF();
-    console.log("123");
+  @Get("/question-pdf")
+  async questionPdf(
+    @Query("examScheduleId") examScheduleId: number,
+    @Query("examField") examField: string,
+    @Res() res: Response
+  ) {
+    const targetRoomData =
+      await this.examMentoringRoomService.findExamMentoringRoomOne(
+        examScheduleId,
+        examField
+      );
+
+    const buffer = await this.examMentoringRoomService.generateQuestionPDF(
+      targetRoomData,
+      targetRoomData.examQuestionList
+    );
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": "attachment; filename=example.pdf",
+      "Content-Length": buffer.length,
+    });
+
+    res.end(buffer);
+  }
+
+  @Get("/solution-pdf")
+  async solutionPdf(
+    @Query("examScheduleId") examScheduleId: number,
+    @Query("examField") examField: string,
+    @Res() res: Response
+  ) {
+    const targetRoomData =
+      await this.examMentoringRoomService.findExamMentoringRoomOne(
+        examScheduleId,
+        examField
+      );
+
+    const buffer = await this.examMentoringRoomService.generateSolutionPDF(
+      targetRoomData,
+      targetRoomData.examQuestionList
+    );
 
     res.set({
       "Content-Type": "application/pdf",

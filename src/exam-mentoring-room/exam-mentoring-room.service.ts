@@ -22,6 +22,7 @@ import { OauthService } from "src/oauth/oauth.service";
 import { ExamQuestionService } from "src/exam-question/exam-question.service";
 import { v4 as uuidv4 } from "uuid";
 import * as PDFDocument from "pdfkit";
+import DateFormatting from "src/common/utils/DateFormatting";
 
 const INITIAL_QUESTION_COUNT = 5;
 
@@ -291,15 +292,100 @@ export class ExamMentoringRoomService {
     });
   }
 
-  async generatePDF(): Promise<Buffer> {
+  async generateQuestionPDF(
+    examMentoringRoom: ExamMentoringRoom,
+    examQuestionIdList: number[]
+  ): Promise<Buffer> {
+    const examQuestionList = await this.ExamQuestionService.findQuestionAll(
+      examQuestionIdList
+    );
+
+    const examDate = new DateFormatting(new Date(examMentoringRoom.createdAt))
+      .YYYY_MM_DD;
+
     const pdfBuffer: Buffer = await new Promise((resolve) => {
       const doc = new PDFDocument({
-        size: "LETTER",
+        size: "A4",
         bufferPages: true,
       });
+      //나눔고딕폰트
+      doc.font("src/asset/font/NanumGothic.ttf");
 
-      // customize your PDF document
-      doc.text("hello world", 100, 50);
+      //시험지 제목
+      doc
+        .fontSize(18)
+        .text(
+          `${examMentoringRoom.examScheduleTitle} - ${examMentoringRoom.examField} / ${examDate}`,
+          50,
+          50
+        )
+        .moveDown();
+
+      doc.fontSize(12);
+      examQuestionList.map((question, questionIndex) => {
+        doc
+          .text(`${questionIndex + 1}) ${question.questionText}`)
+          .moveDown(0.5);
+
+        question.answerExampleList.map((example, exampleIndex) => {
+          doc.text(`${exampleIndex + 1}. ${example}`).moveDown(0.5);
+        });
+        doc.moveDown();
+      });
+
+      doc.end();
+
+      const buffer = [];
+      doc.on("data", buffer.push.bind(buffer));
+      doc.on("end", () => {
+        const data = Buffer.concat(buffer);
+        resolve(data);
+      });
+    });
+
+    return pdfBuffer;
+  }
+
+  async generateSolutionPDF(
+    examMentoringRoom: ExamMentoringRoom,
+    examQuestionIdList: number[]
+  ): Promise<Buffer> {
+    const examQuestionList = await this.ExamQuestionService.findQuestionAll(
+      examQuestionIdList
+    );
+
+    const examDate = new DateFormatting(new Date(examMentoringRoom.createdAt))
+      .YYYY_MM_DD;
+
+    const pdfBuffer: Buffer = await new Promise((resolve) => {
+      const doc = new PDFDocument({
+        size: "A4",
+        bufferPages: true,
+      });
+      //나눔고딕폰트
+      doc.font("src/asset/font/NanumGothic.ttf");
+
+      //시험지 제목
+      doc
+        .fontSize(18)
+        .text(
+          `${examMentoringRoom.examScheduleTitle} - ${examMentoringRoom.examField} - 솔루션 / ${examDate}`,
+          50,
+          50
+        )
+        .moveDown();
+
+      doc.fontSize(12);
+      examQuestionList.map((question, questionIndex) => {
+        doc
+          .text(`${questionIndex + 1}) ${question.questionText}`)
+          .moveDown(0.5);
+
+        doc.text(`풀이 : ${question.solution}`).moveDown(0.5);
+        doc.text(`답 : ${question.answer}`).moveDown(0.5);
+        doc.moveDown();
+      });
+
       doc.end();
 
       const buffer = [];

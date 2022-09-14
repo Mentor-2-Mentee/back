@@ -6,6 +6,8 @@ import {
   ExamQuestion,
   UpdateExamQuestionDto,
 } from "src/models";
+import * as PDFDocument from "pdfkit";
+import { ExamMentoringRoomService } from "src/exam-mentoring-room/exam-mentoring-room.service";
 
 @Injectable()
 export class ExamQuestionService {

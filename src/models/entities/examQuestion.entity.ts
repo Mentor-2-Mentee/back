@@ -25,7 +25,7 @@ export class ExamQuestion extends Model {
   questionText: string;
 
   @Column({ allowNull: false, type: DataType.JSON })
-  answerExampleList: string;
+  answerExampleList: string[];
 
   @Column({ allowNull: true })
   solution: string;
