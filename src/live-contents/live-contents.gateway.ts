@@ -154,9 +154,20 @@ export class LiveContentsGateway {
 
   @SubscribeMessage("examMentoringRoom_question_option")
   async emitUpdatedExamMentoringRoomQuestionOption(
-    @MessageBody() { userId, examScheduleId, examField, setQuestionCount }: any
+    @MessageBody()
+    {
+      userId,
+      examScheduleId,
+      examField,
+      setQuestionCount,
+      deleteExamQuestionId,
+    }: any
   ) {
-    console.log("examMentoringRoom_question_option");
+    console.log(
+      "examMentoringRoom_question_option",
+      setQuestionCount,
+      deleteExamQuestionId
+    );
 
     const targetChannel = `examMentoringRoom_question_option-${examScheduleId}_${examField}`;
 
@@ -166,18 +177,18 @@ export class LiveContentsGateway {
         examField
       );
 
-    if (setQuestionCount.currentCount > setQuestionCount.newCount) {
-      const deleteQuestionIdList = roomData.examQuestionList.slice(
-        setQuestionCount.newCount
-      );
-      const remainedQuestionIdList = roomData.examQuestionList.slice(
-        0,
-        setQuestionCount.newCount
+    if (deleteExamQuestionId) {
+      await this.examQuestionService.deleteQuestion(deleteExamQuestionId);
+
+      const targetRoom =
+        await this.examMentoringRoomService.findExamMentoringRoomOne(
+          examScheduleId,
+          examField
+        );
+      const remainedQuestionIdList = targetRoom.examQuestionList.filter(
+        (quesionId) => quesionId !== deleteExamQuestionId
       );
 
-      for (const deleteQuestionId of deleteQuestionIdList) {
-        await this.examQuestionService.deleteQuestion(deleteQuestionId);
-      }
       const updatedRoom =
         await this.examMentoringRoomService.updateExamMentoringRoomOne(
           examScheduleId,
@@ -197,54 +208,76 @@ export class LiveContentsGateway {
       };
 
       this.server.emit(targetChannel, result);
-      return;
     }
 
-    if (setQuestionCount.currentCount < setQuestionCount.newCount) {
-      const createBulkCount =
-        setQuestionCount.newCount - setQuestionCount.currentCount;
-
-      if (createBulkCount > 200) throw new Error("too much require!!");
-      const createdNewQuestionIdList =
-        await this.examQuestionService.createBulkQuestion({
-          examScheduleId,
-          examField,
-          bulkCount: createBulkCount,
-        });
-
-      const updatedRoom =
-        await this.examMentoringRoomService.updateExamMentoringRoomOne(
-          examScheduleId,
-          examField,
-          {
-            examQuestionList: createdNewQuestionIdList,
-          }
+    if (setQuestionCount) {
+      if (setQuestionCount.currentCount > setQuestionCount.newCount) {
+        const deleteQuestionIdList = roomData.examQuestionList.slice(
+          setQuestionCount.newCount
+        );
+        const remainedQuestionIdList = roomData.examQuestionList.slice(
+          0,
+          setQuestionCount.newCount
         );
 
-      const examList = await this.examQuestionService.findQuestionAll(
-        updatedRoom.examQuestionList
-      );
+        for (const deleteQuestionId of deleteQuestionIdList) {
+          await this.examQuestionService.deleteQuestion(deleteQuestionId);
+        }
+        const updatedRoom =
+          await this.examMentoringRoomService.updateExamMentoringRoomOne(
+            examScheduleId,
+            examField,
+            {
+              examQuestionList: remainedQuestionIdList,
+            }
+          );
 
-      const result = {
-        examQuestionList: examList,
-        liveWrittingUser: [],
-      };
+        const examList = await this.examQuestionService.findQuestionAll(
+          updatedRoom.examQuestionList
+        );
 
-      this.server.emit(targetChannel, result);
-      return;
+        const result = {
+          examQuestionList: examList,
+          liveWrittingUser: [],
+        };
+
+        this.server.emit(targetChannel, result);
+        return;
+      }
+
+      if (setQuestionCount.currentCount < setQuestionCount.newCount) {
+        const createBulkCount =
+          setQuestionCount.newCount - setQuestionCount.currentCount;
+
+        if (createBulkCount > 200) throw new Error("too much require!!");
+        const createdNewQuestionIdList =
+          await this.examQuestionService.createBulkQuestion({
+            examScheduleId,
+            examField,
+            bulkCount: createBulkCount,
+          });
+
+        const updatedRoom =
+          await this.examMentoringRoomService.updateExamMentoringRoomOne(
+            examScheduleId,
+            examField,
+            {
+              examQuestionList: createdNewQuestionIdList,
+            }
+          );
+
+        const examList = await this.examQuestionService.findQuestionAll(
+          updatedRoom.examQuestionList
+        );
+
+        const result = {
+          examQuestionList: examList,
+          liveWrittingUser: [],
+        };
+
+        this.server.emit(targetChannel, result);
+        return;
+      }
     }
-
-    const updatedExamQuestion = await this.examQuestionService.findQuestionAll(
-      roomData.examQuestionList
-    );
-
-    const result = {
-      userId,
-      examScheduleId,
-      examField,
-      examQuestionList: updatedExamQuestion,
-    };
-
-    this.server.emit(targetChannel, result);
   }
 }
