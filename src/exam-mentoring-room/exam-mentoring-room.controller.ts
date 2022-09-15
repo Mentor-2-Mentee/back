@@ -60,6 +60,30 @@ export class ExamMentoringRoomController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get("userInfo")
+  async findUserInfoById(
+    @Query("examScheduleId") examScheduleId: number,
+    @Query("examField") examField: string
+  ) {
+    const { userList } =
+      await this.examMentoringRoomService.findExamMentoringRoomOne(
+        examScheduleId,
+        examField
+      );
+    const userInfoList = [];
+
+    for (const userId of userList) {
+      const userInfo = await this.OauthService.getProfile(userId);
+      userInfoList.push(userInfo);
+    }
+
+    return {
+      message: `${examScheduleId}-${examField} userInfoList`,
+      userInfoList,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createExamMentoringRoom(
     @Req() request: AuthUserRequestDto,

@@ -30,7 +30,7 @@ export class ExamMentoringRoom extends Model {
   examField: string;
 
   @Column({ allowNull: false, type: DataType.JSON })
-  userList: string;
+  userList: number[];
 
   @Column({ allowNull: false, type: DataType.JSON })
   chatListBundle: string;

@@ -321,6 +321,7 @@ export class ExamMentoringRoomService {
         )
         .moveDown();
 
+      //문제본문
       doc.fontSize(12);
       examQuestionList.map((question, questionIndex) => {
         doc
@@ -375,6 +376,7 @@ export class ExamMentoringRoomService {
         )
         .moveDown();
 
+      //문제해설
       doc.fontSize(12);
       examQuestionList.map((question, questionIndex) => {
         doc
