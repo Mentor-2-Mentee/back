@@ -59,7 +59,7 @@ services:
       - "name=redis"
       - "mode=standalone"
     volumes:
-      - ./redis_config/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis_config/redis.conf:/data/redis.conf
     ports:
       - ${REDIS_PORT}:${REDIS_PORT}
     networks:
