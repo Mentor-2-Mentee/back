@@ -9,4 +9,4 @@ import { ExamMentoringRoomModule } from "src/exam-mentoring-room/exam-mentoring-
   imports: [ExamQuestionModule, ExamMentoringRoomModule],
   providers: [LiveContentsGateway, LiveContentsService],
 })
-export class LiveChatModule {}
+export class LiveContentsModule {}

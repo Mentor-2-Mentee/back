@@ -5,7 +5,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { LiveRoomsModule } from "./live-rooms/live-rooms.module";
 
-import { LiveChatModule } from "./live-contents/live-contents.module";
+import { LiveContentsModule } from "./live-contents/live-contents.module";
 import { OauthModule } from "./oauth/oauth.module";
 
 import configuration from "./common/config/configuration";
@@ -69,7 +69,7 @@ import { ExamQuestionModule } from "./exam-question/exam-question.module";
       }),
       isGlobal: true,
     }),
-    LiveChatModule,
+    LiveContentsModule,
     OauthModule,
     QuestionTagModule,
     ExamScheduleModule,
