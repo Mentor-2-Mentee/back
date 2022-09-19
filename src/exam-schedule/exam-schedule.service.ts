@@ -9,6 +9,7 @@ import {
 } from "src/models";
 import { Sequelize, Op } from "sequelize";
 import * as PDFDocument from "pdfkit";
+import configuration from "src/common/config/configuration";
 
 @Injectable()
 export class ExamScheduleService {
@@ -26,7 +27,10 @@ export class ExamScheduleService {
 
     imageFiles.map((imageFile) => {
       const rootDirName = new RegExp("public/");
-      const savedPath = imageFile.path.replace(rootDirName, "");
+      const savedPath = `${
+        configuration().apiServerBaseURL
+      }/${imageFile.path.replace(rootDirName, "")}`;
+
       imagesPath.push(savedPath);
     });
     Object.entries(createExamScheduleDto).map(([key, value]) => {

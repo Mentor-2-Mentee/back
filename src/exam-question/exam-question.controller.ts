@@ -15,6 +15,7 @@ import {
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
+import configuration from "src/common/config/configuration";
 import { ExamMentoringRoomService } from "src/exam-mentoring-room/exam-mentoring-room.service";
 import { AuthUserRequestDto } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
@@ -37,9 +38,10 @@ export class ExamQuestionController {
 
     const rootDirName = new RegExp("public/");
     const savedPath = file.path.replace(rootDirName, "");
+
     return {
       message: "OK",
-      imageUrl: savedPath,
+      imageUrl: `${configuration().apiServerBaseURL}/${savedPath}`,
     };
   }
 }

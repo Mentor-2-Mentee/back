@@ -1,5 +1,6 @@
 export default () => ({
   clientURL: String(process.env.CLIENT_URL),
+  apiServerBaseURL: String(process.env.API_SERVER_BASE_URL),
   apiServerPort: Number(process.env.API_SERVER_PORT),
   kakaoRestApiKey: String(process.env.KAKAO_REST_API_KEY),
   kakaoCallbackURL: String(process.env.KAKAO_CALLBACK_URL),
