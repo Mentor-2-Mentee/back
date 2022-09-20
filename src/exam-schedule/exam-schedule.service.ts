@@ -145,11 +145,17 @@ export class ExamScheduleService {
       },
     });
 
+    const { examScheduleTitle } = await this.examScheduleModel.findByPk(
+      examScheduleId
+    );
+
     await this.examScheduleModel.destroy({
       where: {
         [Op.and]: searchExamScheduleQuerys,
       },
     });
+
+    return examScheduleTitle;
   }
 
   async generatePDF(): Promise<Buffer> {

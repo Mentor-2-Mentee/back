@@ -15,6 +15,7 @@ import {
   Put,
   Res,
   Req,
+  HttpCode,
 } from "@nestjs/common";
 import { ExamScheduleService } from "./exam-schedule.service";
 import { OauthService } from "src/oauth/oauth.service";
@@ -101,11 +102,6 @@ export class ExamScheduleController {
       message: `${body.examScheduleTitle} 일정이 생성되었습니다.`,
       examScheduleId: savedExamSchedule.examScheduleId,
     };
-
-    return {
-      message: `create ${body.examScheduleTitle} schedule success`,
-      data: savedExamSchedule,
-    };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -140,16 +136,13 @@ export class ExamScheduleController {
       return "permission denied";
     }
 
-    await this.examScheduleService.deleteExamSchedule(
-      userData,
-      Number(examScheduleId)
-    );
-
-    console.log(examScheduleId);
-
+    const deletedExamScheduleTitle =
+      await this.examScheduleService.deleteExamSchedule(
+        userData,
+        Number(examScheduleId)
+      );
     return {
-      message: `delete ${examScheduleId} schedule success`,
-      data: examScheduleId,
+      message: `${deletedExamScheduleTitle} 시험일정이 삭제되었습니다`,
     };
   }
 }
