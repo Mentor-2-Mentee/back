@@ -106,7 +106,9 @@ export class ExamScheduleService {
 
     imageFiles.map((imageFile) => {
       const rootDirName = new RegExp("public/");
-      const savedPath = imageFile.path.replace(rootDirName, "");
+      const savedPath = `${
+        configuration().apiServerBaseURL
+      }/${imageFile.path.replace(rootDirName, "")}`;
       imagesPath.push(savedPath);
     });
     Object.entries(updateExamScheduleDto).map(([key, value]) => {

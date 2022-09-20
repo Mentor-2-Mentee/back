@@ -26,6 +26,7 @@ import {
   UpdateExamScheduleDto,
 } from "src/models";
 import { Response } from "express";
+import configuration from "src/common/config/configuration";
 
 const MAX_IMAGE_COUNT = 10;
 
@@ -119,7 +120,7 @@ export class ExamScheduleController {
 
     return {
       message: `update ${body.examScheduleTitle} schedule success`,
-      data: body,
+      examScheduleId: body.examScheduleId,
     };
   }
 

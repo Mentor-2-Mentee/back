@@ -17,6 +17,7 @@ import {
   Order,
 } from "sequelize";
 import { generateLiveRoomWhereOption } from "../common/utils/generateLiveRoomWhereOption";
+import configuration from "src/common/config/configuration";
 
 @Injectable()
 export class LiveRoomsService {
@@ -44,7 +45,9 @@ export class LiveRoomsService {
 
     imageFiles.map((imageFile) => {
       const rootDirName = new RegExp("public/");
-      const savedPath = imageFile.path.replace(rootDirName, "");
+      const savedPath = `${
+        configuration().apiServerBaseURL
+      }/${imageFile.path.replace(rootDirName, "")}`;
       imagesPath.push(savedPath);
     });
 
