@@ -42,14 +42,24 @@ export class QuestionTagController {
 
     const result = await this.questionTagService.createTag(body);
 
-    return result;
+    if (!result) {
+      return {
+        message: "이미 존재하거나, 생성에 실패했습니다",
+        result: false,
+      };
+    }
+    return {
+      message: `${result.tagName}이 생성되었습니다.`,
+      result: true,
+    };
   }
 
   @Get()
   async getAllTags() {
     const result = await this.questionTagService.findAllTags();
     return {
-      data: result,
+      message: "OK",
+      questionTagList: result,
     };
   }
 
@@ -68,17 +78,21 @@ export class QuestionTagController {
     }
 
     if (parentTag === "undefined") {
-      const result = await this.questionTagService.deleteParentsFamilyTag({
+      await this.questionTagService.deleteParentsFamilyTag({
         tagName,
       });
-      return result;
+      return {
+        message: `${tagName} 및 하위태그들 삭제완료`,
+      };
     }
     if (parentTag !== "undefined") {
-      const result = await this.questionTagService.deleteChildTag({
+      await this.questionTagService.deleteChildTag({
         tagName,
         parentTag,
       });
-      return result;
+      return {
+        message: `${parentTag} - ${tagName} 삭제완료`,
+      };
     }
   }
 }

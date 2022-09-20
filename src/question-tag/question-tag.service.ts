@@ -10,7 +10,9 @@ export class QuestionTagService {
     @InjectModel(QuestionTag)
     private questionTagModel: typeof QuestionTag
   ) {}
-  async createTag(createQuestionTagDto: CreateQuestionTagDto) {
+  async createTag(
+    createQuestionTagDto: CreateQuestionTagDto
+  ): Promise<false | QuestionTag> {
     const searchTagQuerys: WhereOptions = [];
     if (createQuestionTagDto.parentTag !== undefined) {
       searchTagQuerys.push({
@@ -26,17 +28,18 @@ export class QuestionTagService {
       },
     });
     try {
-      const checkExist = await this.questionTagModel.findAll({
-        where: {
-          [Op.and]: searchTagQuerys,
-        },
-      });
-      if (checkExist.length !== 0) {
-        throw new Error("already exist tag");
-      }
     } catch (error) {
       console.log("createTag Error:", error);
       return error;
+    }
+
+    const checkExist = await this.questionTagModel.findAll({
+      where: {
+        [Op.and]: searchTagQuerys,
+      },
+    });
+    if (checkExist.length !== 0) {
+      return false;
     }
 
     const result = await this.questionTagModel.create({
@@ -61,18 +64,17 @@ export class QuestionTagService {
 
   async deleteParentsFamilyTag(DeleteQuestionTagDto: DeleteQuestionTagDto) {
     try {
-      const deleteParent = await this.questionTagModel.destroy({
+      await this.questionTagModel.destroy({
         where: {
           parentTag: null,
           tagName: DeleteQuestionTagDto.tagName,
         },
       });
-      const deleteChilds = await this.questionTagModel.destroy({
+      await this.questionTagModel.destroy({
         where: {
           parentTag: DeleteQuestionTagDto.tagName,
         },
       });
-      return `delete ${deleteParent + deleteChilds}Tags complete`;
     } catch (error) {
       console.log("deleteParentsFamilyTag Error:", error);
       return error;
@@ -87,7 +89,6 @@ export class QuestionTagService {
           tagName: DeleteQuestionTagDto.tagName,
         },
       });
-      return `delete ${DeleteQuestionTagDto.tagName}Tag complete`;
     } catch (error) {
       console.log("deleteChildTag Error:", error);
       return error;
