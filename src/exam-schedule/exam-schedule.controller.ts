@@ -98,6 +98,11 @@ export class ExamScheduleController {
     );
 
     return {
+      message: `${body.examScheduleTitle} 일정이 생성되었습니다.`,
+      examScheduleId: savedExamSchedule.examScheduleId,
+    };
+
+    return {
       message: `create ${body.examScheduleTitle} schedule success`,
       data: savedExamSchedule,
     };
@@ -119,7 +124,7 @@ export class ExamScheduleController {
     await this.examScheduleService.updateExamSchedule(userData, body, files);
 
     return {
-      message: `update ${body.examScheduleTitle} schedule success`,
+      message: `${body.examScheduleTitle} 일정이 수정되었습니다.`,
       examScheduleId: body.examScheduleId,
     };
   }
