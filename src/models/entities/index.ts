@@ -7,3 +7,4 @@ export * from "./examSchedule.entity";
 export * from "./createExamMentoringRoomRequest.entity";
 export * from "./examMentoringRoom.entity";
 export * from "./examQuestion.entity";
+export * from "./issuedToken.entity";

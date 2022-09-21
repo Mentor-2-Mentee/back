@@ -16,7 +16,7 @@ import { OauthService } from "./oauth.service";
 import { JwtAuthGuard } from "./jwt/jwt-auth.guard";
 import { injectURLQuerys } from "src/common/utils/injectURLQuerys";
 import { ConfigService } from "@nestjs/config";
-import { AuthUserRequestDto } from "src/models";
+import { AuthUserRequestDto, PostOauthCodeDto } from "src/models";
 
 @Controller("oauth")
 export class OauthController {
@@ -28,7 +28,11 @@ export class OauthController {
   @UseGuards(JwtAuthGuard)
   @Get("profile")
   async getProfileByUserId(@Req() request: AuthUserRequestDto) {
-    return await this.OauthService.getProfile(request.user.userId);
+    const userProfile = await this.OauthService.getProfile(request.user.userId);
+    return {
+      message: "OK",
+      userProfile,
+    };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -60,10 +64,15 @@ export class OauthController {
   }
 
   @Post("/token")
-  async sendToken(@Body() bodyParam: any) {
-    const tokens = await this.OauthService.sendToken(bodyParam.code);
-    console.log(bodyParam, "tokens", tokens);
-    return tokens;
+  async sendToken(@Body() bodyParam: PostOauthCodeDto) {
+    const issuedToken = await this.OauthService.sendToken(bodyParam.authCode);
+    console.log(bodyParam, "tokens", issuedToken);
+    return {
+      message: "OK",
+      isFirstSignIn: issuedToken.isFirstSignIn,
+      accessToken: issuedToken.accessToken,
+      refreshToken: issuedToken.refreshToken,
+    };
   }
   @UseGuards(AuthGuard("kakao"))
   @Get("/kakao")

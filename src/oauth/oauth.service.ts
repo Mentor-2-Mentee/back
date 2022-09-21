@@ -1,7 +1,7 @@
 import { CACHE_MANAGER, Inject, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Cache } from "cache-manager";
-import { User } from "src/models";
+import { IssuedToken, User } from "src/models";
 import configuration from "../common/config/configuration";
 import { AuthUserRequestDto, UserKakaoDto, UserM2MDto } from "src/models/dto";
 import { InjectModel } from "@nestjs/sequelize";
@@ -163,6 +163,6 @@ export class OauthService {
   }
 
   async sendToken(tokenKeyCode: string) {
-    return await this.cacheManager.get<string>(tokenKeyCode);
+    return await this.cacheManager.get<IssuedToken>(tokenKeyCode);
   }
 }
