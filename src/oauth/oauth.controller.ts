@@ -39,7 +39,15 @@ export class OauthController {
   @Put("profile")
   async updateProfile(@Request() req, @Body() body) {
     console.log("POST /profile", req.user, body);
-    return await this.OauthService.updateProfile(req.user, body.newName);
+    const updatedUserProfile = await this.OauthService.updateProfile(
+      req.user,
+      body.newName
+    );
+
+    return {
+      message: `${updatedUserProfile.username}으로 수정되었습니다.`,
+      userProfile: updatedUserProfile,
+    };
   }
 
   @Get("name_check")
