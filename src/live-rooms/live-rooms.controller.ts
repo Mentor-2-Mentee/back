@@ -71,12 +71,12 @@ export class LiveRoomsController {
 
     if (Number(page) >= maxpage) {
       return {
-        data: roomList,
+        mentoringRoomList: roomList,
       };
     }
 
     return {
-      data: roomList,
+      mentoringRoomList: roomList,
       nextPage: Number(page) + 1,
     };
   }
