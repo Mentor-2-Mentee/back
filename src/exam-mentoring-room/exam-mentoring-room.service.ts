@@ -23,6 +23,8 @@ import { ExamQuestionService } from "src/exam-question/exam-question.service";
 import { v4 as uuidv4 } from "uuid";
 import * as PDFDocument from "pdfkit";
 import DateFormatting from "src/common/utils/DateFormatting";
+import imageUrlLoad from "src/common/utils/imageUrlLoad";
+import configuration from "src/common/config/configuration";
 
 const INITIAL_QUESTION_COUNT = 5;
 
@@ -327,6 +329,21 @@ export class ExamMentoringRoomService {
         doc
           .text(`${questionIndex + 1}) ${question.questionText}`)
           .moveDown(0.5);
+
+        if (question.questionImageUrl[0]) {
+          const outerUrl = new RegExp(configuration().apiServerBaseURL);
+          const filePath = question.questionImageUrl[0].replace(
+            outerUrl,
+            "public/"
+          );
+          doc
+            .image(filePath, {
+              height: 150,
+              align: "center",
+              valign: "center",
+            })
+            .moveDown(0.5);
+        }
 
         question.answerExampleList.map((example, exampleIndex) => {
           doc.text(`${exampleIndex + 1}. ${example}`).moveDown(0.5);

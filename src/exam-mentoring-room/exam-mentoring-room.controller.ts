@@ -144,15 +144,6 @@ export class ExamMentoringRoomController {
     @Query("examField") examField: string
   ) {
     const userData = await this.OauthService.getProfile(request.user.userId);
-
-    console.log(
-      "userData",
-      userData,
-      "examScheduleId",
-      examScheduleId,
-      "examField",
-      examField
-    );
     const requestList =
       await this.examMentoringRoomService.deleteExamMentoringRoomRequest(
         userData,
