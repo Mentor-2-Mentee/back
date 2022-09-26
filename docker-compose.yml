@@ -1,34 +1,6 @@
 version: "3.7"
 
 services:
-  nginx:
-    image: "nginx:1.22"
-    container_name: "nginx"
-    restart: "always"
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8081:8081"
-      - "9080:9080"
-      - "9443:9443"
-      - "9112:9112"
-    volumes:
-      - ./nginx_config/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx_config/proxy.conf:/etc/nginx/proxy.conf
-      - ./nginx_config/nginx_params:/etc/nginx/nginx_params
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    networks:
-      m2m_network:
-        ipv4_address: ${NGINX_STATIC_IP}
-
-  certbot:
-    image: certbot/certbot
-    command: certonly --webroot --webroot-path=/var/www/certbot --email ${EMAIL_ADDRESS} --agree-tos --no-eff-email -d ${API_SERVER_BASE_URL}
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt:rw
-      - ./data/certbot/www:/var/www/certbot:rw
-
   api:
     links:
       - mariadb:mariadb
