@@ -11,51 +11,49 @@ import {
 } from "@nestjs/common";
 import {
   AuthUserRequestDto,
-  CreateCreateExamMentoringRoomRequestDto,
-  CreateExamMentoringRoomDto,
+  CreateCreateExamReviewRoomRequestDto,
+  CreateExamReviewRoomDto,
 } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { OauthService } from "src/oauth/oauth.service";
-import { ExamMentoringRoomService } from "./exam-mentoring-room.service";
+import { ExamReviewRoomService } from "./exam-review-room.service";
 import { Response } from "express";
 
 @Controller("exam-mentoring-room")
-export class ExamMentoringRoomController {
+export class ExamReviewRoomController {
   constructor(
-    private readonly examMentoringRoomService: ExamMentoringRoomService,
+    private readonly examReviewRoomService: ExamReviewRoomService,
     private readonly OauthService: OauthService
   ) {}
 
   @Get()
-  async findExamMentoringRoomListByExamScheduleId(
+  async findExamReviewRoomListByExamScheduleId(
     @Query("examScheduleId") examScheduleId: number,
     @Query("examField") examField: string
   ) {
     console.log(
-      "findExamMentoringRoomListByExamScheduleId",
+      "findExamReviewRoomListByExamScheduleId",
       examScheduleId,
       examField
     );
-    const examMentoringRoomList =
-      await this.examMentoringRoomService.findExamMentoringRoomList(
-        examScheduleId
-      );
+    const examReviewRoomList =
+      await this.examReviewRoomService.findExamReviewRoomList(examScheduleId);
 
     if (examField !== undefined) {
-      const target = examMentoringRoomList.find(
-        (examMentoringRoom) => examMentoringRoom.examField === examField
+      const target = examReviewRoomList.find(
+        (examReviewRoom) => examReviewRoom.examField === examField
       );
       return {
         message: `find ${examField}`,
-        examMentoringRoom: target,
+        examReviewRoom: target,
       };
     }
 
-    console.log("examMentoringRoomList", examMentoringRoomList);
+    console.log("examReviewRoomList", examReviewRoomList);
 
     return {
       message: "OK",
-      examMentoringRoomList,
+      examReviewRoomList,
     };
   }
 
@@ -65,11 +63,10 @@ export class ExamMentoringRoomController {
     @Query("examScheduleId") examScheduleId: number,
     @Query("examField") examField: string
   ) {
-    const { userList } =
-      await this.examMentoringRoomService.findExamMentoringRoomOne(
-        examScheduleId,
-        examField
-      );
+    const { userList } = await this.examReviewRoomService.findExamReviewRoomOne(
+      examScheduleId,
+      examField
+    );
     const userInfoList = [];
 
     for (const userId of userList) {
@@ -85,29 +82,29 @@ export class ExamMentoringRoomController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createExamMentoringRoom(
+  async createExamReviewRoom(
     @Req() request: AuthUserRequestDto,
-    @Body() body: CreateExamMentoringRoomDto
+    @Body() body: CreateExamReviewRoomDto
   ) {
     const [target, isCreated] =
-      await this.examMentoringRoomService.createExamMentoringRoom(body);
+      await this.examReviewRoomService.createExamReviewRoom(body);
 
     return {
       message: `received ${body}`,
-      examMentoringRoom: target,
+      examReviewRoom: target,
       isCreated,
     };
   }
 
   @UseGuards(JwtAuthGuard)
   @Post("/create-request")
-  async createExamMentoringRoomRequest(
+  async createExamReviewRoomRequest(
     @Req() request: AuthUserRequestDto,
-    @Body() body: CreateCreateExamMentoringRoomRequestDto
+    @Body() body: CreateCreateExamReviewRoomRequestDto
   ) {
     const userData = await this.OauthService.getProfile(request.user.userId);
 
-    await this.examMentoringRoomService.createExamMentoringRoomRequest(
+    await this.examReviewRoomService.createExamReviewRoomRequest(
       userData,
       body
     );
@@ -118,15 +115,13 @@ export class ExamMentoringRoomController {
   }
 
   @Get("/create-request")
-  async getCreateExamMentoringRoomRequestList(
+  async getCreateExamReviewRoomRequestList(
     @Query("examScheduleId") examScheduleId: number
   ) {
     const requestList =
-      await this.examMentoringRoomService.getCreateExamMentoringRoomRequestList(
-        {
-          examScheduleId,
-        }
-      );
+      await this.examReviewRoomService.getCreateExamReviewRoomRequestList({
+        examScheduleId,
+      });
 
     console.log("requestList", requestList);
 
@@ -138,14 +133,14 @@ export class ExamMentoringRoomController {
 
   @UseGuards(JwtAuthGuard)
   @Delete("/create-request")
-  async cancelExamMentoringRoomRequest(
+  async cancelExamReviewRoomRequest(
     @Req() request: AuthUserRequestDto,
     @Query("examScheduleId") examScheduleId: number,
     @Query("examField") examField: string
   ) {
     const userData = await this.OauthService.getProfile(request.user.userId);
     const requestList =
-      await this.examMentoringRoomService.deleteExamMentoringRoomRequest(
+      await this.examReviewRoomService.deleteExamReviewRoomRequest(
         userData,
         examScheduleId,
         examField
@@ -164,12 +159,12 @@ export class ExamMentoringRoomController {
     @Res() res: Response
   ) {
     const targetRoomData =
-      await this.examMentoringRoomService.findExamMentoringRoomOne(
+      await this.examReviewRoomService.findExamReviewRoomOne(
         examScheduleId,
         examField
       );
 
-    const buffer = await this.examMentoringRoomService.generateQuestionPDF(
+    const buffer = await this.examReviewRoomService.generateQuestionPDF(
       targetRoomData,
       targetRoomData.examQuestionList
     );
@@ -190,12 +185,12 @@ export class ExamMentoringRoomController {
     @Res() res: Response
   ) {
     const targetRoomData =
-      await this.examMentoringRoomService.findExamMentoringRoomOne(
+      await this.examReviewRoomService.findExamReviewRoomOne(
         examScheduleId,
         examField
       );
 
-    const buffer = await this.examMentoringRoomService.generateSolutionPDF(
+    const buffer = await this.examReviewRoomService.generateSolutionPDF(
       targetRoomData,
       targetRoomData.examQuestionList
     );

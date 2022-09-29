@@ -1,6 +1,6 @@
 import { User } from "../entities";
 
-export class CreateExamMentoringRoomDto {
+export class CreateExamReviewRoomDto {
   examScheduleTitle: string;
   examScheduleId: number;
   examField: string;

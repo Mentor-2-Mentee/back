@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import {
-  CreateCreateExamMentoringRoomRequestDto,
-  CreateExamMentoringRoomDto,
-  GetCreateExamMentoringRoomRequest,
+  CreateCreateExamReviewRoomRequestDto,
+  CreateExamReviewRoomDto,
+  GetCreateExamReviewRoomRequest,
   User,
 } from "src/models";
 import {
-  CreateExamMentoringRoomRequest,
-  ExamMentoringRoom,
+  CreateExamReviewRoomRequest,
+  ExamReviewRoom,
 } from "src/models/entities";
 import {
   Sequelize,
@@ -29,44 +29,43 @@ import configuration from "src/common/config/configuration";
 const INITIAL_QUESTION_COUNT = 5;
 
 @Injectable()
-export class ExamMentoringRoomService {
+export class ExamReviewRoomService {
   constructor(
     private readonly OauthService: OauthService,
     private readonly ExamQuestionService: ExamQuestionService,
-    @InjectModel(CreateExamMentoringRoomRequest)
-    private createExamMentoringRoomRequestModel: typeof CreateExamMentoringRoomRequest,
-    @InjectModel(ExamMentoringRoom)
-    private examMentoringRoomModel: typeof ExamMentoringRoom
+    @InjectModel(CreateExamReviewRoomRequest)
+    private createExamReviewRoomRequestModel: typeof CreateExamReviewRoomRequest,
+    @InjectModel(ExamReviewRoom)
+    private examReviewRoomModel: typeof ExamReviewRoom
   ) {}
 
-  async createExamMentoringRoomRequest(
+  async createExamReviewRoomRequest(
     userData: Pick<User, "userId" | "username" | "userGrade">,
-    createCreateExamMentoringRoomRequestDto: CreateCreateExamMentoringRoomRequestDto
+    createCreateExamReviewRoomRequestDto: CreateCreateExamReviewRoomRequestDto
   ) {
     const searchExamScheduleId: WhereOptions = [];
 
     searchExamScheduleId.push({
       ["examScheduleId"]: {
         [Op.and]: {
-          [Op.eq]: createCreateExamMentoringRoomRequestDto.examScheduleId,
+          [Op.eq]: createCreateExamReviewRoomRequestDto.examScheduleId,
         },
       },
       ["examField"]: {
         [Op.and]: {
-          [Op.eq]: createCreateExamMentoringRoomRequestDto.examField,
+          [Op.eq]: createCreateExamReviewRoomRequestDto.examField,
         },
       },
     });
 
     const [target, created] =
-      await this.createExamMentoringRoomRequestModel.findOrCreate({
+      await this.createExamReviewRoomRequestModel.findOrCreate({
         where: {
           [Op.and]: searchExamScheduleId,
         },
         defaults: {
-          examScheduleId:
-            createCreateExamMentoringRoomRequestDto.examScheduleId,
-          examField: createCreateExamMentoringRoomRequestDto.examField,
+          examScheduleId: createCreateExamReviewRoomRequestDto.examScheduleId,
+          examField: createCreateExamReviewRoomRequestDto.examField,
           requestUserList: [userData],
         },
       });
@@ -78,11 +77,10 @@ export class ExamMentoringRoomService {
           -1
       );
       if (isExist) return;
-      await this.createExamMentoringRoomRequestModel.update(
+      await this.createExamReviewRoomRequestModel.update(
         {
-          examScheduleId:
-            createCreateExamMentoringRoomRequestDto.examScheduleId,
-          examField: createCreateExamMentoringRoomRequestDto.examField,
+          examScheduleId: createCreateExamReviewRoomRequestDto.examScheduleId,
+          examField: createCreateExamReviewRoomRequestDto.examField,
           requestUserList: [...target.requestUserList, userData],
         },
         {
@@ -94,9 +92,9 @@ export class ExamMentoringRoomService {
     }
   }
 
-  async getCreateExamMentoringRoomRequestList({
+  async getCreateExamReviewRoomRequestList({
     examScheduleId,
-  }: GetCreateExamMentoringRoomRequest) {
+  }: GetCreateExamReviewRoomRequest) {
     const searchExamScheduleId: WhereOptions = [];
 
     searchExamScheduleId.push({
@@ -107,7 +105,7 @@ export class ExamMentoringRoomService {
       },
     });
 
-    const requestList = await this.createExamMentoringRoomRequestModel.findAll({
+    const requestList = await this.createExamReviewRoomRequestModel.findAll({
       where: {
         [Op.and]: searchExamScheduleId,
       },
@@ -116,13 +114,13 @@ export class ExamMentoringRoomService {
     return requestList;
   }
 
-  async deleteExamMentoringRoomRequest(
+  async deleteExamReviewRoomRequest(
     userData: Pick<User, "userId" | "username" | "userGrade">,
     examScheduleId: number,
     examField: string
   ) {
-    const searchExamMentoringRoomRequest: WhereOptions = [];
-    searchExamMentoringRoomRequest.push({
+    const searchExamReviewRoomRequest: WhereOptions = [];
+    searchExamReviewRoomRequest.push({
       ["examScheduleId"]: {
         [Op.and]: {
           [Op.eq]: examScheduleId,
@@ -135,10 +133,9 @@ export class ExamMentoringRoomService {
       },
     });
 
-    const targetRequest =
-      await this.createExamMentoringRoomRequestModel.findOne({
-        where: searchExamMentoringRoomRequest,
-      });
+    const targetRequest = await this.createExamReviewRoomRequestModel.findOne({
+      where: searchExamReviewRoomRequest,
+    });
 
     const currentUserList: any[] = [...targetRequest.requestUserList];
 
@@ -146,53 +143,51 @@ export class ExamMentoringRoomService {
     console.log("requestUserList", [...targetRequest.requestUserList]);
     if (!targetRequest) return;
 
-    await this.createExamMentoringRoomRequestModel.update(
+    await this.createExamReviewRoomRequestModel.update(
       {
         requestUserList: currentUserList.filter(
           (user) => user.userId !== userData.userId
         ),
       },
       {
-        where: searchExamMentoringRoomRequest,
+        where: searchExamReviewRoomRequest,
       }
     );
   }
 
-  async createExamMentoringRoom(
-    createExamMentoringRoomDto: CreateExamMentoringRoomDto
-  ) {
+  async createExamReviewRoom(createExamReviewRoomDto: CreateExamReviewRoomDto) {
     const searchByExamScheduleIdAndExamField: WhereOptions = [];
     searchByExamScheduleIdAndExamField.push({
       ["examScheduleId"]: {
         [Op.and]: {
-          [Op.eq]: createExamMentoringRoomDto.examScheduleId,
+          [Op.eq]: createExamReviewRoomDto.examScheduleId,
         },
       },
       ["examField"]: {
         [Op.and]: {
-          [Op.eq]: createExamMentoringRoomDto.examField,
+          [Op.eq]: createExamReviewRoomDto.examField,
         },
       },
     });
 
-    const newExamMentoringRoomId = uuidv4();
+    const newExamReviewRoomId = uuidv4();
 
-    const [target, isCreated] = await this.examMentoringRoomModel.findOrCreate({
+    const [target, isCreated] = await this.examReviewRoomModel.findOrCreate({
       where: {
         [Op.and]: searchByExamScheduleIdAndExamField,
       },
       defaults: {
-        examMentoringRoomId: newExamMentoringRoomId,
-        examScheduleTitle: createExamMentoringRoomDto.examScheduleTitle,
-        examScheduleId: createExamMentoringRoomDto.examScheduleId,
-        examField: createExamMentoringRoomDto.examField,
+        examReviewRoomId: newExamReviewRoomId,
+        examScheduleTitle: createExamReviewRoomDto.examScheduleTitle,
+        examScheduleId: createExamReviewRoomDto.examScheduleId,
+        examField: createExamReviewRoomDto.examField,
         userList: [
-          ...createExamMentoringRoomDto.userList.map((user) => user.userId),
+          ...createExamReviewRoomDto.userList.map((user) => user.userId),
         ],
         chatListBundle: [],
         examQuestionList: await this.ExamQuestionService.createBulkQuestion({
-          examScheduleId: createExamMentoringRoomDto.examScheduleId,
-          examField: createExamMentoringRoomDto.examField,
+          examScheduleId: createExamReviewRoomDto.examScheduleId,
+          examField: createExamReviewRoomDto.examField,
           bulkCount: 5,
         }),
       },
@@ -203,16 +198,16 @@ export class ExamMentoringRoomService {
       searchDestoryRequest.push({
         ["examScheduleId"]: {
           [Op.and]: {
-            [Op.eq]: createExamMentoringRoomDto.examScheduleId,
+            [Op.eq]: createExamReviewRoomDto.examScheduleId,
           },
         },
         ["examField"]: {
           [Op.and]: {
-            [Op.eq]: createExamMentoringRoomDto.examField,
+            [Op.eq]: createExamReviewRoomDto.examField,
           },
         },
       });
-      await this.createExamMentoringRoomRequestModel.destroy({
+      await this.createExamReviewRoomRequestModel.destroy({
         where: {
           [Op.and]: searchDestoryRequest,
         },
@@ -222,7 +217,7 @@ export class ExamMentoringRoomService {
     return [target, isCreated];
   }
 
-  async findExamMentoringRoomList(examScheduleId: number) {
+  async findExamReviewRoomList(examScheduleId: number) {
     const searchByExamScheduleId: WhereOptions = [];
     searchByExamScheduleId.push({
       ["examScheduleId"]: {
@@ -232,18 +227,18 @@ export class ExamMentoringRoomService {
       },
     });
 
-    const examMentoringRoomList = await this.examMentoringRoomModel.findAll({
+    const examReviewRoomList = await this.examReviewRoomModel.findAll({
       where: {
         [Op.and]: searchByExamScheduleId,
       },
     });
 
-    return examMentoringRoomList;
+    return examReviewRoomList;
   }
 
-  async findExamMentoringRoomOne(examScheduleId: number, examField: string) {
-    const searchExamMentoringRoom: WhereOptions = [];
-    searchExamMentoringRoom.push({
+  async findExamReviewRoomOne(examScheduleId: number, examField: string) {
+    const searchExamReviewRoom: WhereOptions = [];
+    searchExamReviewRoom.push({
       ["examScheduleId"]: {
         [Op.and]: {
           [Op.eq]: examScheduleId,
@@ -256,18 +251,18 @@ export class ExamMentoringRoomService {
       },
     });
 
-    return await this.examMentoringRoomModel.findOne({
-      where: searchExamMentoringRoom,
+    return await this.examReviewRoomModel.findOne({
+      where: searchExamReviewRoom,
     });
   }
 
-  async updateExamMentoringRoomOne(
+  async updateExamReviewRoomOne(
     examScheduleId: number,
     examField: string,
     updateData?: any
   ) {
-    const searchExamMentoringRoom: WhereOptions = [];
-    searchExamMentoringRoom.push({
+    const searchExamReviewRoom: WhereOptions = [];
+    searchExamReviewRoom.push({
       ["examScheduleId"]: {
         [Op.and]: {
           [Op.eq]: examScheduleId,
@@ -280,29 +275,29 @@ export class ExamMentoringRoomService {
       },
     });
 
-    await this.examMentoringRoomModel.update(
+    await this.examReviewRoomModel.update(
       {
         ...updateData,
       },
       {
-        where: searchExamMentoringRoom,
+        where: searchExamReviewRoom,
       }
     );
 
-    return await this.examMentoringRoomModel.findOne({
-      where: searchExamMentoringRoom,
+    return await this.examReviewRoomModel.findOne({
+      where: searchExamReviewRoom,
     });
   }
 
   async generateQuestionPDF(
-    examMentoringRoom: ExamMentoringRoom,
+    examReviewRoom: ExamReviewRoom,
     examQuestionIdList: number[]
   ): Promise<Buffer> {
     const examQuestionList = await this.ExamQuestionService.findQuestionAll(
       examQuestionIdList
     );
 
-    const examDate = new DateFormatting(new Date(examMentoringRoom.createdAt))
+    const examDate = new DateFormatting(new Date(examReviewRoom.createdAt))
       .YYYY_MM_DD;
 
     const pdfBuffer: Buffer = await new Promise((resolve) => {
@@ -317,7 +312,7 @@ export class ExamMentoringRoomService {
       doc
         .fontSize(18)
         .text(
-          `${examMentoringRoom.examScheduleTitle} - ${examMentoringRoom.examField} / ${examDate}`,
+          `${examReviewRoom.examScheduleTitle} - ${examReviewRoom.examField} / ${examDate}`,
           50,
           50
         )
@@ -365,14 +360,14 @@ export class ExamMentoringRoomService {
   }
 
   async generateSolutionPDF(
-    examMentoringRoom: ExamMentoringRoom,
+    examReviewRoom: ExamReviewRoom,
     examQuestionIdList: number[]
   ): Promise<Buffer> {
     const examQuestionList = await this.ExamQuestionService.findQuestionAll(
       examQuestionIdList
     );
 
-    const examDate = new DateFormatting(new Date(examMentoringRoom.createdAt))
+    const examDate = new DateFormatting(new Date(examReviewRoom.createdAt))
       .YYYY_MM_DD;
 
     const pdfBuffer: Buffer = await new Promise((resolve) => {
@@ -387,7 +382,7 @@ export class ExamMentoringRoomService {
       doc
         .fontSize(18)
         .text(
-          `${examMentoringRoom.examScheduleTitle} - ${examMentoringRoom.examField} - 솔루션 / ${examDate}`,
+          `${examReviewRoom.examScheduleTitle} - ${examReviewRoom.examField} - 솔루션 / ${examDate}`,
           50,
           50
         )

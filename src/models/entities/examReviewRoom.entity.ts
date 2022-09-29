@@ -6,11 +6,11 @@ import {
   DataType,
 } from "sequelize-typescript";
 @Table({
-  tableName: "ExamMentoringRoom",
+  tableName: "ExamReviewRoom",
   timestamps: true,
   createdAt: true,
 })
-export class ExamMentoringRoom extends Model {
+export class ExamReviewRoom extends Model {
   @AutoIncrement
   @Column({
     primaryKey: true,
@@ -18,7 +18,7 @@ export class ExamMentoringRoom extends Model {
   id: number;
 
   @Column({ allowNull: false })
-  examMentoringRoomId: string;
+  examReviewRoomId: string;
 
   @Column({ allowNull: false })
   examScheduleTitle: string;

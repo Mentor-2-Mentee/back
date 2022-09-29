@@ -8,7 +8,7 @@ import { LiveContentsService } from "./live-contents.service";
 import {
   LiveChat,
   MentoringRoomChatSummary,
-  SocketReceiveExamMentoringRoomDto,
+  SocketReceiveExamReviewRoomDto,
   SocketReceiveLiveExamQuestionDto,
   SocketReceiveMentoringRoomLiveCanvasStroke,
   SocketReceiveMentoringRoomPrevCanvasStrokeList,
@@ -18,7 +18,7 @@ import { Server } from "http";
 import { CACHE_MANAGER, Inject, Logger } from "@nestjs/common";
 import { Cache } from "cache-manager";
 import { ExamQuestionService } from "src/exam-question/exam-question.service";
-import { ExamMentoringRoomService } from "src/exam-mentoring-room/exam-mentoring-room.service";
+import { ExamReviewRoomService } from "src/exam-review-room/exam-review-room.service";
 
 @WebSocketGateway(8081, {
   namespace: "/live-contents",
@@ -29,7 +29,7 @@ export class LiveContentsGateway {
   constructor(
     private readonly liveChatService: LiveContentsService,
     private readonly examQuestionService: ExamQuestionService,
-    private readonly examMentoringRoomService: ExamMentoringRoomService,
+    private readonly examReviewRoomService: ExamReviewRoomService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 
@@ -105,13 +105,13 @@ export class LiveContentsGateway {
    * 모든 회사의 직군시험들에 대한 실시간 작성 내용 수신 엔드포인트 => 해당 회사의 특정 직군시험에 작성된 내용 발신
    * @param data : examScheduleId, examField, examQuestionIndex, examQuestion
    */
-  @SubscribeMessage("examMentoringRoom_question_live")
-  async emitExamMentoringRoomLiveQuestion(
+  @SubscribeMessage("examReviewRoom_question_live")
+  async emitExamReviewRoomLiveQuestion(
     @MessageBody() data: SocketReceiveLiveExamQuestionDto
   ) {
     console.log(data);
 
-    const targetChannel = `examMentoringRoom_question_live-${data.examScheduleId}_${data.examField}`;
+    const targetChannel = `examReviewRoom_question_live-${data.examScheduleId}_${data.examField}`;
 
     const updatedExamQuestion = await this.examQuestionService.updateQuestion(
       data.updateExamQuestionData
@@ -128,19 +128,18 @@ export class LiveContentsGateway {
     this.server.emit(targetChannel, result);
   }
 
-  @SubscribeMessage("examMentoringRoom_question_prev")
-  async emitExamMentoringRoomCurrentQuestion(
-    @MessageBody() data: SocketReceiveExamMentoringRoomDto
+  @SubscribeMessage("examReviewRoom_question_prev")
+  async emitExamReviewRoomCurrentQuestion(
+    @MessageBody() data: SocketReceiveExamReviewRoomDto
   ) {
-    console.log("examMentoringRoom_question_prev received data", data);
+    console.log("examReviewRoom_question_prev received data", data);
 
-    const targetChannel = `examMentoringRoom_question_prev-${data.examScheduleId}_${data.examField}_${data.userId}`;
+    const targetChannel = `examReviewRoom_question_prev-${data.examScheduleId}_${data.examField}_${data.userId}`;
 
-    const roomData =
-      await this.examMentoringRoomService.findExamMentoringRoomOne(
-        data.examScheduleId,
-        data.examField
-      );
+    const roomData = await this.examReviewRoomService.findExamReviewRoomOne(
+      data.examScheduleId,
+      data.examField
+    );
     const examList = await this.examQuestionService.findQuestionAll(
       roomData.examQuestionList
     );
@@ -154,8 +153,8 @@ export class LiveContentsGateway {
     this.server.emit(targetChannel, result);
   }
 
-  @SubscribeMessage("examMentoringRoom_question_option")
-  async emitUpdatedExamMentoringRoomQuestionOption(
+  @SubscribeMessage("examReviewRoom_question_option")
+  async emitUpdatedExamReviewRoomQuestionOption(
     @MessageBody()
     {
       userId,
@@ -166,33 +165,31 @@ export class LiveContentsGateway {
     }: any
   ) {
     console.log(
-      "examMentoringRoom_question_option",
+      "examReviewRoom_question_option",
       setQuestionCount,
       deleteExamQuestionId
     );
 
-    const targetChannel = `examMentoringRoom_question_option-${examScheduleId}_${examField}`;
+    const targetChannel = `examReviewRoom_question_option-${examScheduleId}_${examField}`;
 
-    const roomData =
-      await this.examMentoringRoomService.findExamMentoringRoomOne(
-        examScheduleId,
-        examField
-      );
+    const roomData = await this.examReviewRoomService.findExamReviewRoomOne(
+      examScheduleId,
+      examField
+    );
 
     if (deleteExamQuestionId) {
       await this.examQuestionService.deleteQuestion(deleteExamQuestionId);
 
-      const targetRoom =
-        await this.examMentoringRoomService.findExamMentoringRoomOne(
-          examScheduleId,
-          examField
-        );
+      const targetRoom = await this.examReviewRoomService.findExamReviewRoomOne(
+        examScheduleId,
+        examField
+      );
       const remainedQuestionIdList = targetRoom.examQuestionList.filter(
         (quesionId) => quesionId !== deleteExamQuestionId
       );
 
       const updatedRoom =
-        await this.examMentoringRoomService.updateExamMentoringRoomOne(
+        await this.examReviewRoomService.updateExamReviewRoomOne(
           examScheduleId,
           examField,
           {
@@ -226,7 +223,7 @@ export class LiveContentsGateway {
           await this.examQuestionService.deleteQuestion(deleteQuestionId);
         }
         const updatedRoom =
-          await this.examMentoringRoomService.updateExamMentoringRoomOne(
+          await this.examReviewRoomService.updateExamReviewRoomOne(
             examScheduleId,
             examField,
             {
@@ -260,7 +257,7 @@ export class LiveContentsGateway {
           });
 
         const updatedRoom =
-          await this.examMentoringRoomService.updateExamMentoringRoomOne(
+          await this.examReviewRoomService.updateExamReviewRoomOne(
             examScheduleId,
             examField,
             {

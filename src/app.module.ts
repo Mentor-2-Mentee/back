@@ -14,10 +14,10 @@ import { join } from "path";
 import * as redisStore from "cache-manager-ioredis";
 import { User } from "./models/entities/user.entity";
 import {
-  CreateExamMentoringRoomRequest,
+  CreateExamReviewRoomRequest,
   LiveRoom,
   QuestionTag,
-  ExamMentoringRoom,
+  ExamReviewRoom,
   ExamSchedule,
   ExamQuestion,
 } from "src/models";
@@ -25,8 +25,9 @@ import {
 import { SequelizeModule } from "@nestjs/sequelize";
 import { QuestionTagModule } from "./question-tag/question-tag.module";
 import { ExamScheduleModule } from "./exam-schedule/exam-schedule.module";
-import { ExamMentoringRoomModule } from "./exam-mentoring-room/exam-mentoring-room.module";
+import { ExamReviewRoomModule } from "./exam-review-room/exam-review-room.module";
 import { ExamQuestionModule } from "./exam-question/exam-question.module";
+import { ImagesModule } from "./images/images.module";
 
 @Module({
   imports: [
@@ -52,8 +53,8 @@ import { ExamQuestionModule } from "./exam-question/exam-question.module";
           User,
           QuestionTag,
           ExamSchedule,
-          CreateExamMentoringRoomRequest,
-          ExamMentoringRoom,
+          CreateExamReviewRoomRequest,
+          ExamReviewRoom,
           ExamQuestion,
         ],
       }),
@@ -73,8 +74,9 @@ import { ExamQuestionModule } from "./exam-question/exam-question.module";
     OauthModule,
     QuestionTagModule,
     ExamScheduleModule,
-    ExamMentoringRoomModule,
+    ExamReviewRoomModule,
     ExamQuestionModule,
+    ImagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

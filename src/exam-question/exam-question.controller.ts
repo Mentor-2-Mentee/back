@@ -16,7 +16,7 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import configuration from "src/common/config/configuration";
-import { ExamMentoringRoomService } from "src/exam-mentoring-room/exam-mentoring-room.service";
+import { ExamReviewRoomService } from "src/exam-review-room/exam-review-room.service";
 import { AuthUserRequestDto } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { OauthService } from "src/oauth/oauth.service";

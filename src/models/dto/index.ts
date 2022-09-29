@@ -26,16 +26,16 @@ export * from "./get-pastChatList.dto";
 export * from "./create-examSchedule.dto";
 export * from "./update-examSchedule.dto";
 
-export * from "./create-createExamMentoringRoomRequest.dto";
-export * from "./get-createExamMentoringRoomRequest.dto";
+export * from "./create-createExamReviewRoomRequest.dto";
+export * from "./get-createExamReviewRoomRequest.dto";
 
 export * from "./auth-userRequest.dto";
 
-export * from "./create-examMentoringRoom.dto";
+export * from "./create-examReviewRoom.dto";
 
 export * from "./create-bulkExamQuestion.dto";
 
 export * from "./socketReceive-liveExamQuestion.dto";
-export * from "./socketReceive-examMentoringRoom.dto";
+export * from "./socketReceive-examReviewRoom.dto";
 
 export * from "./update-examQuestion.dto";
