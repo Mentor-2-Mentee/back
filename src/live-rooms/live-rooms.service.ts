@@ -33,14 +33,13 @@ export class LiveRoomsService {
     },
     createLiveRoomDto: CreateLiveRoomDto,
     imageFiles: Express.Multer.File[]
-  ): Promise<string> {
+  ): Promise<number> {
     console.log(
       userData,
       createLiveRoomDto.mentoringRoomTitle,
       JSON.parse(createLiveRoomDto.appliedTagOptions),
       createLiveRoomDto.mentoringRoomDescription
     );
-    const roomPath = String(uuidv4());
     const imagesPath = [];
 
     imageFiles.map((imageFile) => {
@@ -58,8 +57,7 @@ export class LiveRoomsService {
       createLiveRoomDto.mentoringRoomDescription
     );
 
-    await this.liveRoomModel.create({
-      mentoringRoomId: roomPath,
+    const createdRoom = await this.liveRoomModel.create({
       mentoringRoomTitle: JSON.parse(createLiveRoomDto.mentoringRoomTitle),
       mentoringRoomDescription: parsedExplainRoomText,
       author: userData.username,
@@ -73,7 +71,7 @@ export class LiveRoomsService {
       }),
     });
 
-    return roomPath;
+    return createdRoom.id;
   }
 
   async findRoomsByFilter({ page, limit, filter, option }: GetLiveRoomDto) {

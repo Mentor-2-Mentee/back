@@ -30,6 +30,7 @@ export class ImagesController {
     });
 
     return {
+      message: "image upload success",
       url: imageUrl,
     };
   }

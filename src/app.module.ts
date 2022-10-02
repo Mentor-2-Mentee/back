@@ -28,6 +28,7 @@ import { ExamScheduleModule } from "./exam-schedule/exam-schedule.module";
 import { ExamReviewRoomModule } from "./exam-review-room/exam-review-room.module";
 import { ExamQuestionModule } from "./exam-question/exam-question.module";
 import { ImagesModule } from "./images/images.module";
+import { QuestionModule } from './question/question.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { ImagesModule } from "./images/images.module";
     ExamReviewRoomModule,
     ExamQuestionModule,
     ImagesModule,
+    QuestionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

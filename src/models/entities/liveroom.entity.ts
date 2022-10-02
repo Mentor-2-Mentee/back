@@ -19,9 +19,6 @@ export class LiveRoom extends Model {
   id: number;
 
   @Column({ allowNull: false })
-  mentoringRoomId: string;
-
-  @Column({ allowNull: false })
   mentoringRoomTitle: string;
 
   @Column({ allowNull: true })
