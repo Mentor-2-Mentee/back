@@ -20,6 +20,8 @@ import {
   ExamReviewRoom,
   ExamSchedule,
   ExamQuestion,
+  Question,
+  QuestionPost,
 } from "src/models";
 
 import { SequelizeModule } from "@nestjs/sequelize";
@@ -28,7 +30,8 @@ import { ExamScheduleModule } from "./exam-schedule/exam-schedule.module";
 import { ExamReviewRoomModule } from "./exam-review-room/exam-review-room.module";
 import { ExamQuestionModule } from "./exam-question/exam-question.module";
 import { ImagesModule } from "./images/images.module";
-import { QuestionModule } from './question/question.module';
+import { QuestionModule } from "./question/question.module";
+import { QuestionPostModule } from './question-post/question-post.module';
 
 @Module({
   imports: [
@@ -57,6 +60,8 @@ import { QuestionModule } from './question/question.module';
           CreateExamReviewRoomRequest,
           ExamReviewRoom,
           ExamQuestion,
+          Question,
+          QuestionPost,
         ],
       }),
     }),
@@ -79,6 +84,7 @@ import { QuestionModule } from './question/question.module';
     ExamQuestionModule,
     ImagesModule,
     QuestionModule,
+    QuestionPostModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -23,10 +23,5 @@ export class QuestionController {
       body,
       body.questionForm.question.questionImageUrl
     );
-
-    return {
-      message: "now api testing...",
-      url: "testUrl",
-    };
   }
 }

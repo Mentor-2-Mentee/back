@@ -39,3 +39,5 @@ export * from "./socketReceive-liveExamQuestion.dto";
 export * from "./socketReceive-examReviewRoom.dto";
 
 export * from "./update-examQuestion.dto";
+
+export * from "./create-question.dto";

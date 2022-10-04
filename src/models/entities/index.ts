@@ -8,3 +8,5 @@ export * from "./createExamReviewRoomRequest.entity";
 export * from "./examReviewRoom.entity";
 export * from "./examQuestion.entity";
 export * from "./issuedToken.entity";
+export * from "./question.entity";
+export * from "./questionPost.entity";
