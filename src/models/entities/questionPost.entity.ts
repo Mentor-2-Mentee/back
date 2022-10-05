@@ -4,11 +4,8 @@ import {
   Model,
   AutoIncrement,
   Column,
-  DataType,
   ForeignKey,
-  HasOne,
   BelongsTo,
-  HasMany,
 } from "sequelize-typescript";
 import { Question } from "./question.entity";
 
@@ -41,6 +38,6 @@ export class QuestionPost extends Model {
   @Column({ allowNull: false })
   questionPostDescription: number;
 
-  @Column({ allowNull: false })
+  @Column({ allowNull: true })
   viewCount: number;
 }
