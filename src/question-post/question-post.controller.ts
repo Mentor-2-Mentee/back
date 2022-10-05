@@ -21,6 +21,15 @@ export class QuestionPostController {
     };
   }
 
+  @Get("/max-page")
+  async getQuestionPostMaxPage() {
+    const maxPage = await this.questionPostService.getQuestionPostMaxPage();
+    return {
+      message: "OK",
+      maxPage,
+    };
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post()
   async createNewQuestion(

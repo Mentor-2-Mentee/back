@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { Includeable } from "sequelize";
+import { Order, WhereOptions } from "sequelize";
 
 import { Question, QuestionPost } from "src/models";
 import { CreateQuestionPostDto } from "src/models/dto/create-questionPost.dto";
@@ -22,12 +22,18 @@ export class QuestionPostService {
   }
 
   async findQuestionPost() {
+    const searchFilterQuerys: WhereOptions = [];
     const result = await this.questionPostModel.findAll({
       include: [Question],
+      order: [["questionPostId", "DESC"]],
     });
 
-    console.log(result);
-
     return result;
+  }
+
+  async getQuestionPostMaxPage(limit = 10) {
+    const totalPostLength = await this.questionPostModel.count();
+
+    return Math.floor(totalPostLength / limit) + 1;
   }
 }
