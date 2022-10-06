@@ -1,3 +1,4 @@
+import { Query } from "@nestjs/common";
 import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { AuthUserRequestDto, CreateQuestionDto } from "src/models";
 import { CreateQuestionPostDto } from "src/models/dto/create-questionPost.dto";
@@ -12,9 +13,30 @@ export class QuestionPostController {
     private readonly questionService: QuestionService
   ) {}
 
+  @Get("/list")
+  async findQuestionPostList(
+    @Query("page") page: string,
+    @Query("limit") limit: string,
+    @Query("filter") filter: string
+  ) {
+    const querys = {
+      page: Number(page),
+      limit: Number(limit),
+      filter: JSON.parse(filter),
+    };
+    console.log("querys", querys);
+    const result = await this.questionPostService.findQuestionPostList(querys);
+    return {
+      message: "OK",
+      questionPost: result,
+    };
+  }
+
   @Get()
-  async findQuestionPost() {
-    const result = await this.questionPostService.findQuestionPost();
+  async findQuestionPostOneById(@Query("postId") postId: number) {
+    const result = await this.questionPostService.findQuestionPostOneById(
+      postId
+    );
     return {
       message: "OK",
       questionPost: result,
@@ -22,8 +44,10 @@ export class QuestionPostController {
   }
 
   @Get("/max-page")
-  async getQuestionPostMaxPage() {
-    const maxPage = await this.questionPostService.getQuestionPostMaxPage();
+  async getQuestionPostMaxPage(@Query("limit") limit: string) {
+    const maxPage = await this.questionPostService.getQuestionPostMaxPage(
+      Number(limit)
+    );
     return {
       message: "OK",
       maxPage,

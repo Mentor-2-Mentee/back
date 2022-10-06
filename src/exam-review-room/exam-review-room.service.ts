@@ -251,6 +251,12 @@ export class ExamReviewRoomService {
       },
     });
 
+    const test = await this.examReviewRoomModel.findOne({
+      where: searchExamReviewRoom,
+    });
+
+    console.log("parseTest", test.examQuestionList[1]);
+
     return await this.examReviewRoomModel.findOne({
       where: searchExamReviewRoom,
     });

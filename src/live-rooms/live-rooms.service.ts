@@ -89,8 +89,6 @@ export class LiveRoomsService {
         break;
     }
 
-    console.log(orderOption);
-
     if (filter.rootFilterTag) {
       searchFilterQuerys.push(
         generateLiveRoomWhereOption(

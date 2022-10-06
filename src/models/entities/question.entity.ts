@@ -23,11 +23,11 @@ export class Question extends Model {
   })
   questionId: number;
 
-  @Column({ allowNull: false, type: DataType.JSON })
+  @Column({ allowNull: false })
   rootTag: string;
 
   @Column({ allowNull: true, type: DataType.JSON })
-  detailTag: string[];
+  detailTag: string;
 
   @Column({ allowNull: false })
   questionType: string;
@@ -48,5 +48,5 @@ export class Question extends Model {
   answer: string;
 
   @HasMany(() => QuestionPost)
-  questionPost: QuestionPost[];
+  questionPost: QuestionPost;
 }
