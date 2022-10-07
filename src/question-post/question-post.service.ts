@@ -87,8 +87,16 @@ export class QuestionPostService {
           data.question.questionImageUrl
         );
         data.question.detailTag = JSON.parse(data.question.detailTag);
+        data.viewCount = data.viewCount + 1;
         return data;
       });
+
+    await this.questionPostModel.update(
+      {
+        viewCount: result.viewCount,
+      },
+      { where: { questionPostId: postId } }
+    );
 
     return result;
   }
