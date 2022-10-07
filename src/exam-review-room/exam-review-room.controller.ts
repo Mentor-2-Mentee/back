@@ -19,7 +19,7 @@ import { OauthService } from "src/oauth/oauth.service";
 import { ExamReviewRoomService } from "./exam-review-room.service";
 import { Response } from "express";
 
-@Controller("exam-mentoring-room")
+@Controller("exam-review-room")
 export class ExamReviewRoomController {
   constructor(
     private readonly examReviewRoomService: ExamReviewRoomService,
