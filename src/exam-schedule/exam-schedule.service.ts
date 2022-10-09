@@ -1,13 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { Order, WhereOptions } from "sequelize/types";
 import {
   CreateExamScheduleDto,
   ExamSchedule,
   UpdateExamScheduleDto,
   User,
 } from "src/models";
-import { Sequelize, Op } from "sequelize";
+import { Op, WhereOptions } from "sequelize";
 import * as PDFDocument from "pdfkit";
 import configuration from "src/common/config/configuration";
 

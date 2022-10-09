@@ -1,9 +1,8 @@
-import { CACHE_MANAGER, Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { Cache } from "cache-manager";
-import { IssuedToken, User } from "src/models";
+import { User } from "src/models";
 import configuration from "../common/config/configuration";
-import { AuthUserRequestDto, GetUserOauthPayloadDto } from "src/models/dto";
+import { GetUserOauthPayloadDto } from "src/models/dto";
 import { InjectModel } from "@nestjs/sequelize";
 import { Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";

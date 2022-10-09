@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
-import { AuthUserRequestDto } from "src/models";
+import { AuthorizeUserProfile } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { OauthService } from "src/oauth/oauth.service";
 import { QuestionService } from "./question.service";
@@ -14,7 +14,7 @@ export class QuestionController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createNewQuestion(
-    @Req() request: AuthUserRequestDto,
+    @Req() request: AuthorizeUserProfile,
     @Body() body: any
   ) {
     console.log(

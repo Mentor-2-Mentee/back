@@ -3,21 +3,13 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
   Delete,
   UseGuards,
-  Request,
   Query,
   Req,
 } from "@nestjs/common";
-import {
-  AuthUserRequestDto,
-  CreateQuestionTagDto,
-  DeleteQuestionTagDto,
-} from "src/models/dto";
+import { AuthorizeUserProfile, CreateQuestionTagDto } from "src/models/dto";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
-import { OauthService } from "src/oauth/oauth.service";
 import { UserProfileService } from "src/user-profile/user-profile.service";
 import { QuestionTagService } from "./question-tag.service";
 
@@ -31,7 +23,7 @@ export class QuestionTagController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
-    @Req() request: AuthUserRequestDto,
+    @Req() request: AuthorizeUserProfile,
     @Body() body: CreateQuestionTagDto
   ) {
     const userData = await this.userProfileService.findUserProfileById(
@@ -69,7 +61,7 @@ export class QuestionTagController {
   @UseGuards(JwtAuthGuard)
   @Delete()
   async deleteTag(
-    @Req() request: AuthUserRequestDto,
+    @Req() request: AuthorizeUserProfile,
     @Query("tagname") tagName: string,
     @Query("parentTag") parentTag: string
   ) {

@@ -12,13 +12,12 @@ export * from "./socketEmit-mentoringRoomLiveChat";
 export * from "./socketReceive-mentoringRoomPrevCanvasStrokeList";
 export * from "./socketReceive-mentoringRoomLiveCanvasStroke";
 
-export * from "./applied-tag-options.dto";
 export * from "./create-questionTag.dto";
 export * from "./delete-questionTag.dto";
 
 export * from "./update-userProfile.dto";
 export * from "./get-userOauthPayload.dto";
-export * from "./post-oauthCode.dto";
+export * from "./create-oauthCode.dto";
 
 export * from "./get-pastChatList.dto";
 
@@ -28,7 +27,7 @@ export * from "./update-examSchedule.dto";
 export * from "./create-createExamReviewRoomRequest.dto";
 export * from "./get-createExamReviewRoomRequest.dto";
 
-export * from "./auth-userRequest.dto";
+export * from "../types/AuthorizeUserProfile";
 
 export * from "./create-examReviewRoom.dto";
 

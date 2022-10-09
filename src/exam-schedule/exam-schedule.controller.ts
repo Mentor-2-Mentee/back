@@ -3,31 +3,24 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
   UseGuards,
-  Request,
   BadRequestException,
   UseInterceptors,
   UploadedFiles,
   Put,
-  Res,
   Req,
-  HttpCode,
 } from "@nestjs/common";
 import { ExamScheduleService } from "./exam-schedule.service";
-import { OauthService } from "src/oauth/oauth.service";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import {
-  AuthUserRequestDto,
+  AuthorizeUserProfile,
   CreateExamScheduleDto,
   UpdateExamScheduleDto,
 } from "src/models";
-import { Response } from "express";
-import configuration from "src/common/config/configuration";
 import { UserProfileService } from "src/user-profile/user-profile.service";
 
 const MAX_IMAGE_COUNT = 10;
@@ -84,7 +77,7 @@ export class ExamScheduleController {
   @Post()
   @UseInterceptors(FilesInterceptor("image[]", MAX_IMAGE_COUNT))
   async createExamSchedule(
-    @Req() request: AuthUserRequestDto,
+    @Req() request: AuthorizeUserProfile,
     @Body() body: CreateExamScheduleDto,
     @UploadedFiles() files: Express.Multer.File[]
   ) {
@@ -111,7 +104,7 @@ export class ExamScheduleController {
   @Put()
   @UseInterceptors(FilesInterceptor("image[]", MAX_IMAGE_COUNT))
   async update(
-    @Req() request: AuthUserRequestDto,
+    @Req() request: AuthorizeUserProfile,
     @Body() body: UpdateExamScheduleDto,
     @UploadedFiles() files: Express.Multer.File[]
   ) {
@@ -133,7 +126,7 @@ export class ExamScheduleController {
   @UseGuards(JwtAuthGuard)
   @Delete()
   async deleteExamSchedule(
-    @Req() request: AuthUserRequestDto,
+    @Req() request: AuthorizeUserProfile,
     @Query("examScheduleId") examScheduleId: string
   ) {
     const userData = await this.userProfileService.findUserProfileById(

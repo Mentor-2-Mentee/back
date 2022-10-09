@@ -7,7 +7,7 @@ import {
   Query,
   Body,
 } from "@nestjs/common";
-import { AuthUserRequestDto, UpdateUserProfileDto } from "src/models";
+import { AuthorizeUserProfile, UpdateUserProfileDto } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { UserProfileService } from "./user-profile.service";
 
@@ -17,7 +17,7 @@ export class UserProfileController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findUserProfileOne(@Request() { user }: AuthUserRequestDto) {
+  async findUserProfileOne(@Request() { user }: AuthorizeUserProfile) {
     const userProfile = await this.userProfileService.findUserProfileById(
       user.id
     );
@@ -30,7 +30,7 @@ export class UserProfileController {
   @UseGuards(JwtAuthGuard)
   @Put()
   async updateUserProfileOne(
-    @Request() { user }: AuthUserRequestDto,
+    @Request() { user }: AuthorizeUserProfile,
     @Body() body: UpdateUserProfileDto
   ) {
     const userProfile = await this.userProfileService.updateUserProfile(

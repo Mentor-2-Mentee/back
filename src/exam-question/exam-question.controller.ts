@@ -1,25 +1,16 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
-  Res,
-  Query,
   UseGuards,
   Req,
   UseInterceptors,
   UploadedFile,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { Response } from "express";
 import configuration from "src/common/config/configuration";
-import { ExamReviewRoomService } from "src/exam-review-room/exam-review-room.service";
-import { AuthUserRequestDto } from "src/models";
+import { AuthorizeUserProfile } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
-import { OauthService } from "src/oauth/oauth.service";
 import { ExamQuestionService } from "./exam-question.service";
 
 @Controller("exam-question")
@@ -30,7 +21,7 @@ export class ExamQuestionController {
   @Post("/question-image")
   @UseInterceptors(FileInterceptor("image"))
   async create(
-    @Req() request: AuthUserRequestDto,
+    @Req() request: AuthorizeUserProfile,
     @Body() body: any,
     @UploadedFile() file: Express.Multer.File
   ) {

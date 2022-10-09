@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { filter } from "rxjs";
-import { Op, Order, WhereOptions } from "sequelize";
+import { Op, WhereOptions } from "sequelize";
 
-import { AppliedTagOptionsDto, Question, QuestionPost } from "src/models";
+import { AppliedTagOptions, Question, QuestionPost } from "src/models";
 import { CreateQuestionPostDto } from "src/models/dto/create-questionPost.dto";
 import { QuestionService } from "src/question/question.service";
 
@@ -27,7 +26,7 @@ export class QuestionPostService {
   async findQuestionPostList(querys: {
     page: number;
     limit: number;
-    filter: AppliedTagOptionsDto;
+    filter: AppliedTagOptions;
   }) {
     const searchTagFilter: WhereOptions = [];
     const searchKeyword: WhereOptions = [];

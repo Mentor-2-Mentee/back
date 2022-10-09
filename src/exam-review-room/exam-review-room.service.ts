@@ -10,20 +10,11 @@ import {
   CreateExamReviewRoomRequest,
   ExamReviewRoom,
 } from "src/models/entities";
-import {
-  Sequelize,
-  IncludeOptions,
-  OrderItem,
-  WhereOptions,
-  Op,
-  Order,
-} from "sequelize";
-import { OauthService } from "src/oauth/oauth.service";
+import { WhereOptions, Op } from "sequelize";
 import { ExamQuestionService } from "src/exam-question/exam-question.service";
 import { v4 as uuidv4 } from "uuid";
 import * as PDFDocument from "pdfkit";
 import DateFormatting from "src/common/utils/DateFormatting";
-import imageUrlLoad from "src/common/utils/imageUrlLoad";
 import configuration from "src/common/config/configuration";
 
 const INITIAL_QUESTION_COUNT = 5;
@@ -31,7 +22,6 @@ const INITIAL_QUESTION_COUNT = 5;
 @Injectable()
 export class ExamReviewRoomService {
   constructor(
-    private readonly OauthService: OauthService,
     private readonly ExamQuestionService: ExamQuestionService,
     @InjectModel(CreateExamReviewRoomRequest)
     private createExamReviewRoomRequestModel: typeof CreateExamReviewRoomRequest,

@@ -12,7 +12,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { OauthService } from "./oauth.service";
 import { injectURLQuerys } from "src/common/utils/injectURLQuerys";
 import { ConfigService } from "@nestjs/config";
-import { AuthUserRequestDto, PostOauthCodeDto } from "src/models";
+import { AuthorizeUserProfile, CreateOauthCodeDto } from "src/models";
 
 @Controller("oauth")
 export class OauthController {
@@ -23,18 +23,18 @@ export class OauthController {
 
   @UseGuards(AuthGuard("kakao"))
   @Get("/kakao")
-  async kakaoLogin(@Req() req): Promise<any> {
+  async kakaoLogin() {
     return HttpStatus.OK;
   }
 
   @UseGuards(AuthGuard("kakao"))
   @Get()
   @Redirect("AUTH_CALLBACK_URL", 301)
-  async kakaoAuthRedirect(@Req() req: AuthUserRequestDto) {
+  async kakaoAuthRedirect(@Req() { user }: AuthorizeUserProfile) {
     const targetURL = injectURLQuerys({
       targetBaseURL: this.configService.get<string>("AUTH_CALLBACK_URL"),
       querys: {
-        code: req.user,
+        code: user,
       },
     });
 
@@ -42,7 +42,7 @@ export class OauthController {
   }
 
   @Post("/token")
-  async sendToken(@Body() bodyParam: PostOauthCodeDto) {
+  async sendToken(@Body() bodyParam: CreateOauthCodeDto) {
     const { accessToken, refreshToken } = await this.OauthService.sendToken(
       bodyParam.authCode
     );

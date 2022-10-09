@@ -1,6 +1,6 @@
 import { Query } from "@nestjs/common";
 import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
-import { AuthUserRequestDto, CreateQuestionDto } from "src/models";
+import { AuthorizeUserProfile, CreateQuestionDto } from "src/models";
 import { CreateQuestionPostDto } from "src/models/dto/create-questionPost.dto";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { QuestionService } from "src/question/question.service";
@@ -57,7 +57,7 @@ export class QuestionPostController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createNewQuestion(
-    @Req() request: AuthUserRequestDto,
+    @Req() request: AuthorizeUserProfile,
     @Body() body: any
   ) {
     console.log(

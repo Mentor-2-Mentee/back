@@ -1,23 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import {
-  AppliedTagOptionsDto,
-  CreateLiveRoomDto,
-  GetLiveRoomDto,
-  UpdateLiveRoomDto,
-} from "src/models/dto";
-import { v4 as uuidv4 } from "uuid";
+import { CreateLiveRoomDto, GetLiveRoomDto } from "src/models/dto";
 import { LiveRoom } from "src/models/entities";
 import { InjectModel } from "@nestjs/sequelize";
-import {
-  Sequelize,
-  IncludeOptions,
-  OrderItem,
-  WhereOptions,
-  Op,
-  Order,
-} from "sequelize";
+import { WhereOptions, Op, Order } from "sequelize";
 import { generateLiveRoomWhereOption } from "../common/utils/generateLiveRoomWhereOption";
 import configuration from "src/common/config/configuration";
+import { AppliedTagOptions } from "src/models";
 
 @Injectable()
 export class LiveRoomsService {
@@ -50,7 +38,7 @@ export class LiveRoomsService {
       imagesPath.push(savedPath);
     });
 
-    const parsedAppliedTagOptions: AppliedTagOptionsDto = JSON.parse(
+    const parsedAppliedTagOptions: AppliedTagOptions = JSON.parse(
       createLiveRoomDto.appliedTagOptions
     );
     const parsedExplainRoomText: string = JSON.parse(
@@ -139,21 +127,5 @@ export class LiveRoomsService {
     const countAllRooms = await this.liveRoomModel.count();
 
     return Math.ceil(countAllRooms / limit);
-  }
-
-  findAll() {
-    return `This action returns all liveRooms`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} liveRoom`;
-  }
-
-  update(id: number, updateLiveRoomDto: UpdateLiveRoomDto) {
-    return `This action updates a #${id} liveRoom`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} liveRoom`;
   }
 }

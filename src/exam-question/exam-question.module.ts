@@ -1,21 +1,17 @@
 import { Module } from "@nestjs/common";
 import { ExamQuestionService } from "./exam-question.service";
 import { ExamQuestionController } from "./exam-question.controller";
-import { OauthModule } from "src/oauth/oauth.module";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { ExamReviewRoom, ExamQuestion } from "src/models";
-import { ExamReviewRoomModule } from "src/exam-review-room/exam-review-room.module";
 import { MulterModule } from "@nestjs/platform-express";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { diskStorage } from "multer";
 import DateFormatting from "src/common/utils/DateFormatting";
 import * as fs from "fs";
-import { v4 as uuidv4 } from "uuid";
 import { extname } from "path";
 
 @Module({
   imports: [
-    OauthModule,
     SequelizeModule.forFeature([ExamQuestion, ExamReviewRoom]),
     MulterModule.registerAsync({
       imports: [ConfigModule],

@@ -3,24 +3,19 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   UseGuards,
-  Request,
   UseInterceptors,
   UploadedFiles,
   Query,
   Req,
 } from "@nestjs/common";
 import { LiveRoomsService } from "./live-rooms.service";
-import { CreateLiveRoomDto, UpdateLiveRoomDto } from "src/models";
+import { CreateLiveRoomDto } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 
 import { FilesInterceptor } from "@nestjs/platform-express";
 import configuration from "../common/config/configuration";
-import { AuthUserRequestDto, GetLiveRoomDto } from "src/models/dto";
-import { OauthService } from "src/oauth/oauth.service";
+import { AuthorizeUserProfile, GetLiveRoomDto } from "src/models/dto";
 import { UserProfileService } from "src/user-profile/user-profile.service";
 
 const MAX_IMAGE_COUNT = 10;
@@ -36,7 +31,7 @@ export class LiveRoomsController {
   @Post()
   @UseInterceptors(FilesInterceptor("image[]", MAX_IMAGE_COUNT))
   async create(
-    @Req() request: AuthUserRequestDto,
+    @Req() request: AuthorizeUserProfile,
     @Body() body: CreateLiveRoomDto,
     @UploadedFiles() files: Express.Multer.File[]
   ) {
@@ -85,23 +80,5 @@ export class LiveRoomsController {
       mentoringRoomList: roomList,
       nextPage: Number(page) + 1,
     };
-  }
-
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.liveRoomsService.findOne(+id);
-  }
-
-  @Patch(":id")
-  update(
-    @Param("id") id: string,
-    @Body() updateLiveRoomDto: UpdateLiveRoomDto
-  ) {
-    return this.liveRoomsService.update(+id, updateLiveRoomDto);
-  }
-
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.liveRoomsService.remove(+id);
   }
 }

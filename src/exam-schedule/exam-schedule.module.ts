@@ -3,7 +3,6 @@ import { ExamScheduleService } from "./exam-schedule.service";
 import { ExamScheduleController } from "./exam-schedule.controller";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { ExamSchedule } from "src/models";
-import { OauthModule } from "src/oauth/oauth.module";
 import { MulterModule } from "@nestjs/platform-express";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { diskStorage } from "multer";

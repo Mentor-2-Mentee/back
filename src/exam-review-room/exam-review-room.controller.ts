@@ -10,21 +10,17 @@ import {
   Res,
 } from "@nestjs/common";
 import {
-  AuthUserRequestDto,
+  AuthorizeUserProfile,
   CreateCreateExamReviewRoomRequestDto,
   CreateExamReviewRoomDto,
 } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
-import { OauthService } from "src/oauth/oauth.service";
 import { ExamReviewRoomService } from "./exam-review-room.service";
 import { Response } from "express";
 
 @Controller("exam-review-room")
 export class ExamReviewRoomController {
-  constructor(
-    private readonly examReviewRoomService: ExamReviewRoomService,
-    private readonly OauthService: OauthService
-  ) {}
+  constructor(private readonly examReviewRoomService: ExamReviewRoomService) {}
 
   @Get()
   async findExamReviewRoomListByExamScheduleId(
@@ -83,7 +79,7 @@ export class ExamReviewRoomController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createExamReviewRoom(
-    @Req() request: AuthUserRequestDto,
+    @Req() request: AuthorizeUserProfile,
     @Body() body: CreateExamReviewRoomDto
   ) {
     const [target, isCreated] =
@@ -99,7 +95,7 @@ export class ExamReviewRoomController {
   @UseGuards(JwtAuthGuard)
   @Post("/create-request")
   async createExamReviewRoomRequest(
-    @Req() request: AuthUserRequestDto,
+    @Req() request: AuthorizeUserProfile,
     @Body() body: CreateCreateExamReviewRoomRequestDto
   ) {
     // const userData = await this.OauthService.getProfile(request.user.id);
@@ -134,7 +130,7 @@ export class ExamReviewRoomController {
   @UseGuards(JwtAuthGuard)
   @Delete("/create-request")
   async cancelExamReviewRoomRequest(
-    @Req() request: AuthUserRequestDto,
+    @Req() request: AuthorizeUserProfile,
     @Query("examScheduleId") examScheduleId: number,
     @Query("examField") examField: string
   ) {
