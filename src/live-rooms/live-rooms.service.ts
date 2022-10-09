@@ -28,8 +28,8 @@ export class LiveRoomsService {
 
   async createRoom(
     userData: {
-      userId: number;
-      username: string;
+      id: string;
+      userName: string;
     },
     createLiveRoomDto: CreateLiveRoomDto,
     imageFiles: Express.Multer.File[]
@@ -60,7 +60,7 @@ export class LiveRoomsService {
     const createdRoom = await this.liveRoomModel.create({
       mentoringRoomTitle: JSON.parse(createLiveRoomDto.mentoringRoomTitle),
       mentoringRoomDescription: parsedExplainRoomText,
-      author: userData.username,
+      author: userData.userName,
       imageFiles: imagesPath,
       rootFilterTag:
         parsedAppliedTagOptions.rootFilterTag === undefined

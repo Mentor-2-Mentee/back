@@ -3,10 +3,9 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-kakao";
 import configuration from "../../common/config/configuration";
-import { UserKakaoDto } from "../../models/dto/user.kakao.dto";
 import { Cache } from "cache-manager";
-import { v4 as uuidv4 } from "uuid";
 import { OauthService } from "../oauth.service";
+import { GetUserOauthPayloadDto } from "src/models";
 
 interface CachingTokenPayload {
   accessToken: string;
@@ -26,30 +25,33 @@ export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
     });
   }
 
+  get randomUserId(): string {
+    return `UID-${Math.random().toString().replace("0.", "").slice(0, 6)}`;
+  }
+
   async validate(_accessToken, _refreshToken, profile, done) {
     const profileJson = profile._json;
     const kakaoAccount = profileJson.kakao_account;
-    const payload: UserKakaoDto = {
-      name:
-        kakaoAccount.profile.nickname ||
-        `UID-${Math.random().toString().replace("0.", "").slice(0, 6)}`, //undiefined일수있음
-      kakaoId: profileJson.id,
-      email:
-        kakaoAccount.has_email && !kakaoAccount.email_needs_agreement
-          ? kakaoAccount.email
-          : null,
+    const kakaoPayload: GetUserOauthPayloadDto = {
+      userName: kakaoAccount.profile.nickname || this.randomUserId,
+      oauthType: "kakao",
+      oauthId: String(profileJson.id),
     };
-    console.log(payload);
-    const tokenKeyCode = uuidv4();
 
-    const tokenPayload: CachingTokenPayload =
-      await this.OauthService.createToken(payload);
-    await this.cacheManager.set<CachingTokenPayload>(
-      tokenKeyCode,
-      tokenPayload,
-      { ttl: 60 }
-    );
+    const [registeredUser, isNewUser] =
+      await this.OauthService.findOrCreateUserByOauth(kakaoPayload);
+    const tokenIssueCode = await this.OauthService.createToken(registeredUser);
+    // const tokenPayload: CachingTokenPayload =
+    //   await this.OauthService.createToken(registeredUser);
 
-    done(null, tokenKeyCode);
+    // const tokenPayload: CachingTokenPayload =
+    //   await this.OauthService.createToken(payload);
+    // await this.cacheManager.set<CachingTokenPayload>(
+    //   tokenKeyCode,
+    //   tokenPayload,
+    //   { ttl: 60 }
+    // );
+
+    done(null, tokenIssueCode);
   }
 }

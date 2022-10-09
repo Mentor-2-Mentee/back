@@ -6,6 +6,7 @@ import {
   Column,
   ForeignKey,
   BelongsTo,
+  DataType,
 } from "sequelize-typescript";
 import { Question } from "./question.entity";
 
@@ -19,8 +20,11 @@ export class QuestionPost extends Model {
   @AutoIncrement
   @Column({
     primaryKey: true,
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV1,
+    allowNull: false,
   })
-  questionPostId: number;
+  questionPostId: string;
 
   @ForeignKey(() => Question)
   @Column({ allowNull: false })

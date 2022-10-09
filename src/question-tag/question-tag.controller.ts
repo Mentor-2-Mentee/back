@@ -18,13 +18,14 @@ import {
 } from "src/models/dto";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { OauthService } from "src/oauth/oauth.service";
+import { UserProfileService } from "src/user-profile/user-profile.service";
 import { QuestionTagService } from "./question-tag.service";
 
 @Controller("question-tag")
 export class QuestionTagController {
   constructor(
     private readonly questionTagService: QuestionTagService,
-    private readonly OauthService: OauthService
+    private readonly userProfileService: UserProfileService
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -33,7 +34,9 @@ export class QuestionTagController {
     @Req() request: AuthUserRequestDto,
     @Body() body: CreateQuestionTagDto
   ) {
-    const userData = await this.OauthService.getProfile(request.user.userId);
+    const userData = await this.userProfileService.findUserProfileById(
+      request.user.id
+    );
     console.log("/POST question-tag ", userData, body);
 
     if (userData.userGrade !== "master") {
@@ -70,7 +73,9 @@ export class QuestionTagController {
     @Query("tagname") tagName: string,
     @Query("parentTag") parentTag: string
   ) {
-    const userData = await this.OauthService.getProfile(request.user.userId);
+    const userData = await this.userProfileService.findUserProfileById(
+      request.user.id
+    );
     console.log("/DELETE question-tag ", userData, tagName, parentTag);
 
     if (userData.userGrade !== "master") {

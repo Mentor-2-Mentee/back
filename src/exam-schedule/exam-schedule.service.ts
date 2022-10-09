@@ -19,7 +19,7 @@ export class ExamScheduleService {
   ) {}
 
   async createExamSchedule(
-    userData: Pick<User, "userId" | "username" | "userGrade">,
+    userData: Pick<User, "id" | "userName" | "userGrade">,
     createExamScheduleDto: CreateExamScheduleDto,
     imageFiles: Express.Multer.File[]
   ) {
@@ -88,7 +88,7 @@ export class ExamScheduleService {
   }
 
   async updateExamSchedule(
-    userData: Pick<User, "userId" | "username" | "userGrade">,
+    userData: Pick<User, "id" | "userName" | "userGrade">,
     updateExamScheduleDto: UpdateExamScheduleDto,
     imageFiles: Express.Multer.File[]
   ) {
@@ -133,7 +133,7 @@ export class ExamScheduleService {
   }
 
   async deleteExamSchedule(
-    userData: Pick<User, "userId" | "username" | "userGrade">,
+    userData: Pick<User, "id" | "userName" | "userGrade">,
     examScheduleId: number
   ) {
     const searchExamScheduleQuerys: WhereOptions = [];

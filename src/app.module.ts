@@ -31,7 +31,8 @@ import { ExamReviewRoomModule } from "./exam-review-room/exam-review-room.module
 import { ExamQuestionModule } from "./exam-question/exam-question.module";
 import { ImagesModule } from "./images/images.module";
 import { QuestionModule } from "./question/question.module";
-import { QuestionPostModule } from './question-post/question-post.module';
+import { QuestionPostModule } from "./question-post/question-post.module";
+import { UserProfileModule } from './user-profile/user-profile.module';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { QuestionPostModule } from './question-post/question-post.module';
     ImagesModule,
     QuestionModule,
     QuestionPostModule,
+    UserProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

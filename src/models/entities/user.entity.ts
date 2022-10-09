@@ -1,23 +1,44 @@
-import { Column, Model, Table, AutoIncrement } from "sequelize-typescript";
+import {
+  Column,
+  Model,
+  Table,
+  AutoIncrement,
+  DataType,
+} from "sequelize-typescript";
 @Table({
-  tableName: "Users",
+  tableName: "User",
   timestamps: true,
-  createdAt: true,
-  updatedAt: "updatedAt",
+  createdAt: "created_at",
+  updatedAt: "updated_at",
 })
 export class User extends Model {
   @AutoIncrement
   @Column({
     primaryKey: true,
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV1,
+    allowNull: false,
   })
-  id: number;
+  id: string;
 
-  @Column({ allowNull: false })
-  userId: number;
+  @Column({ allowNull: false, field: "user_name" })
+  userName: string;
 
-  @Column({ allowNull: false })
-  username: string;
+  @Column({ allowNull: false, field: "oauth_type" })
+  oauthType: string;
 
-  @Column({ allowNull: false })
+  @Column({ allowNull: false, field: "oauth_id" })
+  oauthId: string;
+
+  @Column({ allowNull: false, field: "user_grade" })
   userGrade: string;
+
+  @Column({ allowNull: true, field: "token_issue_code" })
+  tokenIssueCode: string;
+
+  @Column({ allowNull: true, field: "access_token" })
+  accessToken: string;
+
+  @Column({ allowNull: true, field: "refresh_token" })
+  refreshToken: string;
 }

@@ -3,166 +3,68 @@ import { JwtService } from "@nestjs/jwt";
 import { Cache } from "cache-manager";
 import { IssuedToken, User } from "src/models";
 import configuration from "../common/config/configuration";
-import { AuthUserRequestDto, UserKakaoDto, UserM2MDto } from "src/models/dto";
+import { AuthUserRequestDto, GetUserOauthPayloadDto } from "src/models/dto";
 import { InjectModel } from "@nestjs/sequelize";
 import { Op } from "sequelize";
-
-interface UserPayload {
-  isFirstSignIn: boolean;
-  payload: {
-    userId: number;
-    username: string;
-    userGrade: string;
-  };
-}
+import { v4 as uuidv4 } from "uuid";
 
 @Injectable()
 export class OauthService {
   constructor(
     private jwtService: JwtService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     @InjectModel(User)
     private userModel: typeof User
   ) {}
 
-  async getUserPayload({ kakaoId }: UserKakaoDto): Promise<UserPayload> {
-    const registeredUser = await this.userModel.findOne({
+  async findOrCreateUserByOauth({
+    userName,
+    oauthType,
+    oauthId,
+  }: GetUserOauthPayloadDto) {
+    return await this.userModel.findOrCreate({
       where: {
-        userId: kakaoId,
+        [Op.and]: [{ oauthType }, { oauthId }],
       },
-    });
-
-    console.log("로그인한 유저 db정보:", registeredUser);
-
-    if (!registeredUser) {
-      const initialRandomName = `UID-${Math.random()
-        .toString()
-        .replace("0.", "")
-        .slice(0, 6)}`;
-
-      const result = await this.userModel.create({
-        userId: kakaoId,
-        username: initialRandomName,
+      defaults: {
+        userName,
+        oauthType,
+        oauthId,
         userGrade: "user",
-      });
-
-      return {
-        isFirstSignIn: true,
-        payload: {
-          userId: result.userId,
-          username: result.username,
-          userGrade: result.userGrade,
-        },
-      };
-    }
-
-    return {
-      isFirstSignIn: false,
-      payload: {
-        userId: registeredUser.userId,
-        username: registeredUser.username,
-        userGrade: registeredUser.userGrade,
-      },
-    };
-  }
-
-  async checkUseableName(newName: string) {
-    console.log("들어온이름", newName);
-    if (newName.length < 1) {
-      return {
-        message: "새 닉네임을 입력해주세요.",
-        canUse: false,
-      };
-    }
-    if (newName.match(/\s/g)) {
-      console.log("공백발견");
-
-      return {
-        message: "공백문자는 사용할 수 없습니다.",
-        canUse: false,
-      };
-    }
-
-    const result = await this.userModel.findOne({
-      where: {
-        username: newName,
       },
     });
-
-    if (Boolean(result)) {
-      return {
-        message: "이미 사용중인 닉네임입니다.",
-        canUse: false,
-      };
-    }
-
-    return {
-      message: `OK`,
-      canUse: true,
-    };
   }
 
-  async getProfile(
-    userId: number
-  ): Promise<Pick<User, "userId" | "username" | "userGrade">> {
-    const targetUser: User = await this.userModel.findOne({
-      where: {
-        [Op.and]: {
-          ["userId"]: {
-            [Op.eq]: userId,
-          },
-        },
-      },
-    });
-
-    return {
-      userId: targetUser.userId,
-      username: targetUser.username,
-      userGrade: targetUser.userGrade,
-    };
-  }
-
-  async updateProfile(
-    { userId, username }: { userId: number; username: string },
-    newName: string
-  ) {
-    await this.userModel.update(
+  async createToken({ id, userName, userGrade }: User) {
+    const tokenIssueCode = uuidv4();
+    const accessToken = this.jwtService.sign({ id, userName, userGrade });
+    const refreshToken = this.jwtService.sign(
+      { id, userName, userGrade },
       {
-        username: newName,
-      },
-      {
-        where: {
-          userId,
-        },
+        expiresIn: `${configuration().jwtRefreshExpireTime}`,
       }
     );
 
-    const updateResult = await this.userModel.findOne({
-      where: {
-        userId,
+    await this.userModel.update(
+      {
+        tokenIssueCode,
+        accessToken,
+        refreshToken,
       },
+      { where: { id } }
+    );
+
+    return tokenIssueCode;
+  }
+
+  async sendToken(tokenIssueCode: string) {
+    const { accessToken, refreshToken } = await this.userModel.findOne({
+      where: { tokenIssueCode },
     });
 
     return {
-      userId: updateResult.userId,
-      username: updateResult.username,
-      userGrade: updateResult.userGrade,
+      // isfirstSignIn: true,
+      accessToken,
+      refreshToken,
     };
-  }
-
-  async createToken(params: UserKakaoDto) {
-    const { isFirstSignIn, payload } = await this.getUserPayload(params);
-
-    return {
-      isFirstSignIn,
-      accessToken: this.jwtService.sign(payload),
-      refreshToken: this.jwtService.sign(payload, {
-        expiresIn: `${configuration().jwtRefreshExpireTime}`,
-      }),
-    };
-  }
-
-  async sendToken(tokenKeyCode: string) {
-    return await this.cacheManager.get<IssuedToken>(tokenKeyCode);
   }
 }

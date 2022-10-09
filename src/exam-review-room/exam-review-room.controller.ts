@@ -70,8 +70,8 @@ export class ExamReviewRoomController {
     const userInfoList = [];
 
     for (const userId of userList) {
-      const userInfo = await this.OauthService.getProfile(userId);
-      userInfoList.push(userInfo);
+      // const userInfo = await this.OauthService.getProfile(userId);
+      // userInfoList.push(userInfo);
     }
 
     return {
@@ -102,12 +102,12 @@ export class ExamReviewRoomController {
     @Req() request: AuthUserRequestDto,
     @Body() body: CreateCreateExamReviewRoomRequestDto
   ) {
-    const userData = await this.OauthService.getProfile(request.user.userId);
+    // const userData = await this.OauthService.getProfile(request.user.id);
 
-    await this.examReviewRoomService.createExamReviewRoomRequest(
-      userData,
-      body
-    );
+    // await this.examReviewRoomService.createExamReviewRoomRequest(
+    //   userData,
+    //   body
+    // );
 
     return {
       message: "OK",
@@ -138,18 +138,17 @@ export class ExamReviewRoomController {
     @Query("examScheduleId") examScheduleId: number,
     @Query("examField") examField: string
   ) {
-    const userData = await this.OauthService.getProfile(request.user.userId);
-    const requestList =
-      await this.examReviewRoomService.deleteExamReviewRoomRequest(
-        userData,
-        examScheduleId,
-        examField
-      );
-
-    return {
-      message: `${examScheduleId} requestList`,
-      data: requestList,
-    };
+    // const userData = await this.OauthService.getProfile(request.user.id);
+    // const requestList =
+    //   await this.examReviewRoomService.deleteExamReviewRoomRequest(
+    //     userData,
+    //     examScheduleId,
+    //     examField
+    //   );
+    // return {
+    //   message: `${examScheduleId} requestList`,
+    //   data: requestList,
+    // };
   }
 
   @Get("/question-pdf")

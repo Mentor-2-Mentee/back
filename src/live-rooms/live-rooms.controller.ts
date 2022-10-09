@@ -19,8 +19,9 @@ import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 
 import { FilesInterceptor } from "@nestjs/platform-express";
 import configuration from "../common/config/configuration";
-import { AuthUserRequestDto, GetLiveRoomDto, UserM2MDto } from "src/models/dto";
+import { AuthUserRequestDto, GetLiveRoomDto } from "src/models/dto";
 import { OauthService } from "src/oauth/oauth.service";
+import { UserProfileService } from "src/user-profile/user-profile.service";
 
 const MAX_IMAGE_COUNT = 10;
 
@@ -28,7 +29,7 @@ const MAX_IMAGE_COUNT = 10;
 export class LiveRoomsController {
   constructor(
     private readonly liveRoomsService: LiveRoomsService,
-    private readonly OauthService: OauthService
+    private readonly userProfileService: UserProfileService
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -41,9 +42,14 @@ export class LiveRoomsController {
   ) {
     console.log("새 질의응답방 생성자", request.user);
 
-    const userData = await this.OauthService.getProfile(request.user.userId);
+    const userData = await this.userProfileService.findUserProfileById(
+      request.user.id
+    );
     const roomPath = await this.liveRoomsService.createRoom(
-      userData,
+      {
+        id: userData.id,
+        userName: userData.userName,
+      },
       body,
       files
     );

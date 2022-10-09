@@ -28,6 +28,7 @@ import {
 } from "src/models";
 import { Response } from "express";
 import configuration from "src/common/config/configuration";
+import { UserProfileService } from "src/user-profile/user-profile.service";
 
 const MAX_IMAGE_COUNT = 10;
 
@@ -35,7 +36,7 @@ const MAX_IMAGE_COUNT = 10;
 export class ExamScheduleController {
   constructor(
     private readonly examScheduleService: ExamScheduleService,
-    private readonly OauthService: OauthService
+    private readonly userProfileService: UserProfileService
   ) {}
 
   @Get()
@@ -87,7 +88,9 @@ export class ExamScheduleController {
     @Body() body: CreateExamScheduleDto,
     @UploadedFiles() files: Express.Multer.File[]
   ) {
-    const userData = await this.OauthService.getProfile(request.user.userId);
+    const userData = await this.userProfileService.findUserProfileById(
+      request.user.id
+    );
     if (userData.userGrade === "user") {
       return "permission denied";
     }
@@ -112,7 +115,9 @@ export class ExamScheduleController {
     @Body() body: UpdateExamScheduleDto,
     @UploadedFiles() files: Express.Multer.File[]
   ) {
-    const userData = await this.OauthService.getProfile(request.user.userId);
+    const userData = await this.userProfileService.findUserProfileById(
+      request.user.id
+    );
     if (userData.userGrade === "user") {
       return "permission denied";
     }
@@ -131,7 +136,9 @@ export class ExamScheduleController {
     @Req() request: AuthUserRequestDto,
     @Query("examScheduleId") examScheduleId: string
   ) {
-    const userData = await this.OauthService.getProfile(request.user.userId);
+    const userData = await this.userProfileService.findUserProfileById(
+      request.user.id
+    );
     if (userData.userGrade === "user") {
       return "permission denied";
     }

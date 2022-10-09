@@ -1,7 +1,6 @@
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { LiveRoomsService } from "./live-rooms.service";
 import { LiveRoomsController } from "./live-rooms.controller";
-import { OauthModule } from "src/oauth/oauth.module";
 import { MulterModule } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -12,10 +11,11 @@ import { extname } from "path";
 import { LiveRoom } from "../models/entities/liveroom.entity";
 import DateFormatting from "src/common/utils/DateFormatting";
 import { SequelizeModule } from "@nestjs/sequelize";
+import { UserProfileModule } from "src/user-profile/user-profile.module";
 
 @Module({
   imports: [
-    OauthModule,
+    UserProfileModule,
     SequelizeModule.forFeature([LiveRoom]),
     MulterModule.registerAsync({
       imports: [ConfigModule],

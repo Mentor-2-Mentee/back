@@ -71,6 +71,7 @@ export class QuestionPostController {
       ...body.questionForm.question,
     };
 
+    console.log("question등록", body.questionForm.question);
     const { questionId } =
       body.questionForm.uploadType === "TEXT"
         ? await this.questionService.createNewQuestionByText(createQuestionDto)
@@ -78,9 +79,11 @@ export class QuestionPostController {
             createQuestionDto
           );
 
+    console.log("questionId생성", questionId);
+
     const createQuestionPostDto: CreateQuestionPostDto = {
       questionId,
-      author: request.user.username,
+      author: String(request.user.userName),
       questionPostTitle: body.questionForm.questionPostTitle,
       questionPostDescription: body.questionForm.questionPostDescription,
     };

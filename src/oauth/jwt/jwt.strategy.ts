@@ -2,8 +2,7 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
 import { Injectable } from "@nestjs/common";
 import configuration from "../../common/config/configuration";
-import { JwtPayloadDto } from "src/models";
-import { UserKakaoDto } from "../../models/dto/user.kakao.dto";
+import { JwtPayload } from "src/models";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   //jwt토큰 해싱한 payload를 가져와서 반환한다
-  async validate(payload: JwtPayloadDto) {
+  async validate(payload: JwtPayload) {
     return payload;
   }
 }

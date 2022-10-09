@@ -40,7 +40,7 @@ export class ExamReviewRoomService {
   ) {}
 
   async createExamReviewRoomRequest(
-    userData: Pick<User, "userId" | "username" | "userGrade">,
+    userData: Pick<User, "id" | "userName" | "userGrade">,
     createCreateExamReviewRoomRequestDto: CreateCreateExamReviewRoomRequestDto
   ) {
     const searchExamScheduleId: WhereOptions = [];
@@ -66,22 +66,21 @@ export class ExamReviewRoomService {
         defaults: {
           examScheduleId: createCreateExamReviewRoomRequestDto.examScheduleId,
           examField: createCreateExamReviewRoomRequestDto.examField,
-          requestUserList: [userData],
+          // requestUserList: [userData],
         },
       });
 
     if (!created) {
       const existUserList: any[] = [...target.requestUserList];
-      const isExist = Boolean(
-        existUserList.findIndex((user) => user.userId === userData.userId) !==
-          -1
-      );
+      const isExist = Boolean();
+      // existUserList.findIndex((user) => user.userId === userData.userId) !==
+      // -1
       if (isExist) return;
       await this.createExamReviewRoomRequestModel.update(
         {
           examScheduleId: createCreateExamReviewRoomRequestDto.examScheduleId,
           examField: createCreateExamReviewRoomRequestDto.examField,
-          requestUserList: [...target.requestUserList, userData],
+          // requestUserList: [...target.requestUserList, userData],
         },
         {
           where: {
@@ -115,7 +114,7 @@ export class ExamReviewRoomService {
   }
 
   async deleteExamReviewRoomRequest(
-    userData: Pick<User, "userId" | "username" | "userGrade">,
+    userData: Pick<User, "id" | "userName" | "userGrade">,
     examScheduleId: number,
     examField: string
   ) {
@@ -145,9 +144,9 @@ export class ExamReviewRoomService {
 
     await this.createExamReviewRoomRequestModel.update(
       {
-        requestUserList: currentUserList.filter(
-          (user) => user.userId !== userData.userId
-        ),
+        // requestUserList: currentUserList.filter(
+        //   (user) => user.userId !== userData.userId
+        // ),
       },
       {
         where: searchExamReviewRoomRequest,
@@ -181,9 +180,9 @@ export class ExamReviewRoomService {
         examScheduleTitle: createExamReviewRoomDto.examScheduleTitle,
         examScheduleId: createExamReviewRoomDto.examScheduleId,
         examField: createExamReviewRoomDto.examField,
-        userList: [
-          ...createExamReviewRoomDto.userList.map((user) => user.userId),
-        ],
+        // userList: [
+        //   ...createExamReviewRoomDto.userList.map((user) => user.userId),
+        // ],
         chatListBundle: [],
         examQuestionList: await this.ExamQuestionService.createBulkQuestion({
           examScheduleId: createExamReviewRoomDto.examScheduleId,

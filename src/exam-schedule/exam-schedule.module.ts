@@ -11,10 +11,11 @@ import DateFormatting from "src/common/utils/DateFormatting";
 import * as fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import { extname } from "path";
+import { UserProfileModule } from "src/user-profile/user-profile.module";
 
 @Module({
   imports: [
-    OauthModule,
+    UserProfileModule,
     SequelizeModule.forFeature([ExamSchedule]),
     MulterModule.registerAsync({
       imports: [ConfigModule],
