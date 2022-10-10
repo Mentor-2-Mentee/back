@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Op, WhereOptions } from "sequelize";
 
-import { AppliedTagOptions, Question, QuestionPost } from "src/models";
+import { AppliedTagOptions, Question, QuestionPost, User } from "src/models";
 import { CreateQuestionPostDto } from "src/models/dto/create-questionPost.dto";
 import { QuestionService } from "src/question/question.service";
 
@@ -62,7 +62,10 @@ export class QuestionPostService {
     }
 
     const result = await this.questionPostModel.findAll({
-      include: [{ model: Question, where: { [Op.and]: searchTagFilter } }],
+      include: [
+        { model: Question, where: { [Op.and]: searchTagFilter } },
+        { model: User },
+      ],
       order: [["questionPostId", "DESC"]],
       where: { [Op.and]: searchKeyword },
       offset: (querys.page - 1) * querys.limit,
@@ -77,7 +80,7 @@ export class QuestionPostService {
   async findQuestionPostOneById(postId: number) {
     const result = await this.questionPostModel
       .findByPk(postId, {
-        include: [{ model: Question }],
+        include: [{ model: Question }, { model: User }],
         plain: true,
       })
       .then((data) => {

@@ -7,8 +7,11 @@ import {
   ForeignKey,
   BelongsTo,
   DataType,
+  DefaultScope,
+  Scopes,
 } from "sequelize-typescript";
 import { Question } from "./question.entity";
+import { User } from "./user.entity";
 
 @Table({
   tableName: "QuestionPost",
@@ -30,11 +33,15 @@ export class QuestionPost extends Model {
   @Column({ allowNull: false })
   questionId!: number;
 
-  @BelongsTo(() => Question)
+  @BelongsTo(() => Question, "questionId")
   question: Question;
 
+  @ForeignKey(() => User)
   @Column({ allowNull: false })
-  author: string;
+  authorId!: number;
+
+  @BelongsTo(() => User, "authorId")
+  author: User;
 
   @Column({ allowNull: false })
   questionPostTitle: string;

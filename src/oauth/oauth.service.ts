@@ -56,9 +56,11 @@ export class OauthService {
   }
 
   async sendToken(tokenIssueCode: string) {
-    const { accessToken, refreshToken } = await this.userModel.findOne({
-      where: { tokenIssueCode },
-    });
+    const { accessToken, refreshToken } = await this.userModel
+      .scope("full")
+      .findOne({
+        where: { tokenIssueCode },
+      });
 
     return {
       // isfirstSignIn: true,

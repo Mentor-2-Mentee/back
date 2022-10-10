@@ -4,7 +4,27 @@ import {
   Table,
   AutoIncrement,
   DataType,
+  HasMany,
+  DefaultScope,
+  Scopes,
 } from "sequelize-typescript";
+import { QuestionPost } from "./questionPost.entity";
+
+@DefaultScope(() => ({
+  attributes: ["id", "userName", "userGrade"],
+}))
+@Scopes(() => ({
+  full: {
+    attributes: [
+      "id",
+      "userName",
+      "userGrade",
+      "tokenIssueCode",
+      "accessToken",
+      "refreshToken",
+    ],
+  },
+}))
 @Table({
   tableName: "User",
   timestamps: true,
@@ -41,4 +61,7 @@ export class User extends Model {
 
   @Column({ allowNull: true, field: "refresh_token" })
   refreshToken: string;
+
+  @HasMany(() => QuestionPost, "authorId")
+  questionPost: QuestionPost;
 }

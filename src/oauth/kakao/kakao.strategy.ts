@@ -33,7 +33,6 @@ export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
       oauthId: String(profileJson.id),
     };
 
-    console.log("test");
     const [registeredUser, isNewUser] =
       await this.OauthService.findOrCreateUserByOauth(kakaoPayload);
     const tokenIssueCode = await this.OauthService.createToken(registeredUser);
