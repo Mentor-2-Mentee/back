@@ -141,7 +141,7 @@ export class LiveContentsGateway {
       data.examField
     );
     const examList = await this.examQuestionService.findQuestionAll(
-      roomData.examQuestionList
+      roomData.examQuestionId
     );
 
     const result = {
@@ -149,6 +149,8 @@ export class LiveContentsGateway {
       liveWrittingUser: [],
       timer: data.timer,
     };
+
+    console.log("result", targetChannel);
 
     this.server.emit(targetChannel, result);
   }
@@ -184,7 +186,7 @@ export class LiveContentsGateway {
         examScheduleId,
         examField
       );
-      const remainedQuestionIdList = targetRoom.examQuestionList.filter(
+      const remainedQuestionIdList = targetRoom.examQuestionId.filter(
         (quesionId) => quesionId !== deleteExamQuestionId
       );
 
@@ -198,7 +200,7 @@ export class LiveContentsGateway {
         );
 
       const examList = await this.examQuestionService.findQuestionAll(
-        updatedRoom.examQuestionList
+        updatedRoom.examQuestionId
       );
 
       const result = {
@@ -211,10 +213,10 @@ export class LiveContentsGateway {
 
     if (setQuestionCount) {
       if (setQuestionCount.currentCount > setQuestionCount.newCount) {
-        const deleteQuestionIdList = roomData.examQuestionList.slice(
+        const deleteQuestionIdList = roomData.examQuestionId.slice(
           setQuestionCount.newCount
         );
-        const remainedQuestionIdList = roomData.examQuestionList.slice(
+        const remainedQuestionIdList = roomData.examQuestionId.slice(
           0,
           setQuestionCount.newCount
         );
@@ -232,7 +234,7 @@ export class LiveContentsGateway {
           );
 
         const examList = await this.examQuestionService.findQuestionAll(
-          updatedRoom.examQuestionList
+          updatedRoom.examQuestionId
         );
 
         const result = {
@@ -266,7 +268,7 @@ export class LiveContentsGateway {
           );
 
         const examList = await this.examQuestionService.findQuestionAll(
-          updatedRoom.examQuestionList
+          updatedRoom.examQuestionId
         );
 
         const result = {

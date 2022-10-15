@@ -24,28 +24,28 @@ export class ExamReviewRoomController {
 
   @Get()
   async findExamReviewRoomListByExamScheduleId(
-    @Query("examScheduleId") examScheduleId: number,
-    @Query("examField") examField: string
+    @Query("examScheduleId") examScheduleId: number
+    // @Query("examField") examField: string
   ) {
-    console.log(
-      "findExamReviewRoomListByExamScheduleId",
-      examScheduleId,
-      examField
-    );
+    // console.log(
+    //   "findExamReviewRoomListByExamScheduleId",
+    //   examScheduleId
+    //   // examField
+    // );
     const examReviewRoomList =
       await this.examReviewRoomService.findExamReviewRoomList(examScheduleId);
 
-    if (examField !== undefined) {
-      const target = examReviewRoomList.find(
-        (examReviewRoom) => examReviewRoom.examField === examField
-      );
-      return {
-        message: `find ${examField}`,
-        examReviewRoom: target,
-      };
-    }
+    // // if (examField !== undefined) {
+    // //   const target = examReviewRoomList.find(
+    // //     (examReviewRoom) => examReviewRoom.examField === examField
+    // //   );
+    // //   return {
+    // //     message: `find ${examField}`,
+    // //     examReviewRoom: target,
+    // //   };
+    // // }
 
-    console.log("examReviewRoomList", examReviewRoomList);
+    // console.log("examReviewRoomList", examReviewRoomList);
 
     return {
       message: "OK",
@@ -59,16 +59,16 @@ export class ExamReviewRoomController {
     @Query("examScheduleId") examScheduleId: number,
     @Query("examField") examField: string
   ) {
-    const { userList } = await this.examReviewRoomService.findExamReviewRoomOne(
-      examScheduleId,
-      examField
-    );
+    // const { userList } = await this.examReviewRoomService.findExamReviewRoomOne(
+    //   examScheduleId,
+    //   examField
+    // );
     const userInfoList = [];
 
-    for (const userId of userList) {
-      // const userInfo = await this.OauthService.getProfile(userId);
-      // userInfoList.push(userInfo);
-    }
+    // for (const userId of userList) {
+    //   // const userInfo = await this.OauthService.getProfile(userId);
+    //   // userInfoList.push(userInfo);
+    // }
 
     return {
       message: `${examScheduleId}-${examField} userInfoList`,
@@ -147,55 +147,65 @@ export class ExamReviewRoomController {
     // };
   }
 
-  @Get("/question-pdf")
-  async questionPdf(
-    @Query("examScheduleId") examScheduleId: number,
-    @Query("examField") examField: string,
-    @Res() res: Response
-  ) {
-    const targetRoomData =
-      await this.examReviewRoomService.findExamReviewRoomOne(
-        examScheduleId,
-        examField
-      );
+  // @Get("/question-pdf")
+  // async questionPdf(
+  //   @Query("examScheduleId") examScheduleId: number,
+  //   @Query("examField") examField: string,
+  //   @Res() res: Response
+  // ) {
+  //   const targetRoomData =
+  //     await this.examReviewRoomService.findExamReviewRoomOne(
+  //       examScheduleId,
+  //       examField
+  //     );
 
-    const buffer = await this.examReviewRoomService.generateQuestionPDF(
-      targetRoomData,
-      targetRoomData.examQuestionList
+  //   const buffer = await this.examReviewRoomService.generateQuestionPDF(
+  //     targetRoomData,
+  //     targetRoomData.examQuestionList
+  //   );
+
+  //   res.set({
+  //     "Content-Type": "application/pdf",
+  //     "Content-Disposition": "attachment; filename=example.pdf",
+  //     "Content-Length": buffer.length,
+  //   });
+
+  //   res.end(buffer);
+  // }
+
+  // @Get("/solution-pdf")
+  // async solutionPdf(
+  //   @Query("examScheduleId") examScheduleId: number,
+  //   @Query("examField") examField: string,
+  //   @Res() res: Response
+  // ) {
+  //   const targetRoomData =
+  //     await this.examReviewRoomService.findExamReviewRoomOne(
+  //       examScheduleId,
+  //       examField
+  //     );
+
+  //   const buffer = await this.examReviewRoomService.generateSolutionPDF(
+  //     targetRoomData,
+  //     targetRoomData.examQuestionList
+  //   );
+
+  //   res.set({
+  //     "Content-Type": "application/pdf",
+  //     "Content-Disposition": "attachment; filename=example.pdf",
+  //     "Content-Length": buffer.length,
+  //   });
+
+  //   res.end(buffer);
+  // }
+
+  @UseGuards(JwtAuthGuard)
+  @Post("/enter")
+  async roomEnter(@Req() { user }: AuthorizeUserProfile, @Body() body: any) {
+    console.log("enter user", user, body);
+    return await this.examReviewRoomService.checkUserEntered(
+      user.id,
+      body.examReviewRoomId
     );
-
-    res.set({
-      "Content-Type": "application/pdf",
-      "Content-Disposition": "attachment; filename=example.pdf",
-      "Content-Length": buffer.length,
-    });
-
-    res.end(buffer);
-  }
-
-  @Get("/solution-pdf")
-  async solutionPdf(
-    @Query("examScheduleId") examScheduleId: number,
-    @Query("examField") examField: string,
-    @Res() res: Response
-  ) {
-    const targetRoomData =
-      await this.examReviewRoomService.findExamReviewRoomOne(
-        examScheduleId,
-        examField
-      );
-
-    const buffer = await this.examReviewRoomService.generateSolutionPDF(
-      targetRoomData,
-      targetRoomData.examQuestionList
-    );
-
-    res.set({
-      "Content-Type": "application/pdf",
-      "Content-Disposition": "attachment; filename=example.pdf",
-      "Content-Length": buffer.length,
-    });
-
-    res.end(buffer);
   }
 }

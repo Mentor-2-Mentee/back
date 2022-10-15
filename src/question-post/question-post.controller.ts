@@ -83,7 +83,7 @@ export class QuestionPostController {
 
     const createQuestionPostDto: CreateQuestionPostDto = {
       questionId,
-      author: String(request.user.userName),
+      authorId: String(request.user.id),
       questionPostTitle: body.questionForm.questionPostTitle,
       questionPostDescription: body.questionForm.questionPostDescription,
     };

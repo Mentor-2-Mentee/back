@@ -71,9 +71,6 @@ export class QuestionPostService {
       offset: (querys.page - 1) * querys.limit,
       limit: querys.limit,
     });
-
-    console.log("result.length", result.length);
-
     return result;
   }
 

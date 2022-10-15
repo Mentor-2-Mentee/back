@@ -25,7 +25,7 @@ import { UserProfileService } from "src/user-profile/user-profile.service";
 
 const MAX_IMAGE_COUNT = 10;
 
-@Controller("examSchedule")
+@Controller("exam-schedule")
 export class ExamScheduleController {
   constructor(
     private readonly examScheduleService: ExamScheduleService,
@@ -96,7 +96,7 @@ export class ExamScheduleController {
 
     return {
       message: `${body.examScheduleTitle} 일정이 생성되었습니다.`,
-      examScheduleId: savedExamSchedule.examScheduleId,
+      examScheduleId: savedExamSchedule.id,
     };
   }
 

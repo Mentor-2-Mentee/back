@@ -9,6 +9,8 @@ import {
 import {
   CreateExamReviewRoomRequest,
   ExamReviewRoom,
+  ExamSchedule,
+  ExamScheduleRelation,
 } from "src/models/entities";
 import { WhereOptions, Op } from "sequelize";
 import { ExamQuestionService } from "src/exam-question/exam-question.service";
@@ -26,7 +28,9 @@ export class ExamReviewRoomService {
     @InjectModel(CreateExamReviewRoomRequest)
     private createExamReviewRoomRequestModel: typeof CreateExamReviewRoomRequest,
     @InjectModel(ExamReviewRoom)
-    private examReviewRoomModel: typeof ExamReviewRoom
+    private examReviewRoomModel: typeof ExamReviewRoom,
+    @InjectModel(ExamSchedule)
+    private examScheduleModel: typeof ExamSchedule
   ) {}
 
   async createExamReviewRoomRequest(
@@ -159,14 +163,11 @@ export class ExamReviewRoomService {
       },
     });
 
-    const newExamReviewRoomId = uuidv4();
-
     const [target, isCreated] = await this.examReviewRoomModel.findOrCreate({
       where: {
         [Op.and]: searchByExamScheduleIdAndExamField,
       },
       defaults: {
-        examReviewRoomId: newExamReviewRoomId,
         examScheduleTitle: createExamReviewRoomDto.examScheduleTitle,
         examScheduleId: createExamReviewRoomDto.examScheduleId,
         examField: createExamReviewRoomDto.examField,
@@ -215,14 +216,38 @@ export class ExamReviewRoomService {
         },
       },
     });
+    console.log("-----", examScheduleId, "------");
 
-    const examReviewRoomList = await this.examReviewRoomModel.findAll({
-      where: {
-        [Op.and]: searchByExamScheduleId,
-      },
-    });
+    const examSchedule = await this.examScheduleModel
+      .findByPk(examScheduleId, {
+        include: [{ model: ExamReviewRoom }, { model: ExamScheduleRelation }],
+      })
+      .then((data) => {
+        const parsedRooms = data.examReviewRooms.map((examReviewRoom) => {
+          return {
+            ...examReviewRoom,
+            adminUserId: JSON.parse(String(examReviewRoom.adminUserId)),
+            participantUserId: JSON.parse(
+              String(examReviewRoom.participantUserId)
+            ),
+            nonParticipantUserId: JSON.parse(
+              String(examReviewRoom.nonParticipantUserId)
+            ),
+          };
+        });
+        console.log("parse test data", parsedRooms);
+        return data;
+      });
 
-    return examReviewRoomList;
+    console.log("joined examSchedule", examSchedule.examReviewRooms);
+
+    // const examReviewRoomList = await this.examReviewRoomModel.findAll({
+    //   where: {
+    //     [Op.and]: searchByExamScheduleId,
+    //   },
+    // });
+
+    return examSchedule.examReviewRooms;
   }
 
   async findExamReviewRoomOne(examScheduleId: number, examField: string) {
@@ -243,8 +268,6 @@ export class ExamReviewRoomService {
     const test = await this.examReviewRoomModel.findOne({
       where: searchExamReviewRoom,
     });
-
-    console.log("parseTest", test.examQuestionList[1]);
 
     return await this.examReviewRoomModel.findOne({
       where: searchExamReviewRoom,
@@ -307,7 +330,7 @@ export class ExamReviewRoomService {
       doc
         .fontSize(18)
         .text(
-          `${examReviewRoom.examScheduleTitle} - ${examReviewRoom.examField} / ${examDate}`,
+          `${examReviewRoom.examOrganizer} - ${examReviewRoom.examType} / ${examDate}`,
           50,
           50
         )
@@ -335,7 +358,7 @@ export class ExamReviewRoomService {
             .moveDown(0.5);
         }
 
-        question.answerExampleList.map((example, exampleIndex) => {
+        question.answerExample.map((example, exampleIndex) => {
           doc.text(`${exampleIndex + 1}. ${example}`).moveDown(0.5);
         });
         doc.moveDown();
@@ -377,7 +400,7 @@ export class ExamReviewRoomService {
       doc
         .fontSize(18)
         .text(
-          `${examReviewRoom.examScheduleTitle} - ${examReviewRoom.examField} - 솔루션 / ${examDate}`,
+          `${examReviewRoom.examOrganizer} - ${examReviewRoom.examType} - 솔루션 / ${examDate}`,
           50,
           50
         )
@@ -406,5 +429,27 @@ export class ExamReviewRoomService {
     });
 
     return pdfBuffer;
+  }
+
+  async checkUserEntered(userId: string, examReviewRoomId: number) {
+    const targetRoom = await this.examReviewRoomModel.findByPk(
+      examReviewRoomId
+    );
+
+    // const isEndtered = Boolean(
+    //   targetRoom.userList.findIndex((ele) => ele === userId) !== -1
+    // );
+
+    // if (isEndtered) {
+    //   return {
+    //     message: "enteredUser",
+    //     examScheduleId: targetRoom.examScheduleId,
+    //     examField: targetRoom.examField,
+    //   };
+    // }
+
+    return {
+      message: "not enteredUser",
+    };
   }
 }

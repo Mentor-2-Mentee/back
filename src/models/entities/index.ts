@@ -10,3 +10,4 @@ export * from "./examQuestion.entity";
 export * from "./issuedToken.entity";
 export * from "./question.entity";
 export * from "./questionPost.entity";
+export * from "./examScheduleRelation.entity";

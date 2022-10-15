@@ -22,6 +22,7 @@ import {
   ExamQuestion,
   Question,
   QuestionPost,
+  ExamScheduleRelation,
 } from "src/models";
 
 import { SequelizeModule } from "@nestjs/sequelize";
@@ -32,7 +33,7 @@ import { ExamQuestionModule } from "./exam-question/exam-question.module";
 import { ImagesModule } from "./images/images.module";
 import { QuestionModule } from "./question/question.module";
 import { QuestionPostModule } from "./question-post/question-post.module";
-import { UserProfileModule } from './user-profile/user-profile.module';
+import { UserProfileModule } from "./user-profile/user-profile.module";
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { UserProfileModule } from './user-profile/user-profile.module';
           User,
           QuestionTag,
           ExamSchedule,
+          ExamScheduleRelation,
           CreateExamReviewRoomRequest,
           ExamReviewRoom,
           ExamQuestion,

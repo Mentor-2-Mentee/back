@@ -3,13 +3,17 @@ import { ExamReviewRoomService } from "./exam-review-room.service";
 import { ExamReviewRoomController } from "./exam-review-room.controller";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { CreateExamReviewRoomRequest } from "src/models/entities/createExamReviewRoomRequest.entity";
-import { ExamReviewRoom } from "src/models";
+import { ExamReviewRoom, ExamSchedule } from "src/models";
 import { ExamQuestionModule } from "src/exam-question/exam-question.module";
 
 @Module({
   imports: [
     ExamQuestionModule,
-    SequelizeModule.forFeature([CreateExamReviewRoomRequest, ExamReviewRoom]),
+    SequelizeModule.forFeature([
+      CreateExamReviewRoomRequest,
+      ExamReviewRoom,
+      ExamSchedule,
+    ]),
   ],
   controllers: [ExamReviewRoomController],
   providers: [ExamReviewRoomService],

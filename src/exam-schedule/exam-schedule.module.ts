@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { ExamScheduleService } from "./exam-schedule.service";
 import { ExamScheduleController } from "./exam-schedule.controller";
 import { SequelizeModule } from "@nestjs/sequelize";
-import { ExamSchedule } from "src/models";
+import { ExamSchedule, ExamScheduleRelation } from "src/models";
 import { MulterModule } from "@nestjs/platform-express";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { diskStorage } from "multer";
@@ -15,7 +15,7 @@ import { UserProfileModule } from "src/user-profile/user-profile.module";
 @Module({
   imports: [
     UserProfileModule,
-    SequelizeModule.forFeature([ExamSchedule]),
+    SequelizeModule.forFeature([ExamSchedule, ExamScheduleRelation]),
     MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

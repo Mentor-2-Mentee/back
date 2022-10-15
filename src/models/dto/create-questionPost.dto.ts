@@ -1,6 +1,6 @@
 export class CreateQuestionPostDto {
   questionId: number;
-  author: string;
+  authorId: string;
   questionPostTitle: string;
   questionPostDescription: number;
 }

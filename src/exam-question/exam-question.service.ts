@@ -48,9 +48,7 @@ export class ExamQuestionService {
       },
     });
 
-    const questionIdList = newQuestionList.map(
-      (question) => question.examQuestionId
-    );
+    const questionIdList = newQuestionList.map((question) => question.id);
 
     return questionIdList;
   }

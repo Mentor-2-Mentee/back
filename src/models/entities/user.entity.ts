@@ -2,7 +2,6 @@ import {
   Column,
   Model,
   Table,
-  AutoIncrement,
   DataType,
   HasMany,
   DefaultScope,
@@ -32,7 +31,6 @@ import { QuestionPost } from "./questionPost.entity";
   updatedAt: "updated_at",
 })
 export class User extends Model {
-  @AutoIncrement
   @Column({
     primaryKey: true,
     type: DataType.UUID,
@@ -64,4 +62,13 @@ export class User extends Model {
 
   @HasMany(() => QuestionPost, "authorId")
   questionPost: QuestionPost;
+
+  // @ManyToMany(() => ExamReviewRoom, "adminUserId")
+  // examReviewRoom: ExamReviewRoom;
+
+  // @HasMany(() => ExamReviewRoom, "participantUserId")
+  // examReviewRoom: ExamReviewRoom;
+
+  // @HasMany(() => ExamReviewRoom, "nonParticipantUserId")
+  // examReviewRoom: ExamReviewRoom;
 }
