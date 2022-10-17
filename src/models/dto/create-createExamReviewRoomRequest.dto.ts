@@ -1,4 +1,4 @@
 export class CreateCreateExamReviewRoomRequestDto {
   examScheduleId: number;
-  examField: string;
+  examType: string;
 }

@@ -5,10 +5,12 @@ import { SequelizeModule } from "@nestjs/sequelize";
 import { CreateExamReviewRoomRequest } from "src/models/entities/createExamReviewRoomRequest.entity";
 import { ExamReviewRoom, ExamSchedule } from "src/models";
 import { ExamQuestionModule } from "src/exam-question/exam-question.module";
+import { UserProfileModule } from "src/user-profile/user-profile.module";
 
 @Module({
   imports: [
     ExamQuestionModule,
+    UserProfileModule,
     SequelizeModule.forFeature([
       CreateExamReviewRoomRequest,
       ExamReviewRoom,

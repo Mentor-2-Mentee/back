@@ -2,6 +2,6 @@ export class CreateExamScheduleDto {
   examScheduleTitle: string;
   examUrl: string;
   examDate: string;
-  examField: string;
+  examType: string;
   examDescription: string;
 }

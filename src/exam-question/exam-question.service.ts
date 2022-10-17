@@ -16,7 +16,7 @@ export class ExamQuestionService {
 
   async createBulkQuestion({
     examScheduleId,
-    examField,
+    examType,
     bulkCount,
   }: CreateBulkExamQuestionDto) {
     const basement = [...Array(bulkCount).keys()].map(() => {
@@ -24,7 +24,7 @@ export class ExamQuestionService {
         answerExampleList: ["", "", "", "", ""],
         questionType: "MULTIPLE_CHOICE",
         examScheduleId,
-        examField,
+        examType,
       };
     });
     const searchQuestionOption: WhereOptions = [];
@@ -34,9 +34,9 @@ export class ExamQuestionService {
           [Op.eq]: examScheduleId,
         },
       },
-      ["examField"]: {
+      ["examType"]: {
         [Op.and]: {
-          [Op.eq]: examField,
+          [Op.eq]: examType,
         },
       },
     });

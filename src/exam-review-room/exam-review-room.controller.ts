@@ -8,6 +8,8 @@ import {
   Query,
   Req,
   Res,
+  HttpException,
+  HttpStatus,
 } from "@nestjs/common";
 import {
   AuthorizeUserProfile,
@@ -17,30 +19,34 @@ import {
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { ExamReviewRoomService } from "./exam-review-room.service";
 import { Response } from "express";
+import { UserProfileService } from "src/user-profile/user-profile.service";
 
 @Controller("exam-review-room")
 export class ExamReviewRoomController {
-  constructor(private readonly examReviewRoomService: ExamReviewRoomService) {}
+  constructor(
+    private readonly examReviewRoomService: ExamReviewRoomService,
+    private readonly userProfileService: UserProfileService
+  ) {}
 
   @Get()
   async findExamReviewRoomListByExamScheduleId(
     @Query("examScheduleId") examScheduleId: number
-    // @Query("examField") examField: string
+    // @Query("examType") examType: string
   ) {
     // console.log(
     //   "findExamReviewRoomListByExamScheduleId",
     //   examScheduleId
-    //   // examField
+    //   // examType
     // );
     const examReviewRoomList =
       await this.examReviewRoomService.findExamReviewRoomList(examScheduleId);
 
-    // // if (examField !== undefined) {
+    // // if (examType !== undefined) {
     // //   const target = examReviewRoomList.find(
-    // //     (examReviewRoom) => examReviewRoom.examField === examField
+    // //     (examReviewRoom) => examReviewRoom.examType === examType
     // //   );
     // //   return {
-    // //     message: `find ${examField}`,
+    // //     message: `find ${examType}`,
     // //     examReviewRoom: target,
     // //   };
     // // }
@@ -57,11 +63,11 @@ export class ExamReviewRoomController {
   @Get("userInfo")
   async findUserInfoById(
     @Query("examScheduleId") examScheduleId: number,
-    @Query("examField") examField: string
+    @Query("examType") examType: string
   ) {
     // const { userList } = await this.examReviewRoomService.findExamReviewRoomOne(
     //   examScheduleId,
-    //   examField
+    //   examType
     // );
     const userInfoList = [];
 
@@ -71,7 +77,7 @@ export class ExamReviewRoomController {
     // }
 
     return {
-      message: `${examScheduleId}-${examField} userInfoList`,
+      message: `${examScheduleId}-${examType} userInfoList`,
       userInfoList,
     };
   }
@@ -98,15 +104,26 @@ export class ExamReviewRoomController {
     @Req() request: AuthorizeUserProfile,
     @Body() body: CreateCreateExamReviewRoomRequestDto
   ) {
-    // const userData = await this.OauthService.getProfile(request.user.id);
+    const userData = await this.userProfileService.findUserProfileById(
+      request.user.id
+    );
 
-    // await this.examReviewRoomService.createExamReviewRoomRequest(
-    //   userData,
-    //   body
-    // );
+    console.log(userData, body);
+
+    const isCreated =
+      await this.examReviewRoomService.createExamReviewRoomRequest(
+        userData,
+        body
+      );
+
+    if (!isCreated)
+      throw new HttpException("bad request", HttpStatus.BAD_REQUEST);
 
     return {
-      message: "OK",
+      message: await this.examReviewRoomService.createExamReviewRoomRequest(
+        userData,
+        body
+      ),
     };
   }
 
@@ -132,14 +149,14 @@ export class ExamReviewRoomController {
   async cancelExamReviewRoomRequest(
     @Req() request: AuthorizeUserProfile,
     @Query("examScheduleId") examScheduleId: number,
-    @Query("examField") examField: string
+    @Query("examType") examType: string
   ) {
     // const userData = await this.OauthService.getProfile(request.user.id);
     // const requestList =
     //   await this.examReviewRoomService.deleteExamReviewRoomRequest(
     //     userData,
     //     examScheduleId,
-    //     examField
+    //     examType
     //   );
     // return {
     //   message: `${examScheduleId} requestList`,
@@ -150,13 +167,13 @@ export class ExamReviewRoomController {
   // @Get("/question-pdf")
   // async questionPdf(
   //   @Query("examScheduleId") examScheduleId: number,
-  //   @Query("examField") examField: string,
+  //   @Query("examType") examType: string,
   //   @Res() res: Response
   // ) {
   //   const targetRoomData =
   //     await this.examReviewRoomService.findExamReviewRoomOne(
   //       examScheduleId,
-  //       examField
+  //       examType
   //     );
 
   //   const buffer = await this.examReviewRoomService.generateQuestionPDF(
@@ -176,13 +193,13 @@ export class ExamReviewRoomController {
   // @Get("/solution-pdf")
   // async solutionPdf(
   //   @Query("examScheduleId") examScheduleId: number,
-  //   @Query("examField") examField: string,
+  //   @Query("examType") examType: string,
   //   @Res() res: Response
   // ) {
   //   const targetRoomData =
   //     await this.examReviewRoomService.findExamReviewRoomOne(
   //       examScheduleId,
-  //       examField
+  //       examType
   //     );
 
   //   const buffer = await this.examReviewRoomService.generateSolutionPDF(

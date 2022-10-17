@@ -34,20 +34,21 @@ export class ExamReviewRoomService {
   ) {}
 
   async createExamReviewRoomRequest(
-    userData: Pick<User, "id" | "userName" | "userGrade">,
-    createCreateExamReviewRoomRequestDto: CreateCreateExamReviewRoomRequestDto
+    requestUser: Pick<User, "id" | "userName" | "userGrade">,
+    { examScheduleId, examType }: CreateCreateExamReviewRoomRequestDto
   ) {
+    if (examType === "") return false;
     const searchExamScheduleId: WhereOptions = [];
 
     searchExamScheduleId.push({
       ["examScheduleId"]: {
         [Op.and]: {
-          [Op.eq]: createCreateExamReviewRoomRequestDto.examScheduleId,
+          [Op.eq]: examScheduleId,
         },
       },
-      ["examField"]: {
+      ["examType"]: {
         [Op.and]: {
-          [Op.eq]: createCreateExamReviewRoomRequestDto.examField,
+          [Op.eq]: examType,
         },
       },
     });
@@ -58,22 +59,22 @@ export class ExamReviewRoomService {
           [Op.and]: searchExamScheduleId,
         },
         defaults: {
-          examScheduleId: createCreateExamReviewRoomRequestDto.examScheduleId,
-          examField: createCreateExamReviewRoomRequestDto.examField,
-          // requestUserList: [userData],
+          examScheduleId,
+          examType,
+          participantUserId: requestUser.id,
         },
       });
 
     if (!created) {
-      const existUserList: any[] = [...target.requestUserList];
+      const existUserList: string[] = [...target.nonParticipantUserId];
       const isExist = Boolean();
       // existUserList.findIndex((user) => user.userId === userData.userId) !==
       // -1
       if (isExist) return;
       await this.createExamReviewRoomRequestModel.update(
         {
-          examScheduleId: createCreateExamReviewRoomRequestDto.examScheduleId,
-          examField: createCreateExamReviewRoomRequestDto.examField,
+          examScheduleId,
+          examType,
           // requestUserList: [...target.requestUserList, userData],
         },
         {
@@ -83,6 +84,7 @@ export class ExamReviewRoomService {
         }
       );
     }
+    return true;
   }
 
   async getCreateExamReviewRoomRequestList({
@@ -110,7 +112,7 @@ export class ExamReviewRoomService {
   async deleteExamReviewRoomRequest(
     userData: Pick<User, "id" | "userName" | "userGrade">,
     examScheduleId: number,
-    examField: string
+    examType: string
   ) {
     const searchExamReviewRoomRequest: WhereOptions = [];
     searchExamReviewRoomRequest.push({
@@ -119,9 +121,9 @@ export class ExamReviewRoomService {
           [Op.eq]: examScheduleId,
         },
       },
-      ["examField"]: {
+      ["examType"]: {
         [Op.and]: {
-          [Op.eq]: examField,
+          [Op.eq]: examType,
         },
       },
     });
@@ -130,10 +132,10 @@ export class ExamReviewRoomService {
       where: searchExamReviewRoomRequest,
     });
 
-    const currentUserList: any[] = [...targetRequest.requestUserList];
+    const currentUserList: any[] = [...targetRequest.nonParticipantUserId];
 
     console.log("*****");
-    console.log("requestUserList", [...targetRequest.requestUserList]);
+    console.log("requestUserList", [...targetRequest.nonParticipantUserId]);
     if (!targetRequest) return;
 
     await this.createExamReviewRoomRequestModel.update(
@@ -156,9 +158,9 @@ export class ExamReviewRoomService {
           [Op.eq]: createExamReviewRoomDto.examScheduleId,
         },
       },
-      ["examField"]: {
+      ["examType"]: {
         [Op.and]: {
-          [Op.eq]: createExamReviewRoomDto.examField,
+          [Op.eq]: createExamReviewRoomDto.examType,
         },
       },
     });
@@ -170,14 +172,14 @@ export class ExamReviewRoomService {
       defaults: {
         examScheduleTitle: createExamReviewRoomDto.examScheduleTitle,
         examScheduleId: createExamReviewRoomDto.examScheduleId,
-        examField: createExamReviewRoomDto.examField,
+        examType: createExamReviewRoomDto.examType,
         // userList: [
         //   ...createExamReviewRoomDto.userList.map((user) => user.userId),
         // ],
         chatListBundle: [],
         examQuestionList: await this.ExamQuestionService.createBulkQuestion({
           examScheduleId: createExamReviewRoomDto.examScheduleId,
-          examField: createExamReviewRoomDto.examField,
+          examType: createExamReviewRoomDto.examType,
           bulkCount: 5,
         }),
       },
@@ -191,9 +193,9 @@ export class ExamReviewRoomService {
             [Op.eq]: createExamReviewRoomDto.examScheduleId,
           },
         },
-        ["examField"]: {
+        ["examType"]: {
           [Op.and]: {
-            [Op.eq]: createExamReviewRoomDto.examField,
+            [Op.eq]: createExamReviewRoomDto.examType,
           },
         },
       });
@@ -250,7 +252,7 @@ export class ExamReviewRoomService {
     return examSchedule.examReviewRooms;
   }
 
-  async findExamReviewRoomOne(examScheduleId: number, examField: string) {
+  async findExamReviewRoomOne(examScheduleId: number, examType: string) {
     const searchExamReviewRoom: WhereOptions = [];
     searchExamReviewRoom.push({
       ["examScheduleId"]: {
@@ -258,9 +260,9 @@ export class ExamReviewRoomService {
           [Op.eq]: examScheduleId,
         },
       },
-      ["examField"]: {
+      ["examType"]: {
         [Op.and]: {
-          [Op.eq]: examField,
+          [Op.eq]: examType,
         },
       },
     });
@@ -276,7 +278,7 @@ export class ExamReviewRoomService {
 
   async updateExamReviewRoomOne(
     examScheduleId: number,
-    examField: string,
+    examType: string,
     updateData?: any
   ) {
     const searchExamReviewRoom: WhereOptions = [];
@@ -286,9 +288,9 @@ export class ExamReviewRoomService {
           [Op.eq]: examScheduleId,
         },
       },
-      ["examField"]: {
+      ["examType"]: {
         [Op.and]: {
-          [Op.eq]: examField,
+          [Op.eq]: examType,
         },
       },
     });
@@ -444,7 +446,7 @@ export class ExamReviewRoomService {
     //   return {
     //     message: "enteredUser",
     //     examScheduleId: targetRoom.examScheduleId,
-    //     examField: targetRoom.examField,
+    //     examType: targetRoom.examType,
     //   };
     // }
 

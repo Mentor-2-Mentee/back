@@ -6,6 +6,7 @@ import {
   Model,
   Table,
 } from "sequelize-typescript";
+import { CreateExamReviewRoomRequest } from "./createExamReviewRoomRequest.entity";
 import { ExamReviewRoom } from "./examReviewRoom.entity";
 import { ExamSchedule } from "./examSchedule.entity";
 
@@ -24,21 +25,33 @@ export class ExamScheduleRelation extends Model {
   })
   id!: string;
 
-  @ForeignKey(() => ExamReviewRoom)
+  @ForeignKey(() => ExamSchedule)
   @Column({
     allowNull: false,
+    field: "exam_schedule_id",
+  })
+  examScheduleId: number;
+
+  @BelongsTo(() => ExamSchedule)
+  examSchedule: ExamSchedule;
+
+  @ForeignKey(() => ExamReviewRoom)
+  @Column({
+    allowNull: true,
+    field: "exam_review_room_id",
   })
   examReviewRoomId: number;
 
   @BelongsTo(() => ExamReviewRoom)
   examReviewRoom: ExamReviewRoom;
 
-  @ForeignKey(() => ExamSchedule)
+  @ForeignKey(() => CreateExamReviewRoomRequest)
   @Column({
-    allowNull: false,
+    allowNull: true,
+    field: "create_review_room_request_id",
   })
-  examScheduleId: number;
+  createExamReviewRoomId: number;
 
-  @BelongsTo(() => ExamSchedule)
-  examSchedule: ExamSchedule;
+  @BelongsTo(() => CreateExamReviewRoomRequest)
+  createExamReviewRoom: CreateExamReviewRoomRequest;
 }

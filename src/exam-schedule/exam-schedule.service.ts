@@ -43,7 +43,7 @@ export class ExamScheduleService {
       examScheduleTitle: createExamScheduleDto.examScheduleTitle,
       examUrl: createExamScheduleDto.examUrl,
       examDate: createExamScheduleDto.examDate,
-      examField: createExamScheduleDto.examField,
+      examType: createExamScheduleDto.examType,
       examDescription: createExamScheduleDto.examDescription,
       imageFiles: imagesPath,
     });
@@ -125,7 +125,7 @@ export class ExamScheduleService {
         examScheduleTitle: updateExamScheduleDto.examScheduleTitle,
         examUrl: updateExamScheduleDto.examUrl,
         examDate: updateExamScheduleDto.examDate,
-        examField: updateExamScheduleDto.examField,
+        examType: updateExamScheduleDto.examType,
         examDescription: updateExamScheduleDto.examDescription,
         imageFiles: imagesPath,
       },

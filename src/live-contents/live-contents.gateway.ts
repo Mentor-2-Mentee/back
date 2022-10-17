@@ -103,7 +103,7 @@ export class LiveContentsGateway {
 
   /**
    * 모든 회사의 직군시험들에 대한 실시간 작성 내용 수신 엔드포인트 => 해당 회사의 특정 직군시험에 작성된 내용 발신
-   * @param data : examScheduleId, examField, examQuestionIndex, examQuestion
+   * @param data : examScheduleId, examType, examQuestionIndex, examQuestion
    */
   @SubscribeMessage("examReviewRoom_question_live")
   async emitExamReviewRoomLiveQuestion(
@@ -111,7 +111,7 @@ export class LiveContentsGateway {
   ) {
     console.log(data);
 
-    const targetChannel = `examReviewRoom_question_live-${data.examScheduleId}_${data.examField}`;
+    const targetChannel = `examReviewRoom_question_live-${data.examScheduleId}_${data.examType}`;
 
     const updatedExamQuestion = await this.examQuestionService.updateQuestion(
       data.updateExamQuestionData
@@ -120,7 +120,7 @@ export class LiveContentsGateway {
     const result = {
       userId: data.userId,
       examScheduleId: data.examScheduleId,
-      examField: data.examField,
+      examType: data.examType,
       nowQuestionIndex: data.nowQuestionIndex,
       examQuestionData: updatedExamQuestion,
     };
@@ -134,11 +134,11 @@ export class LiveContentsGateway {
   ) {
     console.log("examReviewRoom_question_prev received data", data);
 
-    const targetChannel = `examReviewRoom_question_prev-${data.examScheduleId}_${data.examField}_${data.userId}`;
+    const targetChannel = `examReviewRoom_question_prev-${data.examScheduleId}_${data.examType}_${data.userId}`;
 
     const roomData = await this.examReviewRoomService.findExamReviewRoomOne(
       data.examScheduleId,
-      data.examField
+      data.examType
     );
     const examList = await this.examQuestionService.findQuestionAll(
       roomData.examQuestionId
@@ -161,7 +161,7 @@ export class LiveContentsGateway {
     {
       userId,
       examScheduleId,
-      examField,
+      examType,
       setQuestionCount,
       deleteExamQuestionId,
     }: any
@@ -172,11 +172,11 @@ export class LiveContentsGateway {
       deleteExamQuestionId
     );
 
-    const targetChannel = `examReviewRoom_question_option-${examScheduleId}_${examField}`;
+    const targetChannel = `examReviewRoom_question_option-${examScheduleId}_${examType}`;
 
     const roomData = await this.examReviewRoomService.findExamReviewRoomOne(
       examScheduleId,
-      examField
+      examType
     );
 
     if (deleteExamQuestionId) {
@@ -184,7 +184,7 @@ export class LiveContentsGateway {
 
       const targetRoom = await this.examReviewRoomService.findExamReviewRoomOne(
         examScheduleId,
-        examField
+        examType
       );
       const remainedQuestionIdList = targetRoom.examQuestionId.filter(
         (quesionId) => quesionId !== deleteExamQuestionId
@@ -193,7 +193,7 @@ export class LiveContentsGateway {
       const updatedRoom =
         await this.examReviewRoomService.updateExamReviewRoomOne(
           examScheduleId,
-          examField,
+          examType,
           {
             examQuestionList: remainedQuestionIdList,
           }
@@ -227,7 +227,7 @@ export class LiveContentsGateway {
         const updatedRoom =
           await this.examReviewRoomService.updateExamReviewRoomOne(
             examScheduleId,
-            examField,
+            examType,
             {
               examQuestionList: remainedQuestionIdList,
             }
@@ -254,14 +254,14 @@ export class LiveContentsGateway {
         const createdNewQuestionIdList =
           await this.examQuestionService.createBulkQuestion({
             examScheduleId,
-            examField,
+            examType,
             bulkCount: createBulkCount,
           });
 
         const updatedRoom =
           await this.examReviewRoomService.updateExamReviewRoomOne(
             examScheduleId,
-            examField,
+            examType,
             {
               examQuestionList: createdNewQuestionIdList,
             }

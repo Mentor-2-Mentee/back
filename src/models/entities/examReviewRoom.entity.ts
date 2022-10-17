@@ -39,7 +39,6 @@ export class ExamReviewRoom extends Model {
   @Column({ allowNull: false, field: "exam_organizer" })
   examOrganizer: string;
 
-  // @ForeignKey(() => ExamQuestion)
   @Column({ allowNull: false, field: "exam_question_id", type: DataType.JSON })
   examQuestionId: number[];
 

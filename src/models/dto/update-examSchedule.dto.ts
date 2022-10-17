@@ -3,7 +3,7 @@ export class UpdateExamScheduleDto {
   examScheduleTitle: string;
   examUrl: string;
   examDate: string;
-  examField: string;
+  examType: string;
   examDescription: string;
   imageFiles: string;
 }

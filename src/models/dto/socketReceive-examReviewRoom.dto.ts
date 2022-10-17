@@ -1,6 +1,6 @@
 export class SocketReceiveExamReviewRoomDto {
   userId: number;
   examScheduleId: number;
-  examField: string;
+  examType: string;
   timer: number;
 }
