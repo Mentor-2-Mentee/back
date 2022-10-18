@@ -58,14 +58,8 @@ export class ExamScheduleController {
 
   @Get(":examScheduleId")
   async getScheduleById(@Param("examScheduleId") examScheduleId: number) {
-    console.log(examScheduleId);
     const targetExamSchedule =
       await this.examScheduleService.findExamScheduleById(examScheduleId);
-
-    console.log({
-      message: `${examScheduleId} data`,
-      examSchedule: targetExamSchedule,
-    });
 
     return {
       message: `${examScheduleId} data`,

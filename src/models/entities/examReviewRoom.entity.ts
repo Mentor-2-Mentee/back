@@ -9,6 +9,7 @@ import {
   BelongsTo,
   BelongsToMany,
   HasOne,
+  Index,
 } from "sequelize-typescript";
 import { ExamQuestion } from "./examQuestion.entity";
 import { ExamSchedule } from "./examSchedule.entity";
@@ -33,26 +34,23 @@ export class ExamReviewRoom extends Model {
   @Column({ allowNull: false, field: "exam_type" })
   examType: string;
 
+  @ForeignKey(() => ExamSchedule)
+  @Column({ allowNull: false, field: "exam_schedule_id" })
+  examScheduleId: number;
+
+  @BelongsTo(() => ExamSchedule)
+  examSchedule: ExamSchedule;
+
   /**
    * ex: 서부발전
    */
-  @Column({ allowNull: false, field: "exam_organizer" })
-  examOrganizer: string;
 
   @Column({ allowNull: false, field: "exam_question_id", type: DataType.JSON })
   examQuestionId: number[];
 
-  // @BelongsTo(() => ExamQuestion)
-  // examQuestion: ExamQuestion[];
-
-  // @ForeignKey(() => User)
   @Column({ allowNull: false, field: "admin_user_id", type: DataType.JSON })
   adminUserId: string[];
 
-  // @BelongsTo(() => ExamQuestion)
-  // adminUser: User[];
-
-  // @ForeignKey(() => User)
   @Column({
     allowNull: false,
     field: "participant_user_id",
@@ -60,19 +58,12 @@ export class ExamReviewRoom extends Model {
   })
   participantUserId: string[];
 
-  // @BelongsTo(() => ExamQuestion)
-  // participantUser: User[];
-
-  // @ForeignKey(() => User)
   @Column({
     allowNull: false,
     field: "non_participant_user_id",
     type: DataType.JSON,
   })
   nonParticipantUserId: string[];
-
-  // @BelongsTo(() => ExamQuestion)
-  // nonParticipantUser: User[];
 
   @HasMany(() => ExamScheduleRelation)
   ExamScheduleRelation?: ExamScheduleRelation;

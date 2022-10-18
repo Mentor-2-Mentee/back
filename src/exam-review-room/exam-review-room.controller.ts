@@ -101,29 +101,21 @@ export class ExamReviewRoomController {
   @UseGuards(JwtAuthGuard)
   @Post("/create-request")
   async createExamReviewRoomRequest(
-    @Req() request: AuthorizeUserProfile,
+    @Req() { user }: AuthorizeUserProfile,
     @Body() body: CreateCreateExamReviewRoomRequestDto
   ) {
-    const userData = await this.userProfileService.findUserProfileById(
-      request.user.id
-    );
-
-    console.log(userData, body);
-
-    const isCreated =
+    // const userData = await this.userProfileService.findUserProfileById(
+    //   request.user.id
+    // );
+    const [isCreated, message] =
       await this.examReviewRoomService.createExamReviewRoomRequest(
-        userData,
+        user.id,
         body
       );
 
-    if (!isCreated)
-      throw new HttpException("bad request", HttpStatus.BAD_REQUEST);
-
+    if (!isCreated) throw new HttpException(message, HttpStatus.BAD_REQUEST);
     return {
-      message: await this.examReviewRoomService.createExamReviewRoomRequest(
-        userData,
-        body
-      ),
+      message,
     };
   }
 
@@ -135,8 +127,6 @@ export class ExamReviewRoomController {
       await this.examReviewRoomService.getCreateExamReviewRoomRequestList({
         examScheduleId,
       });
-
-    console.log("requestList", requestList);
 
     return {
       message: `${examScheduleId} requestList`,

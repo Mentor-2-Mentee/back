@@ -10,7 +10,6 @@ import {
   CreateExamReviewRoomRequest,
   ExamReviewRoom,
   ExamSchedule,
-  ExamScheduleRelation,
 } from "src/models/entities";
 import { WhereOptions, Op } from "sequelize";
 import { ExamQuestionService } from "src/exam-question/exam-question.service";
@@ -34,12 +33,11 @@ export class ExamReviewRoomService {
   ) {}
 
   async createExamReviewRoomRequest(
-    requestUser: Pick<User, "id" | "userName" | "userGrade">,
+    requestUserId: string,
     { examScheduleId, examType }: CreateCreateExamReviewRoomRequestDto
-  ) {
-    if (examType === "") return false;
+  ): Promise<[boolean, string]> {
+    if (examType === "") return [false, "응시 직군이 입력되지 않았습니다."];
     const searchExamScheduleId: WhereOptions = [];
-
     searchExamScheduleId.push({
       ["examScheduleId"]: {
         [Op.and]: {
@@ -53,7 +51,15 @@ export class ExamReviewRoomService {
       },
     });
 
-    const [target, created] =
+    const existRoom = await this.examReviewRoomModel.findOne({
+      include: [{ model: ExamSchedule, where: { id: examScheduleId } }],
+    });
+
+    if (existRoom) {
+      return [false, `${examType}은 이미 생성되었습니다.`];
+    }
+
+    const [existRequest, created] =
       await this.createExamReviewRoomRequestModel.findOrCreate({
         where: {
           [Op.and]: searchExamScheduleId,
@@ -61,30 +67,14 @@ export class ExamReviewRoomService {
         defaults: {
           examScheduleId,
           examType,
-          participantUserId: requestUser.id,
+          participantUserId: requestUserId,
         },
       });
 
     if (!created) {
-      const existUserList: string[] = [...target.nonParticipantUserId];
-      const isExist = Boolean();
-      // existUserList.findIndex((user) => user.userId === userData.userId) !==
-      // -1
-      if (isExist) return;
-      await this.createExamReviewRoomRequestModel.update(
-        {
-          examScheduleId,
-          examType,
-          // requestUserList: [...target.requestUserList, userData],
-        },
-        {
-          where: {
-            [Op.and]: searchExamScheduleId,
-          },
-        }
-      );
+      return [false, `${examType}은 이미 생성되었습니다.`];
     }
-    return true;
+    return [true, `${examType} 신청 완료`];
   }
 
   async getCreateExamReviewRoomRequestList({
@@ -133,9 +123,6 @@ export class ExamReviewRoomService {
     });
 
     const currentUserList: any[] = [...targetRequest.nonParticipantUserId];
-
-    console.log("*****");
-    console.log("requestUserList", [...targetRequest.nonParticipantUserId]);
     if (!targetRequest) return;
 
     await this.createExamReviewRoomRequestModel.update(
@@ -173,9 +160,6 @@ export class ExamReviewRoomService {
         examScheduleTitle: createExamReviewRoomDto.examScheduleTitle,
         examScheduleId: createExamReviewRoomDto.examScheduleId,
         examType: createExamReviewRoomDto.examType,
-        // userList: [
-        //   ...createExamReviewRoomDto.userList.map((user) => user.userId),
-        // ],
         chatListBundle: [],
         examQuestionList: await this.ExamQuestionService.createBulkQuestion({
           examScheduleId: createExamReviewRoomDto.examScheduleId,
@@ -210,46 +194,11 @@ export class ExamReviewRoomService {
   }
 
   async findExamReviewRoomList(examScheduleId: number) {
-    const searchByExamScheduleId: WhereOptions = [];
-    searchByExamScheduleId.push({
-      ["examScheduleId"]: {
-        [Op.and]: {
-          [Op.eq]: examScheduleId,
-        },
-      },
-    });
-    console.log("-----", examScheduleId, "------");
+    const examSchedule = await (
+      await this.examScheduleModel.findByPk(examScheduleId)
+    ).$get("examReviewRooms");
 
-    const examSchedule = await this.examScheduleModel
-      .findByPk(examScheduleId, {
-        include: [{ model: ExamReviewRoom }, { model: ExamScheduleRelation }],
-      })
-      .then((data) => {
-        const parsedRooms = data.examReviewRooms.map((examReviewRoom) => {
-          return {
-            ...examReviewRoom,
-            adminUserId: JSON.parse(String(examReviewRoom.adminUserId)),
-            participantUserId: JSON.parse(
-              String(examReviewRoom.participantUserId)
-            ),
-            nonParticipantUserId: JSON.parse(
-              String(examReviewRoom.nonParticipantUserId)
-            ),
-          };
-        });
-        console.log("parse test data", parsedRooms);
-        return data;
-      });
-
-    console.log("joined examSchedule", examSchedule.examReviewRooms);
-
-    // const examReviewRoomList = await this.examReviewRoomModel.findAll({
-    //   where: {
-    //     [Op.and]: searchByExamScheduleId,
-    //   },
-    // });
-
-    return examSchedule.examReviewRooms;
+    return examSchedule;
   }
 
   async findExamReviewRoomOne(examScheduleId: number, examType: string) {
@@ -265,10 +214,6 @@ export class ExamReviewRoomService {
           [Op.eq]: examType,
         },
       },
-    });
-
-    const test = await this.examReviewRoomModel.findOne({
-      where: searchExamReviewRoom,
     });
 
     return await this.examReviewRoomModel.findOne({
@@ -332,7 +277,7 @@ export class ExamReviewRoomService {
       doc
         .fontSize(18)
         .text(
-          `${examReviewRoom.examOrganizer} - ${examReviewRoom.examType} / ${examDate}`,
+          `${examReviewRoom.examSchedule.organizer} - ${examReviewRoom.examType} / ${examDate}`,
           50,
           50
         )
@@ -402,7 +347,7 @@ export class ExamReviewRoomService {
       doc
         .fontSize(18)
         .text(
-          `${examReviewRoom.examOrganizer} - ${examReviewRoom.examType} - 솔루션 / ${examDate}`,
+          `${examReviewRoom.examSchedule.organizer} - ${examReviewRoom.examType} - 솔루션 / ${examDate}`,
           50,
           50
         )
