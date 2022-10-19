@@ -151,7 +151,7 @@ export class ExamReviewRoomController {
         requestId
       );
     return {
-      message: `${examType} requestList`,
+      message: `${examType} 신청 취소`,
       isDelete,
     };
   }
