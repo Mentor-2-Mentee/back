@@ -34,7 +34,11 @@ export class ExamReviewRoomService {
 
   async createExamReviewRoomRequest(
     requestUserId: string,
-    { examScheduleId, examType }: CreateCreateExamReviewRoomRequestDto
+    {
+      examScheduleId,
+      examType,
+      isParticipant,
+    }: CreateCreateExamReviewRoomRequestDto
   ): Promise<[boolean, string]> {
     if (examType === "") return [false, "응시 직군이 입력되지 않았습니다."];
     const searchExamScheduleId: WhereOptions = [];
@@ -53,10 +57,11 @@ export class ExamReviewRoomService {
 
     const existRoom = await this.examReviewRoomModel.findOne({
       include: [{ model: ExamSchedule, where: { id: examScheduleId } }],
+      where: { examType },
     });
 
     if (existRoom) {
-      return [false, `${examType}은 이미 생성되었습니다.`];
+      return [false, `${examType} 리뷰방은 이미 생성되었습니다.`];
     }
 
     const [existRequest, created] =
@@ -67,74 +72,143 @@ export class ExamReviewRoomService {
         defaults: {
           examScheduleId,
           examType,
-          participantUserId: requestUserId,
+          participantUserId: isParticipant ? [requestUserId] : [],
+          nonParticipantUserId: isParticipant ? [] : [requestUserId],
         },
       });
 
     if (!created) {
-      return [false, `${examType}은 이미 생성되었습니다.`];
+      const [isExist, message] = await this.enterCreateExamReviewRoom(
+        requestUserId,
+        existRequest.id,
+        isParticipant
+      );
+      return [isExist, `${examType} ${message}`];
     }
-    return [true, `${examType} 신청 완료`];
+    return [created, `${examType} 신청 완료`];
   }
 
-  async getCreateExamReviewRoomRequestList({
-    examScheduleId,
-  }: GetCreateExamReviewRoomRequest) {
-    const searchExamScheduleId: WhereOptions = [];
+  async enterCreateExamReviewRoom(
+    requestUserId: string,
+    requestId: number,
+    isParticipant: boolean
+  ): Promise<[boolean, string]> {
+    const targetRequest = await this.createExamReviewRoomRequestModel.findByPk(
+      requestId
+    );
 
-    searchExamScheduleId.push({
-      ["examScheduleId"]: {
-        [Op.and]: {
-          [Op.eq]: examScheduleId,
-        },
-      },
-    });
+    const isExist =
+      targetRequest.participantUserId.findIndex(
+        (currentUser) => currentUser === requestUserId
+      ) !== -1 ||
+      targetRequest.nonParticipantUserId.findIndex(
+        (currentUser) => currentUser === requestUserId
+      ) !== -1;
 
-    const requestList = await this.createExamReviewRoomRequestModel.findAll({
-      where: {
-        [Op.and]: searchExamScheduleId,
-      },
-    });
-
-    return requestList;
-  }
-
-  async deleteExamReviewRoomRequest(
-    userData: Pick<User, "id" | "userName" | "userGrade">,
-    examScheduleId: number,
-    examType: string
-  ) {
-    const searchExamReviewRoomRequest: WhereOptions = [];
-    searchExamReviewRoomRequest.push({
-      ["examScheduleId"]: {
-        [Op.and]: {
-          [Op.eq]: examScheduleId,
-        },
-      },
-      ["examType"]: {
-        [Op.and]: {
-          [Op.eq]: examType,
-        },
-      },
-    });
-
-    const targetRequest = await this.createExamReviewRoomRequestModel.findOne({
-      where: searchExamReviewRoomRequest,
-    });
-
-    const currentUserList: any[] = [...targetRequest.nonParticipantUserId];
-    if (!targetRequest) return;
+    if (isExist) return [true, "이미 신청되어있습니다"];
 
     await this.createExamReviewRoomRequestModel.update(
       {
-        // requestUserList: currentUserList.filter(
-        //   (user) => user.userId !== userData.userId
-        // ),
+        participantUserId: isParticipant
+          ? [...targetRequest.participantUserId, requestUserId]
+          : targetRequest.participantUserId,
+        nonParticipantUserId: isParticipant
+          ? targetRequest.nonParticipantUserId
+          : [...targetRequest.nonParticipantUserId, requestUserId],
       },
       {
-        where: searchExamReviewRoomRequest,
+        where: { id: targetRequest.id },
       }
     );
+
+    return [false, "신청 완료"];
+  }
+
+  async getCreateExamReviewRoomRequestList(
+    examScheduleId: number,
+    userId?: string
+  ) {
+    const requestList = await this.createExamReviewRoomRequestModel.findAll({
+      where: {
+        examScheduleId,
+      },
+    });
+
+    const reformedRequestList = requestList.map(
+      ({
+        id,
+        examScheduleId,
+        examType,
+        participantUserId,
+        nonParticipantUserId,
+      }) => {
+        const userExistCheck = (userId: string) => {
+          if (
+            participantUserId.findIndex(
+              (participantUser) => participantUser === userId
+            ) !== -1
+          )
+            return "participantUser";
+          if (
+            nonParticipantUserId.findIndex(
+              (nonParticipantUser) => nonParticipantUser === userId
+            ) !== -1
+          )
+            return "nonParticipantUser";
+          return false;
+        };
+
+        return {
+          id,
+          examScheduleId,
+          examType,
+          totalUserCount:
+            participantUserId.length + nonParticipantUserId.length,
+          userExist: userExistCheck(userId),
+        };
+      }
+    );
+
+    return reformedRequestList;
+  }
+
+  async deleteExamReviewRoomRequest(userId: string, requestId: number) {
+    const targetRequest = await this.createExamReviewRoomRequestModel.findByPk(
+      requestId
+    );
+
+    let isExist: boolean;
+    const newParticipantUser: string[] = targetRequest.participantUserId.filter(
+      (currentUser) => {
+        if (currentUser === userId) {
+          isExist = true;
+          return false;
+        }
+        return true;
+      }
+    );
+
+    const newNonParticipantUser: string[] =
+      targetRequest.nonParticipantUserId.filter((currentUser) => {
+        if (currentUser === userId) {
+          isExist = true;
+          return false;
+        }
+        return true;
+      });
+
+    if (!isExist) return false;
+
+    await this.createExamReviewRoomRequestModel.update(
+      {
+        participantUserId: newParticipantUser,
+        nonParticipantUserId: newNonParticipantUser,
+      },
+      {
+        where: { id: requestId },
+      }
+    );
+    return true;
   }
 
   async createExamReviewRoom(createExamReviewRoomDto: CreateExamReviewRoomDto) {

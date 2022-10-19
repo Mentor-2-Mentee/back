@@ -104,16 +104,16 @@ export class ExamReviewRoomController {
     @Req() { user }: AuthorizeUserProfile,
     @Body() body: CreateCreateExamReviewRoomRequestDto
   ) {
-    // const userData = await this.userProfileService.findUserProfileById(
-    //   request.user.id
-    // );
     const [isCreated, message] =
       await this.examReviewRoomService.createExamReviewRoomRequest(
         user.id,
         body
       );
 
-    if (!isCreated) throw new HttpException(message, HttpStatus.BAD_REQUEST);
+    if (!isCreated) {
+      return { message };
+    }
+
     return {
       message,
     };
@@ -121,12 +121,16 @@ export class ExamReviewRoomController {
 
   @Get("/create-request")
   async getCreateExamReviewRoomRequestList(
-    @Query("examScheduleId") examScheduleId: number
+    @Query("examScheduleId") examScheduleId: number,
+    @Query("userId") userId: string
   ) {
+    console.log("userId", userId);
+
     const requestList =
-      await this.examReviewRoomService.getCreateExamReviewRoomRequestList({
+      await this.examReviewRoomService.getCreateExamReviewRoomRequestList(
         examScheduleId,
-      });
+        userId
+      );
 
     return {
       message: `${examScheduleId} requestList`,
@@ -137,21 +141,19 @@ export class ExamReviewRoomController {
   @UseGuards(JwtAuthGuard)
   @Delete("/create-request")
   async cancelExamReviewRoomRequest(
-    @Req() request: AuthorizeUserProfile,
-    @Query("examScheduleId") examScheduleId: number,
+    @Req() { user }: AuthorizeUserProfile,
+    @Query("requestId") requestId: number,
     @Query("examType") examType: string
   ) {
-    // const userData = await this.OauthService.getProfile(request.user.id);
-    // const requestList =
-    //   await this.examReviewRoomService.deleteExamReviewRoomRequest(
-    //     userData,
-    //     examScheduleId,
-    //     examType
-    //   );
-    // return {
-    //   message: `${examScheduleId} requestList`,
-    //   data: requestList,
-    // };
+    const isDelete =
+      await this.examReviewRoomService.deleteExamReviewRoomRequest(
+        user.id,
+        requestId
+      );
+    return {
+      message: `${examType} requestList`,
+      isDelete,
+    };
   }
 
   // @Get("/question-pdf")

@@ -10,4 +10,5 @@ export default () => ({
   jwtRefreshExpireTime: String(process.env.JWT_REFRESH_EXPIRE_TIME),
   imageStorageDest: String(process.env.IMAGE_STORAGE_DEST),
   examQuestionImageDest: String(process.env.EXAM_QUESTION_IMAGE_DEST),
+  liveServerMode: String(process.env.LIVE_SERVER_MODE),
 });

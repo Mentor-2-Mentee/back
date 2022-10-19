@@ -66,6 +66,9 @@ import { UserProfileModule } from "./user-profile/user-profile.module";
           Question,
           QuestionPost,
         ],
+        logging: Boolean(
+          configService.get<string>("LIVE_SERVER_MODE") === "true"
+        ),
       }),
     }),
     CacheModule.registerAsync({

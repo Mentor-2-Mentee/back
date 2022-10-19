@@ -20,7 +20,7 @@ export class CreateExamReviewRoomRequest extends Model {
   })
   id: number;
 
-  @Column({ allowNull: false })
+  @Column({ allowNull: false, field: "exam_schedule_id" })
   examScheduleId: number;
 
   /**
