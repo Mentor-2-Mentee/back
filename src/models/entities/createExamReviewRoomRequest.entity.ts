@@ -5,6 +5,7 @@ import {
   AutoIncrement,
   DataType,
   HasMany,
+  HasOne,
 } from "sequelize-typescript";
 import { ExamScheduleRelation } from "./examScheduleRelation.entity";
 @Table({
@@ -43,6 +44,6 @@ export class CreateExamReviewRoomRequest extends Model {
   })
   nonParticipantUserId: string[];
 
-  @HasMany(() => ExamScheduleRelation)
+  @HasOne(() => ExamScheduleRelation)
   ExamScheduleRelation?: ExamScheduleRelation;
 }

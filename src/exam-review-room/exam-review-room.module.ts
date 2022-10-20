@@ -3,7 +3,7 @@ import { ExamReviewRoomService } from "./exam-review-room.service";
 import { ExamReviewRoomController } from "./exam-review-room.controller";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { CreateExamReviewRoomRequest } from "src/models/entities/createExamReviewRoomRequest.entity";
-import { ExamReviewRoom, ExamSchedule } from "src/models";
+import { ExamReviewRoom, ExamSchedule, ExamScheduleRelation } from "src/models";
 import { ExamQuestionModule } from "src/exam-question/exam-question.module";
 import { UserProfileModule } from "src/user-profile/user-profile.module";
 
@@ -15,6 +15,7 @@ import { UserProfileModule } from "src/user-profile/user-profile.module";
       CreateExamReviewRoomRequest,
       ExamReviewRoom,
       ExamSchedule,
+      ExamScheduleRelation,
     ]),
   ],
   controllers: [ExamReviewRoomController],

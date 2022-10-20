@@ -10,6 +10,7 @@ import {
   Res,
   HttpException,
   HttpStatus,
+  Put,
 } from "@nestjs/common";
 import {
   AuthorizeUserProfile,
@@ -85,16 +86,17 @@ export class ExamReviewRoomController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createExamReviewRoom(
-    @Req() request: AuthorizeUserProfile,
-    @Body() body: CreateExamReviewRoomDto
+    @Req() { user }: AuthorizeUserProfile,
+    @Body() { requestId }: CreateExamReviewRoomDto
   ) {
-    const [target, isCreated] =
-      await this.examReviewRoomService.createExamReviewRoom(body);
+    const createdRoom = await this.examReviewRoomService.createExamReviewRoom(
+      user.id,
+      requestId
+    );
 
     return {
-      message: `received ${body}`,
-      examReviewRoom: target,
-      isCreated,
+      message: `${createdRoom.examType} 리뷰방 생성완료`,
+      isCreated: true,
     };
   }
 
@@ -120,17 +122,16 @@ export class ExamReviewRoomController {
   }
 
   @Get("/create-request")
-  async getCreateExamReviewRoomRequestList(
+  async getRequestList(
     @Query("examScheduleId") examScheduleId: number,
     @Query("userId") userId: string
   ) {
     console.log("userId", userId);
 
-    const requestList =
-      await this.examReviewRoomService.getCreateExamReviewRoomRequestList(
-        examScheduleId,
-        userId
-      );
+    const requestList = await this.examReviewRoomService.getRequestList(
+      examScheduleId,
+      userId
+    );
 
     return {
       message: `${examScheduleId} requestList`,
@@ -139,20 +140,33 @@ export class ExamReviewRoomController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete("/create-request")
+  @Put("/create-request")
   async cancelExamReviewRoomRequest(
     @Req() { user }: AuthorizeUserProfile,
     @Query("requestId") requestId: number,
     @Query("examType") examType: string
   ) {
-    const isDelete =
-      await this.examReviewRoomService.deleteExamReviewRoomRequest(
-        user.id,
-        requestId
-      );
+    const isCanceled = await this.examReviewRoomService.cancelRequest(
+      user.id,
+      requestId
+    );
     return {
       message: `${examType} 신청 취소`,
-      isDelete,
+      isCanceled,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete("/create-request")
+  async deleteExamReviewRoomRequest(
+    @Req() { user }: AuthorizeUserProfile,
+    @Query("requestId") requestId: number,
+    @Query("examType") examType: string
+  ) {
+    const isDeleted = await this.examReviewRoomService.deleteRequest(requestId);
+    return {
+      message: `${examType} 신청 삭제`,
+      isDeleted,
     };
   }
 

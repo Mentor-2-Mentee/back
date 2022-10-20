@@ -10,6 +10,7 @@ import {
   CreateExamReviewRoomRequest,
   ExamReviewRoom,
   ExamSchedule,
+  ExamScheduleRelation,
 } from "src/models/entities";
 import { WhereOptions, Op } from "sequelize";
 import { ExamQuestionService } from "src/exam-question/exam-question.service";
@@ -17,6 +18,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as PDFDocument from "pdfkit";
 import DateFormatting from "src/common/utils/DateFormatting";
 import configuration from "src/common/config/configuration";
+import { whereAndOptions } from "src/common/utils";
 
 const INITIAL_QUESTION_COUNT = 5;
 
@@ -29,7 +31,9 @@ export class ExamReviewRoomService {
     @InjectModel(ExamReviewRoom)
     private examReviewRoomModel: typeof ExamReviewRoom,
     @InjectModel(ExamSchedule)
-    private examScheduleModel: typeof ExamSchedule
+    private examScheduleModel: typeof ExamSchedule,
+    @InjectModel(ExamScheduleRelation)
+    private examScheduleRelation: typeof ExamScheduleRelation
   ) {}
 
   async createExamReviewRoomRequest(
@@ -41,18 +45,10 @@ export class ExamReviewRoomService {
     }: CreateCreateExamReviewRoomRequestDto
   ): Promise<[boolean, string]> {
     if (examType === "") return [false, "응시 직군이 입력되지 않았습니다."];
-    const searchExamScheduleId: WhereOptions = [];
-    searchExamScheduleId.push({
-      ["examScheduleId"]: {
-        [Op.and]: {
-          [Op.eq]: examScheduleId,
-        },
-      },
-      ["examType"]: {
-        [Op.and]: {
-          [Op.eq]: examType,
-        },
-      },
+
+    const searchRequestOptions = whereAndOptions({
+      examScheduleId,
+      examType,
     });
 
     const existRoom = await this.examReviewRoomModel.findOne({
@@ -67,7 +63,7 @@ export class ExamReviewRoomService {
     const [existRequest, created] =
       await this.createExamReviewRoomRequestModel.findOrCreate({
         where: {
-          [Op.and]: searchExamScheduleId,
+          [Op.and]: searchRequestOptions,
         },
         defaults: {
           examScheduleId,
@@ -76,6 +72,11 @@ export class ExamReviewRoomService {
           nonParticipantUserId: isParticipant ? [] : [requestUserId],
         },
       });
+
+    await this.examScheduleRelation.create({
+      examScheduleId,
+      createExamReviewRoomRequestId: existRequest.id,
+    });
 
     if (!created) {
       const [isExist, message] = await this.enterCreateExamReviewRoom(
@@ -124,10 +125,7 @@ export class ExamReviewRoomService {
     return [false, "신청 완료"];
   }
 
-  async getCreateExamReviewRoomRequestList(
-    examScheduleId: number,
-    userId?: string
-  ) {
+  async getRequestList(examScheduleId: number, userId?: string) {
     const requestList = await this.createExamReviewRoomRequestModel.findAll({
       where: {
         examScheduleId,
@@ -172,7 +170,7 @@ export class ExamReviewRoomService {
     return reformedRequestList;
   }
 
-  async deleteExamReviewRoomRequest(userId: string, requestId: number) {
+  async cancelRequest(userId: string, requestId: number) {
     const targetRequest = await this.createExamReviewRoomRequestModel.findByPk(
       requestId
     );
@@ -211,60 +209,60 @@ export class ExamReviewRoomService {
     return true;
   }
 
-  async createExamReviewRoom(createExamReviewRoomDto: CreateExamReviewRoomDto) {
-    const searchByExamScheduleIdAndExamField: WhereOptions = [];
-    searchByExamScheduleIdAndExamField.push({
-      ["examScheduleId"]: {
-        [Op.and]: {
-          [Op.eq]: createExamReviewRoomDto.examScheduleId,
-        },
-      },
-      ["examType"]: {
-        [Op.and]: {
-          [Op.eq]: createExamReviewRoomDto.examType,
-        },
-      },
+  async deleteRequest(requestId: number) {
+    const targetRequest = await this.createExamReviewRoomRequestModel.findByPk(
+      requestId,
+      { include: { model: ExamScheduleRelation } }
+    );
+    const destroyedCount = await this.createExamReviewRoomRequestModel.destroy({
+      where: { id: requestId },
+    });
+    await this.deleteRelation(targetRequest.ExamScheduleRelation.id);
+    return Boolean(destroyedCount !== 0);
+  }
+
+  async deleteRelation(relationId: string) {
+    const destroyedCount = await this.examScheduleRelation.destroy({
+      where: { id: relationId },
+    });
+    return Boolean(destroyedCount !== 0);
+  }
+
+  async createExamReviewRoom(adminUserId: string, requestId: number) {
+    const targetRequest = await this.createExamReviewRoomRequestModel.findByPk(
+      requestId,
+      { include: { model: ExamScheduleRelation } }
+    );
+
+    const createdRoom = await this.examReviewRoomModel.create({
+      examType: targetRequest.examType,
+      examScheduleId: targetRequest.examScheduleId,
+      examQuestionId: await this.ExamQuestionService.createBulkQuestion({
+        examScheduleId: targetRequest.examScheduleId,
+        examType: targetRequest.examType,
+        bulkCount: 5,
+      }),
+      adminUserId: [adminUserId],
+      participantUserId: targetRequest.participantUserId,
+      nonParticipantUserId: targetRequest.nonParticipantUserId,
     });
 
-    const [target, isCreated] = await this.examReviewRoomModel.findOrCreate({
-      where: {
-        [Op.and]: searchByExamScheduleIdAndExamField,
+    await this.examScheduleRelation.update(
+      {
+        examScheduleId: targetRequest.examScheduleId,
+        examReviewRoomId: createdRoom.id,
+        createExamReviewRoomRequestId: null,
       },
-      defaults: {
-        examScheduleTitle: createExamReviewRoomDto.examScheduleTitle,
-        examScheduleId: createExamReviewRoomDto.examScheduleId,
-        examType: createExamReviewRoomDto.examType,
-        chatListBundle: [],
-        examQuestionList: await this.ExamQuestionService.createBulkQuestion({
-          examScheduleId: createExamReviewRoomDto.examScheduleId,
-          examType: createExamReviewRoomDto.examType,
-          bulkCount: 5,
-        }),
-      },
+      {
+        where: { id: targetRequest.ExamScheduleRelation.id },
+      }
+    );
+
+    await this.createExamReviewRoomRequestModel.destroy({
+      where: { id: requestId },
     });
 
-    if (isCreated) {
-      const searchDestoryRequest: WhereOptions = [];
-      searchDestoryRequest.push({
-        ["examScheduleId"]: {
-          [Op.and]: {
-            [Op.eq]: createExamReviewRoomDto.examScheduleId,
-          },
-        },
-        ["examType"]: {
-          [Op.and]: {
-            [Op.eq]: createExamReviewRoomDto.examType,
-          },
-        },
-      });
-      await this.createExamReviewRoomRequestModel.destroy({
-        where: {
-          [Op.and]: searchDestoryRequest,
-        },
-      });
-    }
-
-    return [target, isCreated];
+    return createdRoom;
   }
 
   async findExamReviewRoomList(examScheduleId: number) {

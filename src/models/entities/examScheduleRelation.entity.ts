@@ -23,7 +23,7 @@ export class ExamScheduleRelation extends Model {
     defaultValue: DataType.UUIDV1,
     allowNull: false,
   })
-  id!: string;
+  id: string;
 
   @ForeignKey(() => ExamSchedule)
   @Column({
@@ -50,8 +50,8 @@ export class ExamScheduleRelation extends Model {
     allowNull: true,
     field: "create_review_room_request_id",
   })
-  createExamReviewRoomId: number;
+  createExamReviewRoomRequestId: number;
 
   @BelongsTo(() => CreateExamReviewRoomRequest)
-  createExamReviewRoom: CreateExamReviewRoomRequest;
+  createExamReviewRoomRequest: CreateExamReviewRoomRequest;
 }

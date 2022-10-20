@@ -4,6 +4,7 @@ import { Op, WhereOptions } from "sequelize";
 import {
   CreateBulkExamQuestionDto,
   ExamQuestion,
+  ExamSchedule,
   UpdateExamQuestionDto,
 } from "src/models";
 
@@ -11,7 +12,9 @@ import {
 export class ExamQuestionService {
   constructor(
     @InjectModel(ExamQuestion)
-    private examQuestionModel: typeof ExamQuestion
+    private examQuestionModel: typeof ExamQuestion,
+    @InjectModel(ExamSchedule)
+    private examScheduleModel: typeof ExamSchedule
   ) {}
 
   async createBulkQuestion({
@@ -19,11 +22,18 @@ export class ExamQuestionService {
     examType,
     bulkCount,
   }: CreateBulkExamQuestionDto) {
+    const targetExamSchedule = await this.examScheduleModel.findByPk(
+      examScheduleId
+    );
     const basement = [...Array(bulkCount).keys()].map(() => {
       return {
-        answerExampleList: ["", "", "", "", ""],
+        questionText: null,
+        questionImageUrl: [],
+        answerExample: ["", "", "", "", ""],
+        solution: "",
+        answer: "",
         questionType: "MULTIPLE_CHOICE",
-        examScheduleId,
+        examOrganizer: targetExamSchedule.organizer,
         examType,
       };
     });
@@ -41,13 +51,7 @@ export class ExamQuestionService {
       },
     });
 
-    await this.examQuestionModel.bulkCreate(basement);
-    const newQuestionList = await this.examQuestionModel.findAll({
-      where: {
-        [Op.and]: searchQuestionOption,
-      },
-    });
-
+    const newQuestionList = await this.examQuestionModel.bulkCreate(basement);
     const questionIdList = newQuestionList.map((question) => question.id);
 
     return questionIdList;

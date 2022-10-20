@@ -65,6 +65,8 @@ export class ExamReviewRoom extends Model {
   })
   nonParticipantUserId: string[];
 
-  @HasMany(() => ExamScheduleRelation)
+  @HasOne(() => ExamScheduleRelation, {
+    onDelete: "CASCADE",
+  })
   ExamScheduleRelation?: ExamScheduleRelation;
 }

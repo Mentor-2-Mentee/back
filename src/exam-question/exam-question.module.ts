@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { ExamQuestionService } from "./exam-question.service";
 import { ExamQuestionController } from "./exam-question.controller";
 import { SequelizeModule } from "@nestjs/sequelize";
-import { ExamReviewRoom, ExamQuestion } from "src/models";
+import { ExamReviewRoom, ExamQuestion, ExamSchedule } from "src/models";
 import { MulterModule } from "@nestjs/platform-express";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { diskStorage } from "multer";
@@ -12,7 +12,7 @@ import { extname } from "path";
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([ExamQuestion, ExamReviewRoom]),
+    SequelizeModule.forFeature([ExamQuestion, ExamReviewRoom, ExamSchedule]),
     MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
