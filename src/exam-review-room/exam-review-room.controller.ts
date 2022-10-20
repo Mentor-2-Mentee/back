@@ -31,28 +31,14 @@ export class ExamReviewRoomController {
 
   @Get()
   async findExamReviewRoomListByExamScheduleId(
-    @Query("examScheduleId") examScheduleId: number
-    // @Query("examType") examType: string
+    @Query("examScheduleId") examScheduleId: number,
+    @Query("userId") userId: string
   ) {
-    // console.log(
-    //   "findExamReviewRoomListByExamScheduleId",
-    //   examScheduleId
-    //   // examType
-    // );
     const examReviewRoomList =
-      await this.examReviewRoomService.findExamReviewRoomList(examScheduleId);
-
-    // // if (examType !== undefined) {
-    // //   const target = examReviewRoomList.find(
-    // //     (examReviewRoom) => examReviewRoom.examType === examType
-    // //   );
-    // //   return {
-    // //     message: `find ${examType}`,
-    // //     examReviewRoom: target,
-    // //   };
-    // // }
-
-    // console.log("examReviewRoomList", examReviewRoomList);
+      await this.examReviewRoomService.findExamReviewRoomList(
+        examScheduleId,
+        userId
+      );
 
     return {
       message: "OK",

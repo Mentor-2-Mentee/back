@@ -243,8 +243,12 @@ export class ExamReviewRoomService {
         bulkCount: 5,
       }),
       adminUserId: [adminUserId],
-      participantUserId: targetRequest.participantUserId,
-      nonParticipantUserId: targetRequest.nonParticipantUserId,
+      participantUserId: targetRequest.participantUserId.filter(
+        (currentUser) => currentUser !== adminUserId
+      ),
+      nonParticipantUserId: targetRequest.nonParticipantUserId.filter(
+        (currentUser) => currentUser !== adminUserId
+      ),
     });
 
     await this.examScheduleRelation.update(
@@ -265,12 +269,56 @@ export class ExamReviewRoomService {
     return createdRoom;
   }
 
-  async findExamReviewRoomList(examScheduleId: number) {
-    const examSchedule = await (
-      await this.examScheduleModel.findByPk(examScheduleId)
-    ).$get("examReviewRooms");
+  async findExamReviewRoomList(examScheduleId: number, userId?: string) {
+    const examSchedule = await this.examScheduleModel.findByPk(examScheduleId);
+    const examReviewRooms = await examSchedule.$get("examReviewRooms");
 
-    return examSchedule;
+    const reFormedRooms = examReviewRooms.map(
+      ({
+        id,
+        adminUserId,
+        participantUserId,
+        nonParticipantUserId,
+        examType,
+      }) => {
+        console.log(
+          adminUserId,
+          participantUserId,
+          nonParticipantUserId,
+          userId
+        );
+        const userExistCheck = (userId: string) => {
+          if (adminUserId.findIndex((adminUser) => adminUser === userId) !== -1)
+            return "adminUser";
+          if (
+            participantUserId.findIndex(
+              (participantUser) => participantUser === userId
+            ) !== -1
+          )
+            return "participantUser";
+          if (
+            nonParticipantUserId.findIndex(
+              (nonParticipantUser) => nonParticipantUser === userId
+            ) !== -1
+          )
+            return "nonParticipantUser";
+          return false;
+        };
+        const totalUserCount =
+          adminUserId.length +
+          participantUserId.length +
+          nonParticipantUserId.length;
+
+        return {
+          id,
+          examType,
+          userExist: userExistCheck(userId),
+          totalUserCount,
+        };
+      }
+    );
+
+    return reFormedRooms;
   }
 
   async findExamReviewRoomOne(examScheduleId: number, examType: string) {
