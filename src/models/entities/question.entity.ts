@@ -21,7 +21,7 @@ export class Question extends Model {
   @Column({
     primaryKey: true,
   })
-  questionId: number;
+  id: number;
 
   @Column({ allowNull: false })
   rootTag: string;

@@ -4,6 +4,7 @@ import { Op, WhereOptions } from "sequelize";
 import {
   CreateBulkExamQuestionDto,
   ExamQuestion,
+  ExamReviewRoom,
   ExamSchedule,
   UpdateExamQuestionDto,
 } from "src/models";
@@ -14,17 +15,20 @@ export class ExamQuestionService {
     @InjectModel(ExamQuestion)
     private examQuestionModel: typeof ExamQuestion,
     @InjectModel(ExamSchedule)
-    private examScheduleModel: typeof ExamSchedule
+    private examScheduleModel: typeof ExamSchedule,
+    @InjectModel(ExamReviewRoom)
+    private examReviewRoomModel: typeof ExamReviewRoom
   ) {}
 
   async createBulkQuestion({
-    examScheduleId,
-    examType,
+    examReviewRoomId,
     bulkCount,
   }: CreateBulkExamQuestionDto) {
-    const targetExamSchedule = await this.examScheduleModel.findByPk(
-      examScheduleId
+    const targetExamReviewRoom = await this.examReviewRoomModel.findByPk(
+      examReviewRoomId
     );
+    const relation = await targetExamReviewRoom.$get("ExamScheduleRelation");
+    const parentSchedule = await relation.$get("examSchedule");
     const basement = [...Array(bulkCount).keys()].map(() => {
       return {
         questionText: null,
@@ -33,22 +37,9 @@ export class ExamQuestionService {
         solution: "",
         answer: "",
         questionType: "MULTIPLE_CHOICE",
-        examOrganizer: targetExamSchedule.organizer,
-        examType,
+        examOrganizer: parentSchedule.organizer,
+        examType: targetExamReviewRoom.examType,
       };
-    });
-    const searchQuestionOption: WhereOptions = [];
-    searchQuestionOption.push({
-      ["examScheduleId"]: {
-        [Op.and]: {
-          [Op.eq]: examScheduleId,
-        },
-      },
-      ["examType"]: {
-        [Op.and]: {
-          [Op.eq]: examType,
-        },
-      },
     });
 
     const newQuestionList = await this.examQuestionModel.bulkCreate(basement);
@@ -99,9 +90,15 @@ export class ExamQuestionService {
     return this.findQuestionById(updateExamQuestionDto.examQuestionId);
   }
 
-  async findQuestionAll(examQuestionIdList: number[]) {
-    const result: ExamQuestion[] = [];
+  async findExamQuestionIdListByRoomId(examReviewRoomId: number) {
+    const targetRoom = await this.examReviewRoomModel.findByPk(
+      examReviewRoomId
+    );
+    return targetRoom.examQuestionId;
+  }
 
+  async findExamQuestionListByQuestionId(examQuestionIdList: number[]) {
+    const result = [];
     for (const examQuestionId of examQuestionIdList) {
       const question = await this.examQuestionModel.findByPk(examQuestionId);
       result.push(question);

@@ -237,11 +237,7 @@ export class ExamReviewRoomService {
     const createdRoom = await this.examReviewRoomModel.create({
       examType: targetRequest.examType,
       examScheduleId: targetRequest.examScheduleId,
-      examQuestionId: await this.ExamQuestionService.createBulkQuestion({
-        examScheduleId: targetRequest.examScheduleId,
-        examType: targetRequest.examType,
-        bulkCount: 5,
-      }),
+      examQuestionId: [],
       adminUserId: [adminUserId],
       participantUserId: targetRequest.participantUserId.filter(
         (currentUser) => currentUser !== adminUserId
@@ -266,6 +262,21 @@ export class ExamReviewRoomService {
       where: { id: requestId },
     });
 
+    const initalQuestionIdList =
+      await this.ExamQuestionService.createBulkQuestion({
+        examReviewRoomId: createdRoom.id,
+        bulkCount: 5,
+      });
+
+    await this.examReviewRoomModel.update(
+      {
+        examQuestionId: initalQuestionIdList,
+      },
+      {
+        where: { id: createdRoom.id },
+      }
+    );
+
     return createdRoom;
   }
 
@@ -281,12 +292,6 @@ export class ExamReviewRoomService {
         nonParticipantUserId,
         examType,
       }) => {
-        console.log(
-          adminUserId,
-          participantUserId,
-          nonParticipantUserId,
-          userId
-        );
         const userExistCheck = (userId: string) => {
           if (adminUserId.findIndex((adminUser) => adminUser === userId) !== -1)
             return "adminUser";
@@ -321,66 +326,42 @@ export class ExamReviewRoomService {
     return reFormedRooms;
   }
 
-  async findExamReviewRoomOne(examScheduleId: number, examType: string) {
-    const searchExamReviewRoom: WhereOptions = [];
-    searchExamReviewRoom.push({
-      ["examScheduleId"]: {
-        [Op.and]: {
-          [Op.eq]: examScheduleId,
-        },
-      },
-      ["examType"]: {
-        [Op.and]: {
-          [Op.eq]: examType,
-        },
-      },
-    });
-
-    return await this.examReviewRoomModel.findOne({
-      where: searchExamReviewRoom,
-    });
+  async findExamReviewRoomHeadData(examReviewRoomId: number) {
+    const targetRoom = await this.examReviewRoomModel.findByPk(
+      examReviewRoomId
+    );
+    const targetSchedule = await targetRoom.$get("examSchedule");
+    return {
+      examOrganizer: targetSchedule.organizer,
+      examType: targetRoom.examType,
+    };
   }
 
-  async updateExamReviewRoomOne(
-    examScheduleId: number,
-    examType: string,
-    updateData?: any
-  ) {
-    const searchExamReviewRoom: WhereOptions = [];
-    searchExamReviewRoom.push({
-      ["examScheduleId"]: {
-        [Op.and]: {
-          [Op.eq]: examScheduleId,
-        },
-      },
-      ["examType"]: {
-        [Op.and]: {
-          [Op.eq]: examType,
-        },
-      },
-    });
+  async findExamReviewRoomOne(examReviewRoomId: number) {
+    return await this.examReviewRoomModel.findByPk(examReviewRoomId);
+  }
 
+  async updateExamReviewRoomOne(examReviewRoomId: number, updateData?: any) {
     await this.examReviewRoomModel.update(
       {
         ...updateData,
       },
       {
-        where: searchExamReviewRoom,
+        where: { id: examReviewRoomId },
       }
     );
 
-    return await this.examReviewRoomModel.findOne({
-      where: searchExamReviewRoom,
-    });
+    return await this.examReviewRoomModel.findByPk(examReviewRoomId);
   }
 
   async generateQuestionPDF(
     examReviewRoom: ExamReviewRoom,
     examQuestionIdList: number[]
   ): Promise<Buffer> {
-    const examQuestionList = await this.ExamQuestionService.findQuestionAll(
-      examQuestionIdList
-    );
+    const examQuestionList =
+      await this.ExamQuestionService.findExamQuestionListByQuestionId(
+        examQuestionIdList
+      );
 
     const examDate = new DateFormatting(new Date(examReviewRoom.createdAt))
       .YYYY_MM_DD;
@@ -448,9 +429,10 @@ export class ExamReviewRoomService {
     examReviewRoom: ExamReviewRoom,
     examQuestionIdList: number[]
   ): Promise<Buffer> {
-    const examQuestionList = await this.ExamQuestionService.findQuestionAll(
-      examQuestionIdList
-    );
+    const examQuestionList =
+      await this.ExamQuestionService.findExamQuestionListByQuestionId(
+        examQuestionIdList
+      );
 
     const examDate = new DateFormatting(new Date(examReviewRoom.createdAt))
       .YYYY_MM_DD;
@@ -498,25 +480,50 @@ export class ExamReviewRoomService {
     return pdfBuffer;
   }
 
-  async checkUserEntered(userId: string, examReviewRoomId: number) {
-    const targetRoom = await this.examReviewRoomModel.findByPk(
-      examReviewRoomId
+  async enterRoom(
+    userId: string,
+    enterUserType: string,
+    examReviewRoomId: number
+  ) {
+    const { adminUserId, participantUserId, nonParticipantUserId } =
+      await this.examReviewRoomModel.findByPk(examReviewRoomId);
+
+    const userExistCheck = (userId: string) => {
+      if (adminUserId.findIndex((adminUser) => adminUser === userId) !== -1)
+        return "adminUser";
+      if (
+        participantUserId.findIndex(
+          (participantUser) => participantUser === userId
+        ) !== -1
+      )
+        return "participantUser";
+      if (
+        nonParticipantUserId.findIndex(
+          (nonParticipantUser) => nonParticipantUser === userId
+        ) !== -1
+      )
+        return "nonParticipantUser";
+      return false;
+    };
+
+    if (userExistCheck(userId)) return false;
+
+    await this.examReviewRoomModel.update(
+      {
+        participantUserId:
+          enterUserType === "participantUser"
+            ? [...participantUserId, userId]
+            : participantUserId,
+        nonParticipantUserId:
+          enterUserType === "nonParticipantUser"
+            ? [...nonParticipantUserId, userId]
+            : nonParticipantUserId,
+      },
+      {
+        where: { id: examReviewRoomId },
+      }
     );
 
-    // const isEndtered = Boolean(
-    //   targetRoom.userList.findIndex((ele) => ele === userId) !== -1
-    // );
-
-    // if (isEndtered) {
-    //   return {
-    //     message: "enteredUser",
-    //     examScheduleId: targetRoom.examScheduleId,
-    //     examType: targetRoom.examType,
-    //   };
-    // }
-
-    return {
-      message: "not enteredUser",
-    };
+    return true;
   }
 }

@@ -1,5 +1,4 @@
 export class CreateBulkExamQuestionDto {
-  examScheduleId: number;
-  examType: string;
+  examReviewRoomId: number;
   bulkCount: number;
 }

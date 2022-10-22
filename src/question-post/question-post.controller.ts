@@ -72,17 +72,17 @@ export class QuestionPostController {
     };
 
     console.log("question등록", body.questionForm.question);
-    const { questionId } =
+    const { id } =
       body.questionForm.uploadType === "TEXT"
         ? await this.questionService.createNewQuestionByText(createQuestionDto)
         : await this.questionService.createNewQuestionByImage(
             createQuestionDto
           );
 
-    console.log("questionId생성", questionId);
+    console.log("questionId생성", id);
 
     const createQuestionPostDto: CreateQuestionPostDto = {
-      questionId,
+      questionId: id,
       authorId: String(request.user.id),
       questionPostTitle: body.questionForm.questionPostTitle,
       questionPostDescription: body.questionForm.questionPostDescription,

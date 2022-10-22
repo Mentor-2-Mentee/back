@@ -30,6 +30,21 @@ export class ExamReviewRoomController {
   ) {}
 
   @Get()
+  async findExamReviewRoomHeadData(
+    @Query("examReviewRoomId") examReviewRoomId: number
+    // @Query("userId") userId: string
+  ) {
+    const data = await this.examReviewRoomService.findExamReviewRoomHeadData(
+      examReviewRoomId
+    );
+
+    return {
+      message: "organizer & examType",
+      ...data,
+    };
+  }
+
+  @Get("list")
   async findExamReviewRoomListByExamScheduleId(
     @Query("examScheduleId") examScheduleId: number,
     @Query("userId") userId: string
@@ -211,10 +226,14 @@ export class ExamReviewRoomController {
   @UseGuards(JwtAuthGuard)
   @Post("/enter")
   async roomEnter(@Req() { user }: AuthorizeUserProfile, @Body() body: any) {
-    console.log("enter user", user, body);
-    return await this.examReviewRoomService.checkUserEntered(
+    const isEntered = await this.examReviewRoomService.enterRoom(
       user.id,
+      body.enterUserType,
       body.examReviewRoomId
     );
+    return {
+      message: "enter",
+      isEntered,
+    };
   }
 }

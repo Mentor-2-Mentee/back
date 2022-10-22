@@ -6,6 +6,8 @@ import {
   Req,
   UseInterceptors,
   UploadedFile,
+  Get,
+  Query,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import configuration from "src/common/config/configuration";
@@ -33,6 +35,27 @@ export class ExamQuestionController {
     return {
       message: "OK",
       imageUrl: `${configuration().apiServerBaseURL}/${savedPath}`,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("/list")
+  async findExamQuestionList(
+    @Req() { user }: AuthorizeUserProfile,
+    @Query("examReviewRoomId") examReviewRoomId: number
+  ) {
+    const examQuestionIdList =
+      await this.examQuestionService.findExamQuestionIdListByRoomId(
+        examReviewRoomId
+      );
+    const examQuestionList =
+      await this.examQuestionService.findExamQuestionListByQuestionId(
+        examQuestionIdList
+      );
+
+    return {
+      message: `${examReviewRoomId} questions`,
+      examQuestionList,
     };
   }
 }

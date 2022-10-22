@@ -41,10 +41,6 @@ export class ExamReviewRoom extends Model {
   @BelongsTo(() => ExamSchedule)
   examSchedule: ExamSchedule;
 
-  /**
-   * ex: 서부발전
-   */
-
   @Column({ allowNull: false, field: "exam_question_id", type: DataType.JSON })
   examQuestionId: number[];
 

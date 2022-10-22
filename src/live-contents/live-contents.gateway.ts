@@ -101,6 +101,8 @@ export class LiveContentsGateway {
     this.server.emit(targetChannel, data);
   }
 
+  ////////
+
   /**
    * 모든 회사의 직군시험들에 대한 실시간 작성 내용 수신 엔드포인트 => 해당 회사의 특정 직군시험에 작성된 내용 발신
    * @param data : examScheduleId, examType, examQuestionIndex, examQuestion
@@ -134,18 +136,18 @@ export class LiveContentsGateway {
   ) {
     console.log("examReviewRoom_question_prev received data", data);
 
-    const targetChannel = `examReviewRoom_question_prev-${data.examScheduleId}_${data.examType}_${data.userId}`;
+    const targetChannel = `examReviewRoom_question_prev-${data.examReviewRoomId}_${data.userId}`;
 
     const roomData = await this.examReviewRoomService.findExamReviewRoomOne(
-      data.examScheduleId,
-      data.examType
+      data.examReviewRoomId
     );
-    const examList = await this.examQuestionService.findQuestionAll(
-      roomData.examQuestionId
-    );
+    const examQuestionList =
+      await this.examQuestionService.findExamQuestionListByQuestionId(
+        roomData.examQuestionId
+      );
 
     const result = {
-      examQuestionList: examList,
+      examQuestionList: examQuestionList,
       liveWrittingUser: [],
       timer: data.timer,
     };
@@ -158,13 +160,7 @@ export class LiveContentsGateway {
   @SubscribeMessage("examReviewRoom_question_option")
   async emitUpdatedExamReviewRoomQuestionOption(
     @MessageBody()
-    {
-      userId,
-      examScheduleId,
-      examType,
-      setQuestionCount,
-      deleteExamQuestionId,
-    }: any
+    { userId, examReviewRoomId, setQuestionCount, deleteExamQuestionId }: any
   ) {
     console.log(
       "examReviewRoom_question_option",
@@ -172,19 +168,17 @@ export class LiveContentsGateway {
       deleteExamQuestionId
     );
 
-    const targetChannel = `examReviewRoom_question_option-${examScheduleId}_${examType}`;
+    const targetChannel = `examReviewRoom_question_option-${examReviewRoomId}`;
 
     const roomData = await this.examReviewRoomService.findExamReviewRoomOne(
-      examScheduleId,
-      examType
+      examReviewRoomId
     );
 
     if (deleteExamQuestionId) {
       await this.examQuestionService.deleteQuestion(deleteExamQuestionId);
 
       const targetRoom = await this.examReviewRoomService.findExamReviewRoomOne(
-        examScheduleId,
-        examType
+        examReviewRoomId
       );
       const remainedQuestionIdList = targetRoom.examQuestionId.filter(
         (quesionId) => quesionId !== deleteExamQuestionId
@@ -192,16 +186,16 @@ export class LiveContentsGateway {
 
       const updatedRoom =
         await this.examReviewRoomService.updateExamReviewRoomOne(
-          examScheduleId,
-          examType,
+          examReviewRoomId,
           {
             examQuestionList: remainedQuestionIdList,
           }
         );
 
-      const examList = await this.examQuestionService.findQuestionAll(
-        updatedRoom.examQuestionId
-      );
+      const examList =
+        await this.examQuestionService.findExamQuestionListByQuestionId(
+          updatedRoom.examQuestionId
+        );
 
       const result = {
         examQuestionList: examList,
@@ -226,16 +220,16 @@ export class LiveContentsGateway {
         }
         const updatedRoom =
           await this.examReviewRoomService.updateExamReviewRoomOne(
-            examScheduleId,
-            examType,
+            examReviewRoomId,
             {
               examQuestionList: remainedQuestionIdList,
             }
           );
 
-        const examList = await this.examQuestionService.findQuestionAll(
-          updatedRoom.examQuestionId
-        );
+        const examList =
+          await this.examQuestionService.findExamQuestionListByQuestionId(
+            updatedRoom.examQuestionId
+          );
 
         const result = {
           examQuestionList: examList,
@@ -253,23 +247,22 @@ export class LiveContentsGateway {
         if (createBulkCount > 200) throw new Error("too much require!!");
         const createdNewQuestionIdList =
           await this.examQuestionService.createBulkQuestion({
-            examScheduleId,
-            examType,
+            examReviewRoomId,
             bulkCount: createBulkCount,
           });
 
         const updatedRoom =
           await this.examReviewRoomService.updateExamReviewRoomOne(
-            examScheduleId,
-            examType,
+            examReviewRoomId,
             {
               examQuestionList: createdNewQuestionIdList,
             }
           );
 
-        const examList = await this.examQuestionService.findQuestionAll(
-          updatedRoom.examQuestionId
-        );
+        const examList =
+          await this.examQuestionService.findExamQuestionListByQuestionId(
+            updatedRoom.examQuestionId
+          );
 
         const result = {
           examQuestionList: examList,
