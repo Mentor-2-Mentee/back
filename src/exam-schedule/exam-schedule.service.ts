@@ -65,10 +65,6 @@ export class ExamScheduleService {
 
     console.log("searchQuery", startDate, endDate);
 
-    // const allSchedule = await this.examScheduleModel.findAll();
-
-    // console.log("allSchedule", allSchedule);
-
     const examScheduleList = await this.examScheduleModel.findAll({
       include: [{ model: ExamReviewRoom }, { model: ExamScheduleRelation }],
       where: {
@@ -76,6 +72,8 @@ export class ExamScheduleService {
       },
       // plain: true,
     });
+
+    console.log(examScheduleList[0]);
 
     // for (const examSchedule of examScheduleList) {
     //   // examSchedule.examScheduleRelations.map(relation => {

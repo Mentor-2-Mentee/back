@@ -63,7 +63,6 @@ export class OauthService {
       });
 
     return {
-      // isfirstSignIn: true,
       accessToken,
       refreshToken,
     };

@@ -6,6 +6,9 @@ import {
   HasMany,
   DefaultScope,
   Scopes,
+  ForeignKey,
+  HasOne,
+  BelongsTo,
 } from "sequelize-typescript";
 import { QuestionPost } from "./questionPost.entity";
 
@@ -60,7 +63,7 @@ export class User extends Model {
   @Column({ allowNull: true, field: "refresh_token" })
   refreshToken: string;
 
-  @HasMany(() => QuestionPost, "authorId")
+  @HasMany(() => QuestionPost)
   questionPost: QuestionPost;
 
   // @ManyToMany(() => ExamReviewRoom, "adminUserId")

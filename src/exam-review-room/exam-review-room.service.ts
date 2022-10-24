@@ -341,6 +341,23 @@ export class ExamReviewRoomService {
     return await this.examReviewRoomModel.findByPk(examReviewRoomId);
   }
 
+  async findExamReviewRoomUserList(examReviewRoomId: number) {
+    const targetRoom = await this.examReviewRoomModel.findByPk(
+      examReviewRoomId,
+      {
+        attributes: [
+          "adminUserId",
+          "participantUserId",
+          "nonParticipantUserId",
+        ],
+      }
+    );
+
+    console.log("userLists", targetRoom);
+
+    return targetRoom;
+  }
+
   async updateExamReviewRoomOne(examReviewRoomId: number, updateData?: any) {
     await this.examReviewRoomModel.update(
       {

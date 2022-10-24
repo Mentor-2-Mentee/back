@@ -32,7 +32,6 @@ export class ExamReviewRoomController {
   @Get()
   async findExamReviewRoomHeadData(
     @Query("examReviewRoomId") examReviewRoomId: number
-    // @Query("userId") userId: string
   ) {
     const data = await this.examReviewRoomService.findExamReviewRoomHeadData(
       examReviewRoomId
@@ -62,25 +61,16 @@ export class ExamReviewRoomController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get("userInfo")
-  async findUserInfoById(
-    @Query("examScheduleId") examScheduleId: number,
-    @Query("examType") examType: string
-  ) {
-    // const { userList } = await this.examReviewRoomService.findExamReviewRoomOne(
-    //   examScheduleId,
-    //   examType
-    // );
-    const userInfoList = [];
-
-    // for (const userId of userList) {
-    //   // const userInfo = await this.OauthService.getProfile(userId);
-    //   // userInfoList.push(userInfo);
-    // }
+  @Get("user-list")
+  async findUserInfoById(@Query("examReviewRoomId") examReviewRoomId: number) {
+    const userList =
+      await this.examReviewRoomService.findExamReviewRoomUserList(
+        examReviewRoomId
+      );
 
     return {
-      message: `${examScheduleId}-${examType} userInfoList`,
-      userInfoList,
+      message: `${examReviewRoomId} userList`,
+      userList,
     };
   }
 

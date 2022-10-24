@@ -66,7 +66,7 @@ export class QuestionPostService {
         { model: Question, where: { [Op.and]: searchTagFilter } },
         { model: User },
       ],
-      order: [["questionPostId", "DESC"]],
+      order: [["id", "DESC"]],
       where: { [Op.and]: searchKeyword },
       offset: (querys.page - 1) * querys.limit,
       limit: querys.limit,
@@ -75,29 +75,31 @@ export class QuestionPostService {
   }
 
   async findQuestionPostOneById(postId: number) {
-    const result = await this.questionPostModel
-      .findByPk(postId, {
-        include: [{ model: Question }, { model: User }],
-        plain: true,
-      })
-      .then((data) => {
-        data.question.answerExample = JSON.parse(data.question.answerExample);
-        data.question.questionImageUrl = JSON.parse(
-          data.question.questionImageUrl
-        );
-        data.question.detailTag = JSON.parse(data.question.detailTag);
-        data.viewCount = data.viewCount + 1;
-        return data;
-      });
+    const targetPost = await this.questionPostModel.findByPk(postId, {
+      include: [{ model: Question }, { model: User }],
+    });
+    const author = await targetPost.$get("author");
+    const question = await targetPost.$get("question");
 
     await this.questionPostModel.update(
       {
-        viewCount: result.viewCount,
+        viewCount: targetPost.viewCount + 1,
       },
-      { where: { questionPostId: postId } }
+      { where: { id: postId } }
     );
 
-    return result;
+    console.log("targetPost.createdAt", targetPost);
+
+    return {
+      id: targetPost.id,
+      createdAt: targetPost.createdAt,
+      updatedAt: targetPost.updatedAt,
+      question,
+      author,
+      questionPostTitle: targetPost.questionPostTitle,
+      questionPostDescription: targetPost.questionPostDescription,
+      viewCount: targetPost.viewCount,
+    };
   }
 
   async getQuestionPostMaxPage(limit = 10) {

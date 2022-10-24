@@ -7,6 +7,7 @@ import {
   HasMany,
   BelongsTo,
   ForeignKey,
+  BelongsToMany,
 } from "sequelize-typescript";
 import { QuestionPost } from "./questionPost.entity";
 
@@ -20,6 +21,7 @@ export class Question extends Model {
   @AutoIncrement
   @Column({
     primaryKey: true,
+    allowNull: false,
   })
   id: number;
 

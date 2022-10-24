@@ -72,28 +72,29 @@ export class QuestionPostController {
     };
 
     console.log("question등록", body.questionForm.question);
-    const { id } =
+    const question =
       body.questionForm.uploadType === "TEXT"
         ? await this.questionService.createNewQuestionByText(createQuestionDto)
         : await this.questionService.createNewQuestionByImage(
             createQuestionDto
           );
 
-    console.log("questionId생성", id);
+    console.log("questionId생성", question);
 
     const createQuestionPostDto: CreateQuestionPostDto = {
-      questionId: id,
-      authorId: String(request.user.id),
+      questionId: question.id,
+      authorId: request.user.id,
       questionPostTitle: body.questionForm.questionPostTitle,
       questionPostDescription: body.questionForm.questionPostDescription,
     };
 
-    const { questionPostId } =
-      await this.questionPostService.createQuestionPost(createQuestionPostDto);
+    const questionPost = await this.questionPostService.createQuestionPost(
+      createQuestionPostDto
+    );
 
     return {
       message: "now api testing...",
-      path: `testPath ${questionPostId}`,
+      path: `testPath ${questionPost.id}`,
     };
   }
 }

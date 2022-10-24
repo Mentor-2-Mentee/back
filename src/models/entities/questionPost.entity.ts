@@ -9,6 +9,7 @@ import {
   DataType,
   DefaultScope,
   Scopes,
+  HasOne,
 } from "sequelize-typescript";
 import { Question } from "./question.entity";
 import { User } from "./user.entity";
@@ -16,39 +17,36 @@ import { User } from "./user.entity";
 @Table({
   tableName: "QuestionPost",
   timestamps: true,
-  createdAt: true,
+  createdAt: "createdAt",
   updatedAt: "updatedAt",
 })
 export class QuestionPost extends Model {
   @AutoIncrement
   @Column({
     primaryKey: true,
-    type: DataType.UUID,
-    defaultValue: DataType.UUIDV1,
-    allowNull: false,
   })
-  questionPostId: string;
+  id: number;
 
   @ForeignKey(() => Question)
-  @Column({ allowNull: false })
-  questionId!: number;
+  @Column({ allowNull: false, field: "question_id" })
+  questionId: number;
 
-  @BelongsTo(() => Question, "questionId")
+  @BelongsTo(() => Question)
   question: Question;
 
   @ForeignKey(() => User)
-  @Column({ allowNull: false })
-  authorId!: number;
+  @Column({ allowNull: false, field: "author_id" })
+  authorId: string;
 
-  @BelongsTo(() => User, "authorId")
+  @BelongsTo(() => User)
   author: User;
 
-  @Column({ allowNull: false })
+  @Column({ allowNull: false, field: "question_post_title" })
   questionPostTitle: string;
 
-  @Column({ allowNull: false })
-  questionPostDescription: number;
+  @Column({ allowNull: false, field: "question_post_description" })
+  questionPostDescription: string;
 
-  @Column({ allowNull: true })
+  @Column({ allowNull: true, field: "view_count" })
   viewCount: number;
 }
