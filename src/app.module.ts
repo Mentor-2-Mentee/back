@@ -23,6 +23,7 @@ import {
   Question,
   QuestionPost,
   ExamScheduleRelation,
+  UserRelation,
 } from "src/models";
 
 import { SequelizeModule } from "@nestjs/sequelize";
@@ -57,6 +58,7 @@ import { UserProfileModule } from "./user-profile/user-profile.module";
         models: [
           LiveRoom,
           User,
+          UserRelation,
           QuestionTag,
           ExamSchedule,
           ExamScheduleRelation,

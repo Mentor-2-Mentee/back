@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { UpdateUserProfileDto, User } from "src/models";
+import { QuestionPost, UpdateUserProfileDto, User } from "src/models";
 
 @Injectable()
 export class UserProfileService {
@@ -16,6 +16,15 @@ export class UserProfileService {
       userName,
       userGrade,
     };
+  }
+
+  async findUserPostList(userId: string) {
+    const targetUser = await this.userModel.findByPk(userId, {});
+    const userQuesionPostList = await targetUser.$get("questionPosts", {
+      attributes: ["id", "title"],
+    });
+    console.log("userQuesionPostList", userQuesionPostList);
+    return userQuesionPostList;
   }
 
   async updateUserProfile(userId: string, { newName }: UpdateUserProfileDto) {

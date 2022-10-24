@@ -1,6 +1,10 @@
-import { Query } from "@nestjs/common";
+import { Delete, Put, Query } from "@nestjs/common";
 import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
-import { AuthorizeUserProfile, CreateQuestionDto } from "src/models";
+import {
+  AuthorizeUserProfile,
+  CreateQuestionDto,
+  UpdateQuestionPostDto,
+} from "src/models";
 import { CreateQuestionPostDto } from "src/models/dto/create-questionPost.dto";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { QuestionService } from "src/question/question.service";
@@ -56,45 +60,64 @@ export class QuestionPostController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createNewQuestion(
-    @Req() request: AuthorizeUserProfile,
-    @Body() body: any
+  async createNewQuestionPost(
+    @Req() { user }: AuthorizeUserProfile,
+    @Body() body: CreateQuestionPostDto
   ) {
-    console.log(
-      "POST /question",
-      request.user,
-      body,
-      body.questionForm.question
-    );
+    console.log("POST /question", user, body);
 
-    const createQuestionDto: CreateQuestionDto = {
-      ...body.questionForm.question,
-    };
-
-    console.log("question등록", body.questionForm.question);
+    console.log("question등록", body.questionForm);
     const question =
-      body.questionForm.uploadType === "TEXT"
-        ? await this.questionService.createNewQuestionByText(createQuestionDto)
+      body.uploadType === "TEXT"
+        ? await this.questionService.createNewQuestionByText(body.questionForm)
         : await this.questionService.createNewQuestionByImage(
-            createQuestionDto
+            body.questionForm
           );
 
-    console.log("questionId생성", question);
-
-    const createQuestionPostDto: CreateQuestionPostDto = {
-      questionId: question.id,
-      authorId: request.user.id,
-      questionPostTitle: body.questionForm.questionPostTitle,
-      questionPostDescription: body.questionForm.questionPostDescription,
-    };
+    console.log("questionId생성", question.id);
 
     const questionPost = await this.questionPostService.createQuestionPost(
-      createQuestionPostDto
+      user.id,
+      question.id,
+      body.title,
+      body.description
     );
 
     return {
-      message: "now api testing...",
-      path: `testPath ${questionPost.id}`,
+      message: "등록성공",
+      questionPostId: questionPost.id,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  async updateQuestionPost(
+    @Req() { user }: AuthorizeUserProfile,
+    @Body() body: UpdateQuestionPostDto
+  ) {
+    const isUpdate = await this.questionPostService.updatePost(user.id, body);
+
+    return {
+      message: "OK",
+      questionPostId: body.id,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  async deleteQuestionPost(
+    @Req() { user }: AuthorizeUserProfile,
+    @Query("questionPostId") questionPostId: number
+  ) {
+    const isDelete = await this.questionPostService.deletePost(
+      user.id,
+      questionPostId
+    );
+    if (!isDelete) {
+      return { message: "삭제실패" };
+    }
+    return {
+      message: "삭제되었습니다",
     };
   }
 }

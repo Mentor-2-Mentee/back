@@ -47,4 +47,16 @@ export class UserProfileController {
   async getCheckResult(@Query("newname") newName: string) {
     return this.userProfileService.checkUseableName(newName);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("/question-post")
+  async getMyQuestionPostList(@Request() { user }: AuthorizeUserProfile) {
+    const questionPost = await this.userProfileService.findUserPostList(
+      user.id
+    );
+    return {
+      message: "OK",
+      questionPost,
+    };
+  }
 }

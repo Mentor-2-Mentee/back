@@ -1,8 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { Op, WhereOptions } from "sequelize";
+import { Model, Op, WhereOptions } from "sequelize";
 
-import { AppliedTagOptions, Question, QuestionPost, User } from "src/models";
+import {
+  AppliedTagOptions,
+  Question,
+  QuestionPost,
+  UpdateQuestionPostDto,
+  User,
+} from "src/models";
 import { CreateQuestionPostDto } from "src/models/dto/create-questionPost.dto";
 import { QuestionService } from "src/question/question.service";
 
@@ -15,9 +21,17 @@ export class QuestionPostService {
     private questionModel: typeof Question
   ) {}
 
-  async createQuestionPost(createQuestionPostDto: CreateQuestionPostDto) {
+  async createQuestionPost(
+    userId: string,
+    questionId: number,
+    title: string,
+    description: string
+  ) {
     const newQuestionPost = await this.questionPostModel.create({
-      ...createQuestionPostDto,
+      questionId,
+      authorId: userId,
+      title,
+      description,
     });
 
     return newQuestionPost;
@@ -88,16 +102,14 @@ export class QuestionPostService {
       { where: { id: postId } }
     );
 
-    console.log("targetPost.createdAt", targetPost);
-
     return {
       id: targetPost.id,
       createdAt: targetPost.createdAt,
       updatedAt: targetPost.updatedAt,
       question,
       author,
-      questionPostTitle: targetPost.questionPostTitle,
-      questionPostDescription: targetPost.questionPostDescription,
+      title: targetPost.title,
+      description: targetPost.description,
       viewCount: targetPost.viewCount,
     };
   }
@@ -106,5 +118,41 @@ export class QuestionPostService {
     const totalPostLength = await this.questionPostModel.count();
 
     return Math.floor(totalPostLength / limit) + 1;
+  }
+
+  async updatePost(
+    userId: string,
+    { id, title, description }: UpdateQuestionPostDto
+  ): Promise<boolean> {
+    const targetPost = await this.questionPostModel.findByPk(id, {
+      include: { model: User, where: { id: userId } },
+    });
+
+    if (!targetPost) return false;
+
+    const updateCnt = await this.questionPostModel.update(
+      {
+        title,
+        description,
+      },
+      {
+        where: { id },
+      }
+    );
+
+    return Boolean(updateCnt);
+  }
+
+  async deletePost(userId: string, postId: number) {
+    const targetPost = await this.questionPostModel.findByPk(postId, {
+      include: { model: User, where: { id: userId } },
+    });
+    if (!targetPost) return false;
+
+    const deleteCnt = await this.questionPostModel.destroy({
+      where: { id: postId },
+    });
+
+    return Boolean(deleteCnt);
   }
 }

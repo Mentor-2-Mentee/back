@@ -1,6 +1,9 @@
+import { QuestionUploadType } from "../types";
+import { CreateQuestionDto } from "./create-question.dto";
+
 export class CreateQuestionPostDto {
-  questionId: number;
-  authorId: string;
-  questionPostTitle: string;
-  questionPostDescription: number;
+  uploadType: QuestionUploadType;
+  questionForm: CreateQuestionDto;
+  title: string;
+  description: string;
 }

@@ -10,9 +10,11 @@ import {
   DefaultScope,
   Scopes,
   HasOne,
+  HasMany,
 } from "sequelize-typescript";
 import { Question } from "./question.entity";
 import { User } from "./user.entity";
+import { UserRelation } from "./userRelation.entity";
 
 @Table({
   tableName: "QuestionPost",
@@ -41,12 +43,17 @@ export class QuestionPost extends Model {
   @BelongsTo(() => User)
   author: User;
 
-  @Column({ allowNull: false, field: "question_post_title" })
-  questionPostTitle: string;
+  @Column({ allowNull: false, field: "title" })
+  title: string;
 
-  @Column({ allowNull: false, field: "question_post_description" })
-  questionPostDescription: string;
+  @Column({ allowNull: false, field: "description" })
+  description: string;
 
   @Column({ allowNull: true, field: "view_count" })
   viewCount: number;
+
+  @HasMany(() => UserRelation, {
+    onDelete: "CASCADE",
+  })
+  userRelations?: UserRelation[];
 }

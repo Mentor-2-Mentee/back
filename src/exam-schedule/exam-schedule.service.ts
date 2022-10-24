@@ -70,16 +70,7 @@ export class ExamScheduleService {
       where: {
         [Op.and]: searchExamScheduleQuerys,
       },
-      // plain: true,
     });
-
-    console.log(examScheduleList[0]);
-
-    // for (const examSchedule of examScheduleList) {
-    //   // examSchedule.examScheduleRelations.map(relation => {
-    //   //   relation.
-    //   // })
-    // }
 
     console.log("examScheduleList", examScheduleList.length);
 

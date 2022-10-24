@@ -9,8 +9,11 @@ import {
   ForeignKey,
   HasOne,
   BelongsTo,
+  BelongsToMany,
 } from "sequelize-typescript";
+import { ExamReviewRoom } from "./examReviewRoom.entity";
 import { QuestionPost } from "./questionPost.entity";
+import { UserRelation } from "./userRelation.entity";
 
 @DefaultScope(() => ({
   attributes: ["id", "userName", "userGrade"],
@@ -63,15 +66,14 @@ export class User extends Model {
   @Column({ allowNull: true, field: "refresh_token" })
   refreshToken: string;
 
-  @HasMany(() => QuestionPost)
-  questionPost: QuestionPost;
+  @HasMany(() => UserRelation, {
+    onDelete: "CASCADE",
+  })
+  userRelation: UserRelation[];
 
-  // @ManyToMany(() => ExamReviewRoom, "adminUserId")
-  // examReviewRoom: ExamReviewRoom;
+  @BelongsToMany(() => QuestionPost, () => UserRelation)
+  questionPosts: QuestionPost[];
 
-  // @HasMany(() => ExamReviewRoom, "participantUserId")
-  // examReviewRoom: ExamReviewRoom;
-
-  // @HasMany(() => ExamReviewRoom, "nonParticipantUserId")
-  // examReviewRoom: ExamReviewRoom;
+  @BelongsToMany(() => ExamReviewRoom, () => UserRelation)
+  examReviewRooms: ExamReviewRoom[];
 }
