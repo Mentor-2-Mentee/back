@@ -8,6 +8,7 @@ import {
   QuestionPost,
   UpdateQuestionPostDto,
   User,
+  UserRelation,
 } from "src/models";
 import { CreateQuestionPostDto } from "src/models/dto/create-questionPost.dto";
 import { QuestionService } from "src/question/question.service";
@@ -18,7 +19,9 @@ export class QuestionPostService {
     @InjectModel(QuestionPost)
     private questionPostModel: typeof QuestionPost,
     @InjectModel(Question)
-    private questionModel: typeof Question
+    private questionModel: typeof Question,
+    @InjectModel(UserRelation)
+    private userRelationModel: typeof UserRelation
   ) {}
 
   async createQuestionPost(
@@ -32,6 +35,10 @@ export class QuestionPostService {
       authorId: userId,
       title,
       description,
+    });
+    await this.userRelationModel.create({
+      userId,
+      questionPostId: newQuestionPost.id,
     });
 
     return newQuestionPost;
@@ -55,6 +62,7 @@ export class QuestionPostService {
 
     if (querys.filter.childFilterTags.length !== 0) {
       querys.filter.childFilterTags.map((childTag) => {
+        console.log(childTag.tagName);
         searchTagFilter.push({
           [Op.and]: {
             ["detailTag"]: childTag.tagName,
@@ -67,7 +75,7 @@ export class QuestionPostService {
       querys.filter.filterKeywords.map((keyword) => {
         searchKeyword.push({
           [Op.and]: {
-            ["questionPostTitle"]: {
+            ["title"]: {
               [Op.like]: `%${keyword}%`,
             },
           },
@@ -151,6 +159,9 @@ export class QuestionPostService {
 
     const deleteCnt = await this.questionPostModel.destroy({
       where: { id: postId },
+    });
+    await this.userRelationModel.destroy({
+      where: { userId, questionPostId: postId },
     });
 
     return Boolean(deleteCnt);

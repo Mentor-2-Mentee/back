@@ -1,4 +1,3 @@
-import { Sequelize } from "sequelize";
 import {
   Table,
   Model,
@@ -6,10 +5,6 @@ import {
   Column,
   ForeignKey,
   BelongsTo,
-  DataType,
-  DefaultScope,
-  Scopes,
-  HasOne,
   HasMany,
 } from "sequelize-typescript";
 import { Question } from "./question.entity";

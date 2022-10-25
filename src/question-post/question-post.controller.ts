@@ -1,10 +1,6 @@
 import { Delete, Put, Query } from "@nestjs/common";
 import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
-import {
-  AuthorizeUserProfile,
-  CreateQuestionDto,
-  UpdateQuestionPostDto,
-} from "src/models";
+import { AuthorizeUserProfile, UpdateQuestionPostDto } from "src/models";
 import { CreateQuestionPostDto } from "src/models/dto/create-questionPost.dto";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { QuestionService } from "src/question/question.service";
@@ -29,6 +25,7 @@ export class QuestionPostController {
       filter: JSON.parse(filter),
     };
     console.log("querys", querys);
+    console.log("querys fileter", querys.filter.childFilterTags);
     const result = await this.questionPostService.findQuestionPostList(querys);
     return {
       message: "OK",

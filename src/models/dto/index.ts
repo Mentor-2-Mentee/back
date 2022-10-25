@@ -42,3 +42,5 @@ export * from "./create-question.dto";
 
 export * from "./create-questionPost.dto";
 export * from "./update-questionPost.dto";
+
+export * from "./create-postComment.dto";
