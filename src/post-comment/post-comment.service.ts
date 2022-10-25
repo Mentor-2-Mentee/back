@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { QuestionPost, User } from "src/models";
 import { PostComment } from "src/models/entities/postComment.entity";
-import { DeleteDateColumn } from "typeorm";
 
 @Injectable()
 export class PostCommentService {
