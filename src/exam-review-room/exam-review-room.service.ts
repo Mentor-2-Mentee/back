@@ -371,17 +371,16 @@ export class ExamReviewRoomService {
     return await this.examReviewRoomModel.findByPk(examReviewRoomId);
   }
 
-  async generateQuestionPDF(
-    examReviewRoom: ExamReviewRoom,
-    examQuestionIdList: number[]
-  ): Promise<Buffer> {
-    const examQuestionList =
-      await this.ExamQuestionService.findExamQuestionListByQuestionId(
-        examQuestionIdList
-      );
+  async generateQuestionPDF(): // examReviewRoom?: ExamReviewRoom,
+  // examQuestionIdList?: number[]
+  Promise<Buffer> {
+    // const examQuestionList =
+    //   await this.ExamQuestionService.findExamQuestionListByQuestionId(
+    //     examQuestionIdList
+    //   );
 
-    const examDate = new DateFormatting(new Date(examReviewRoom.createdAt))
-      .YYYY_MM_DD;
+    // const examDate = new DateFormatting(new Date(examReviewRoom.createdAt))
+    //   .YYYY_MM_DD;
 
     const pdfBuffer: Buffer = await new Promise((resolve) => {
       const doc = new PDFDocument({
@@ -395,7 +394,7 @@ export class ExamReviewRoomService {
       doc
         .fontSize(18)
         .text(
-          `${examReviewRoom.examSchedule.organizer} - ${examReviewRoom.examType} / ${examDate}`,
+          "`${examReviewRoom.examSchedule.organizer} - ${examReviewRoom.examType} / ${examDate}`",
           50,
           50
         )
@@ -403,31 +402,34 @@ export class ExamReviewRoomService {
 
       //문제본문
       doc.fontSize(12);
-      examQuestionList.map((question, questionIndex) => {
-        doc
-          .text(`${questionIndex + 1}) ${question.questionText}`)
-          .moveDown(0.5);
+      doc.text(
+        `<p><br></p><p>기사문제 질문글 테스트</p><p><br></p><p><br></p><p><span class="ql-formula" data-value="asdf=qwer">﻿<span contenteditable="false"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>s</mi><mi>d</mi><mi>f</mi><mo>=</mo><mi>q</mi><mi>w</mi><mi>e</mi><mi>r</mi></mrow><annotation encoding="application/x-tex">asdf=qwer</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8889em; vertical-align: -0.1944em;"></span><span class="mord mathnormal">a</span><span class="mord mathnormal">s</span><span class="mord mathnormal" style="margin-right: 0.1076em;">df</span><span class="mspace" style="margin-right: 0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.2778em;"></span></span><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.1944em;"></span><span class="mord mathnormal" style="margin-right: 0.0269em;">qw</span><span class="mord mathnormal" style="margin-right: 0.0278em;">er</span></span></span></span></span>﻿</span></p><p><br></p><p><img src="http://localhost:3802/user_uploads/images/2022-10-24/8093f31c-94c1-4682-872c-ab9c51ad90fa.gif"></p><p><br></p><p><br></p>`
+      );
+      // examQuestionList.map((question, questionIndex) => {
+      //   doc
+      //     .text(`${questionIndex + 1}) ${question.questionText}`)
+      //     .moveDown(0.5);
 
-        if (question.questionImageUrl[0]) {
-          const outerUrl = new RegExp(configuration().apiServerBaseURL);
-          const filePath = question.questionImageUrl[0].replace(
-            outerUrl,
-            "public/"
-          );
-          doc
-            .image(filePath, {
-              height: 150,
-              align: "center",
-              valign: "center",
-            })
-            .moveDown(0.5);
-        }
+      //   if (question.questionImageUrl[0]) {
+      //     const outerUrl = new RegExp(configuration().apiServerBaseURL);
+      //     const filePath = question.questionImageUrl[0].replace(
+      //       outerUrl,
+      //       "public/"
+      //     );
+      //     doc
+      //       .image(filePath, {
+      //         height: 150,
+      //         align: "center",
+      //         valign: "center",
+      //       })
+      //       .moveDown(0.5);
+      //   }
 
-        question.answerExample.map((example, exampleIndex) => {
-          doc.text(`${exampleIndex + 1}. ${example}`).moveDown(0.5);
-        });
-        doc.moveDown();
-      });
+      //   question.answerExample.map((example, exampleIndex) => {
+      //     doc.text(`${exampleIndex + 1}. ${example}`).moveDown(0.5);
+      //   });
+      //   doc.moveDown();
+      // });
 
       doc.end();
 

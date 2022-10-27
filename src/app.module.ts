@@ -25,6 +25,7 @@ import {
   ExamScheduleRelation,
   UserRelation,
   PostComment,
+  ExamQuestionComment,
 } from "src/models";
 
 import { SequelizeModule } from "@nestjs/sequelize";
@@ -37,6 +38,8 @@ import { QuestionModule } from "./question/question.module";
 import { QuestionPostModule } from "./question-post/question-post.module";
 import { UserProfileModule } from "./user-profile/user-profile.module";
 import { PostCommentModule } from "./post-comment/post-comment.module";
+import { PdfModule } from "./pdf/pdf.module";
+import { ExamQuestionCommentModule } from "./exam-question-comment/exam-question-comment.module";
 
 @Module({
   imports: [
@@ -70,6 +73,7 @@ import { PostCommentModule } from "./post-comment/post-comment.module";
           Question,
           QuestionPost,
           PostComment,
+          ExamQuestionComment,
         ],
         logging: Boolean(
           configService.get<string>("LIVE_SERVER_MODE") === "true"
@@ -98,6 +102,8 @@ import { PostCommentModule } from "./post-comment/post-comment.module";
     QuestionPostModule,
     UserProfileModule,
     PostCommentModule,
+    PdfModule,
+    ExamQuestionCommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

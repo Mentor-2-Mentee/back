@@ -161,31 +161,26 @@ export class ExamReviewRoomController {
     };
   }
 
-  // @Get("/question-pdf")
-  // async questionPdf(
-  //   @Query("examScheduleId") examScheduleId: number,
-  //   @Query("examType") examType: string,
-  //   @Res() res: Response
-  // ) {
-  //   const targetRoomData =
-  //     await this.examReviewRoomService.findExamReviewRoomOne(
-  //       examScheduleId,
-  //       examType
-  //     );
+  @Get("/question-pdf")
+  async questionPdf(
+    // @Query("examScheduleId") examScheduleId: number,
+    // @Query("examType") examType: string,
+    @Res() res: Response
+  ) {
+    const buffer = await this.examReviewRoomService
+      .generateQuestionPDF
+      // targetRoomData,
+      // targetRoomData.examQuestionList
+      ();
 
-  //   const buffer = await this.examReviewRoomService.generateQuestionPDF(
-  //     targetRoomData,
-  //     targetRoomData.examQuestionList
-  //   );
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": "attachment; filename=example.pdf",
+      "Content-Length": buffer.length,
+    });
 
-  //   res.set({
-  //     "Content-Type": "application/pdf",
-  //     "Content-Disposition": "attachment; filename=example.pdf",
-  //     "Content-Length": buffer.length,
-  //   });
-
-  //   res.end(buffer);
-  // }
+    res.end(buffer);
+  }
 
   // @Get("/solution-pdf")
   // async solutionPdf(

@@ -8,21 +8,24 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
-import { AuthorizeUserProfile, CreatePostCommentDto } from "src/models";
+import { AuthorizeUserProfile, CreateExamQuestionCommentDto } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
-import { PostCommentService } from "./post-comment.service";
-@Controller("post-comment")
-export class PostCommentController {
-  constructor(private readonly postCommentService: PostCommentService) {}
+import { ExamQuestionCommentService } from "./exam-question-comment.service";
+
+@Controller("exam-question-comment")
+export class ExamQuestionCommentController {
+  constructor(
+    private readonly examQuestionCommentService: ExamQuestionCommentService
+  ) {}
 
   @Get()
-  async findPostCommentListByPostId(
-    @Query("questionPostId") questionPostId: number
+  async findCommentListByExamQuestionId(
+    @Query("examQuestionId") examQuestionId: number
   ) {
-    const commentList = await this.postCommentService.findCommentListByPostId(
-      questionPostId
-    );
-
+    const commentList =
+      await this.examQuestionCommentService.findCommentListByExamQuestionId(
+        examQuestionId
+      );
     return {
       message: "OK",
       commentList,
@@ -33,12 +36,12 @@ export class PostCommentController {
   @Post()
   async createComment(
     @Req() { user }: AuthorizeUserProfile,
-    @Body() body: CreatePostCommentDto
+    @Body() body: CreateExamQuestionCommentDto
   ) {
-    console.log("comment", body.comment);
-    const isCreate = this.postCommentService.createComment(
+    console.log("examComment", body.comment);
+    const isCreate = this.examQuestionCommentService.createComment(
       user.id,
-      body.postId,
+      body.examQuestionId,
       body.comment,
       body.commentLevel,
       body.parentCommentId
@@ -57,7 +60,7 @@ export class PostCommentController {
     @Query("commentId") commentId: number
   ) {
     console.log("delete comment id", commentId);
-    const isDelete = await this.postCommentService.deleteComment(
+    const isDelete = await this.examQuestionCommentService.deleteComment(
       user.id,
       commentId
     );
