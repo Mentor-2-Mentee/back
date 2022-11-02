@@ -65,29 +65,18 @@ export class ExamQuestionService {
     });
   }
 
-  async updateQuestion(updateExamQuestionDto: UpdateExamQuestionDto) {
-    console.log("updateExamQuestionDto", updateExamQuestionDto);
-    const searchQuestionOption: WhereOptions = [];
-    searchQuestionOption.push({
-      ["examQuestionId"]: {
-        [Op.and]: {
-          [Op.eq]: updateExamQuestionDto.examQuestionId,
-        },
-      },
-    });
-
+  async updateQuestion({ id, questionText, solution }: UpdateExamQuestionDto) {
     await this.examQuestionModel.update(
       {
-        ...updateExamQuestionDto,
+        questionText,
+        solution,
       },
       {
-        where: {
-          [Op.and]: searchQuestionOption,
-        },
+        where: { id },
       }
     );
 
-    return this.findQuestionById(updateExamQuestionDto.examQuestionId);
+    return this.findQuestionById(id);
   }
 
   async findExamQuestionIdListByRoomId(examReviewRoomId: number) {

@@ -7,14 +7,15 @@ import {
   HasMany,
 } from "sequelize-typescript";
 import { ExamReviewRoom } from "./examReviewRoom.entity";
+import { RawExamQuestion } from "./rawExamQuestion.entity";
 
 type QuestionType = "MULTIPLE_CHOICE" | "ESSAY_QUESTION";
 
 @Table({
   tableName: "ExamQuestion",
   timestamps: true,
-  createdAt: "created_at",
-  updatedAt: "updated_at",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
 })
 export class ExamQuestion extends Model {
   @AutoIncrement
@@ -56,6 +57,17 @@ export class ExamQuestion extends Model {
   @Column({ allowNull: false, field: "exam_type" })
   examType: string;
 
-  // @HasMany(() => ExamReviewRoom)
-  // examReviewRoom: ExamReviewRoom;
+  @Column({
+    allowNull: true,
+    field: "raw_exam_question_id",
+    type: DataType.JSON,
+  })
+  rawExamQuestionId: number[];
+
+  @Column({
+    allowNull: true,
+    field: "comment_id",
+    type: DataType.JSON,
+  })
+  commentId: number[];
 }

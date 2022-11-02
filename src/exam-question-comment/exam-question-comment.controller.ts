@@ -20,11 +20,11 @@ export class ExamQuestionCommentController {
 
   @Get()
   async findCommentListByExamQuestionId(
-    @Query("examQuestionId") examQuestionId: number
+    @Query("examQuestionId") examQuestionId: string
   ) {
     const commentList =
       await this.examQuestionCommentService.findCommentListByExamQuestionId(
-        examQuestionId
+        Number(examQuestionId)
       );
     return {
       message: "OK",
@@ -57,12 +57,12 @@ export class ExamQuestionCommentController {
   @Delete()
   async deleteComment(
     @Req() { user }: AuthorizeUserProfile,
-    @Query("commentId") commentId: number
+    @Query("commentId") commentId: string
   ) {
     console.log("delete comment id", commentId);
     const isDelete = await this.examQuestionCommentService.deleteComment(
       user.id,
-      commentId
+      Number(commentId)
     );
 
     return {

@@ -8,6 +8,9 @@ import {
   UploadedFile,
   Get,
   Query,
+  Put,
+  HttpException,
+  HttpStatus,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import configuration from "src/common/config/configuration";
@@ -18,6 +21,27 @@ import { ExamQuestionService } from "./exam-question.service";
 @Controller("exam-question")
 export class ExamQuestionController {
   constructor(private readonly examQuestionService: ExamQuestionService) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  async createExamQuestion() {}
+
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  async updateExamQuestion(
+    @Req() { user }: AuthorizeUserProfile,
+    @Body() body: any
+  ) {
+    console.log("update exam question", body);
+    if (user.userGrade === "user")
+      throw new HttpException("Unauthorized user", HttpStatus.UNAUTHORIZED);
+    const isUpdate = this.examQuestionService.updateQuestion(body);
+
+    return {
+      message: "OK",
+      isUpdate,
+    };
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post("/question-image")

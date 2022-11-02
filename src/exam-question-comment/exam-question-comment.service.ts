@@ -1,12 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { ExamQuestionComment, User } from "src/models";
+import { ExamQuestion, ExamQuestionComment, User } from "src/models";
 
 @Injectable()
 export class ExamQuestionCommentService {
   constructor(
     @InjectModel(ExamQuestionComment)
     private examQuestionCommentModel: typeof ExamQuestionComment,
+    @InjectModel(ExamQuestion)
+    private examQuestioModel: typeof ExamQuestion,
     @InjectModel(User)
     private userModel: typeof User
   ) {}
@@ -38,6 +40,17 @@ export class ExamQuestionCommentService {
       author: user.userName,
       authorId: user.id,
     });
+
+    const examQuestion = await this.examQuestioModel.findByPk(examQuestionId);
+    await this.examQuestioModel.update(
+      {
+        commentId: [...examQuestion.commentId, savedComment.id],
+      },
+      {
+        where: { id: examQuestion.id },
+      }
+    );
+
     return Boolean(savedComment);
   }
 
@@ -50,6 +63,20 @@ export class ExamQuestionCommentService {
     const deleteCnt = await this.examQuestionCommentModel.destroy({
       where: { id: commentId },
     });
+
+    const examQuestion = await this.examQuestioModel.findByPk(
+      targetComment.examQuestionId
+    );
+
+    await this.examQuestioModel.update(
+      {
+        commentId: examQuestion.commentId.filter((ele) => ele !== commentId),
+      },
+      {
+        where: { id: targetComment.examQuestionId },
+      }
+    );
+
     return Boolean(deleteCnt);
   }
 }

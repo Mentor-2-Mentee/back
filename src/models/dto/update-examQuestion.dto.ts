@@ -1,7 +1,7 @@
 import { QuestionType } from "../types";
 
 export class UpdateExamQuestionDto {
-  examQuestionId: number;
+  id: number;
   questionText: string;
   answerExampleList: string[];
   answer: string;
