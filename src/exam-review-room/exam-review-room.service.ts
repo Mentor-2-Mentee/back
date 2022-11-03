@@ -9,8 +9,10 @@ import {
 import {
   CreateExamReviewRoomRequest,
   ExamReviewRoom,
+  ExamReviewRoomUser,
   ExamSchedule,
   ExamScheduleRelation,
+  RawExamQuestion,
 } from "src/models/entities";
 import { WhereOptions, Op } from "sequelize";
 import { ExamQuestionService } from "src/exam-question/exam-question.service";
@@ -344,18 +346,15 @@ export class ExamReviewRoomService {
   async findExamReviewRoomUserList(examReviewRoomId: number) {
     const targetRoom = await this.examReviewRoomModel.findByPk(
       examReviewRoomId,
-      {
-        attributes: [
-          "adminUserId",
-          "participantUserId",
-          "nonParticipantUserId",
-        ],
-      }
+      { include: { model: ExamReviewRoomUser } }
     );
 
-    console.log("userLists", targetRoom);
+    const examReviewRoomUser = await targetRoom.$get("examReviewRoomUsers", {
+      include: [{ model: User }, { model: RawExamQuestion }],
+      attributes: ["enteredAt", "examReviewRoomId", "userPosition"],
+    });
 
-    return targetRoom;
+    return examReviewRoomUser;
   }
 
   async updateExamReviewRoomOne(examReviewRoomId: number, updateData?: any) {

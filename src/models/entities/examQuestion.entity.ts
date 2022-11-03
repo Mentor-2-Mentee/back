@@ -6,6 +6,7 @@ import {
   DataType,
   HasMany,
 } from "sequelize-typescript";
+import { ExamQuestionComment } from "./examQuestionComment.entity";
 import { ExamReviewRoom } from "./examReviewRoom.entity";
 import { RawExamQuestion } from "./rawExamQuestion.entity";
 
@@ -57,17 +58,9 @@ export class ExamQuestion extends Model {
   @Column({ allowNull: false, field: "exam_type" })
   examType: string;
 
-  @Column({
-    allowNull: true,
-    field: "raw_exam_question_id",
-    type: DataType.JSON,
-  })
-  rawExamQuestionId: number[];
+  @HasMany(() => RawExamQuestion)
+  rawExamQuestionList: RawExamQuestion[];
 
-  @Column({
-    allowNull: true,
-    field: "comment_id",
-    type: DataType.JSON,
-  })
-  commentId: number[];
+  @HasMany(() => ExamQuestionComment)
+  examQuestionCommentList: ExamQuestionComment[];
 }

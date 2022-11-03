@@ -12,6 +12,7 @@ import {
   Index,
 } from "sequelize-typescript";
 import { ExamQuestion } from "./examQuestion.entity";
+import { ExamReviewRoomUser } from "./examReviewRoomUser.entity";
 import { ExamSchedule } from "./examSchedule.entity";
 import { ExamScheduleRelation } from "./examScheduleRelation.entity";
 import { User } from "./user.entity";
@@ -71,4 +72,12 @@ export class ExamReviewRoom extends Model {
     onDelete: "CASCADE",
   })
   userRelations?: UserRelation[];
+
+  @HasMany(() => ExamReviewRoomUser, {
+    onDelete: "CASCADE",
+  })
+  examReviewRoomUsers?: ExamReviewRoomUser[];
+
+  @BelongsToMany(() => User, () => ExamReviewRoomUser)
+  user: User[];
 }

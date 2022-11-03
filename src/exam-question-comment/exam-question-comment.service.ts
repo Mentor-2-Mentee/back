@@ -41,16 +41,6 @@ export class ExamQuestionCommentService {
       authorId: user.id,
     });
 
-    const examQuestion = await this.examQuestioModel.findByPk(examQuestionId);
-    await this.examQuestioModel.update(
-      {
-        commentId: [...examQuestion.commentId, savedComment.id],
-      },
-      {
-        where: { id: examQuestion.id },
-      }
-    );
-
     return Boolean(savedComment);
   }
 
@@ -63,19 +53,6 @@ export class ExamQuestionCommentService {
     const deleteCnt = await this.examQuestionCommentModel.destroy({
       where: { id: commentId },
     });
-
-    const examQuestion = await this.examQuestioModel.findByPk(
-      targetComment.examQuestionId
-    );
-
-    await this.examQuestioModel.update(
-      {
-        commentId: examQuestion.commentId.filter((ele) => ele !== commentId),
-      },
-      {
-        where: { id: targetComment.examQuestionId },
-      }
-    );
 
     return Boolean(deleteCnt);
   }

@@ -1,4 +1,12 @@
-import { Table, Model, AutoIncrement, Column } from "sequelize-typescript";
+import {
+  Table,
+  Model,
+  AutoIncrement,
+  Column,
+  ForeignKey,
+  BelongsTo,
+} from "sequelize-typescript";
+import { ExamQuestion } from "./examQuestion.entity";
 
 @Table({
   tableName: "ExamQuestionComment",
@@ -13,6 +21,7 @@ export class ExamQuestionComment extends Model {
   })
   id: number;
 
+  @ForeignKey(() => ExamQuestion)
   @Column({ allowNull: false, field: "exam_question_id" })
   examQuestionId: number;
 
@@ -30,4 +39,7 @@ export class ExamQuestionComment extends Model {
 
   @Column({ allowNull: false, field: "author_id" })
   authorId: string;
+
+  @BelongsTo(() => ExamQuestion)
+  examQuestion: ExamQuestion;
 }

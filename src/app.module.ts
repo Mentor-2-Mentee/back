@@ -27,6 +27,7 @@ import {
   PostComment,
   ExamQuestionComment,
   RawExamQuestion,
+  ExamReviewRoomUser,
 } from "src/models";
 
 import { SequelizeModule } from "@nestjs/sequelize";
@@ -77,6 +78,7 @@ import { RawExamQuestionModule } from "./raw-exam-question/raw-exam-question.mod
           PostComment,
           ExamQuestionComment,
           RawExamQuestion,
+          ExamReviewRoomUser,
         ],
         logging: Boolean(
           configService.get<string>("LIVE_SERVER_MODE") === "true"

@@ -4,9 +4,12 @@ import { Op, WhereOptions } from "sequelize";
 import {
   CreateBulkExamQuestionDto,
   ExamQuestion,
+  ExamQuestionComment,
   ExamReviewRoom,
   ExamSchedule,
+  RawExamQuestion,
   UpdateExamQuestionDto,
+  User,
 } from "src/models";
 
 @Injectable()
@@ -83,13 +86,19 @@ export class ExamQuestionService {
     const targetRoom = await this.examReviewRoomModel.findByPk(
       examReviewRoomId
     );
+
     return targetRoom.examQuestionId;
   }
 
   async findExamQuestionListByQuestionId(examQuestionIdList: number[]) {
     const result = [];
     for (const examQuestionId of examQuestionIdList) {
-      const question = await this.examQuestionModel.findByPk(examQuestionId);
+      const question = await this.examQuestionModel.findByPk(examQuestionId, {
+        include: [
+          { model: RawExamQuestion, include: [{ model: User }] },
+          { model: ExamQuestionComment },
+        ],
+      });
       result.push(question);
     }
 

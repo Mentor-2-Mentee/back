@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { ExamQuestion, RawExamQuestion } from "src/models";
+import { ExamReviewRoomUser, RawExamQuestion } from "src/models";
 
 @Injectable()
 export class RawExamQuestionService {
   constructor(
     @InjectModel(RawExamQuestion)
     private rawExamQuestionModel: typeof RawExamQuestion,
-    @InjectModel(ExamQuestion)
-    private examQuestionModel: typeof ExamQuestion
+    @InjectModel(ExamReviewRoomUser)
+    private examReviewRoomUserModel: typeof ExamReviewRoomUser
   ) {}
 
   async saveRawExamQuestion(
@@ -17,25 +17,17 @@ export class RawExamQuestionService {
     questionText: string,
     solution?: string
   ) {
+    const examReviewRoomUser = await this.examReviewRoomUserModel.findOne({
+      where: { userId },
+    });
+
     const savedRawExamQuestion = await this.rawExamQuestionModel.create({
       authorId: userId,
       examQuestionId,
       questionText,
       solution,
+      examReviewRoomUserId: examReviewRoomUser.id,
     });
-
-    const examQuestion = await this.examQuestionModel.findByPk(examQuestionId);
-    await this.examQuestionModel.update(
-      {
-        rawExamQuestionId: [
-          ...examQuestion.rawExamQuestionId,
-          savedRawExamQuestion.id,
-        ],
-      },
-      {
-        where: { id: examQuestionId },
-      }
-    );
 
     return Boolean(savedRawExamQuestion);
   }
