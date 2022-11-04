@@ -215,7 +215,8 @@ export class ExamReviewRoomController {
     const [message, enterExamReviewRoomId] =
       await this.examReviewRoomService.enterRoom(
         user.id,
-        body.enterUserPosition,
+        user.userGrade,
+        Boolean(body.isParticipant),
         body.examReviewRoomId
       );
 

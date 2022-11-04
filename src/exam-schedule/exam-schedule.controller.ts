@@ -69,27 +69,20 @@ export class ExamScheduleController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  @UseInterceptors(FilesInterceptor("image[]", MAX_IMAGE_COUNT))
   async createExamSchedule(
-    @Req() request: AuthorizeUserProfile,
-    @Body() body: CreateExamScheduleDto,
-    @UploadedFiles() files: Express.Multer.File[]
+    @Req() { user }: AuthorizeUserProfile,
+    @Body() body: CreateExamScheduleDto
   ) {
-    const userData = await this.userProfileService.findUserProfileById(
-      request.user.id
-    );
-    if (userData.userGrade === "user") {
+    if (user.userGrade === "user") {
       return "permission denied";
     }
 
     const savedExamSchedule = await this.examScheduleService.createExamSchedule(
-      userData,
-      body,
-      files
+      body
     );
 
     return {
-      message: `${body.examScheduleTitle} 일정이 생성되었습니다.`,
+      message: `${body.organizer} 일정이 생성되었습니다.`,
       examScheduleId: savedExamSchedule.id,
     };
   }
@@ -98,45 +91,37 @@ export class ExamScheduleController {
   @Put()
   @UseInterceptors(FilesInterceptor("image[]", MAX_IMAGE_COUNT))
   async update(
-    @Req() request: AuthorizeUserProfile,
-    @Body() body: UpdateExamScheduleDto,
-    @UploadedFiles() files: Express.Multer.File[]
+    @Req() { user }: AuthorizeUserProfile,
+    @Body() body: UpdateExamScheduleDto
   ) {
-    const userData = await this.userProfileService.findUserProfileById(
-      request.user.id
-    );
-    if (userData.userGrade === "user") {
+    if (user.userGrade === "user") {
       return "permission denied";
     }
 
-    await this.examScheduleService.updateExamSchedule(userData, body, files);
+    const isUpdate = await this.examScheduleService.updateExamSchedule(body);
 
     return {
-      message: `${body.examScheduleTitle} 일정이 수정되었습니다.`,
-      examScheduleId: body.examScheduleId,
+      message: `${body.organizer} 일정이 수정되었습니다.`,
+      examScheduleId: body.id,
+      isUpdate,
     };
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete()
   async deleteExamSchedule(
-    @Req() request: AuthorizeUserProfile,
+    @Req() { user }: AuthorizeUserProfile,
     @Query("examScheduleId") examScheduleId: string
   ) {
-    const userData = await this.userProfileService.findUserProfileById(
-      request.user.id
-    );
-    if (userData.userGrade === "user") {
+    if (user.userGrade === "user") {
       return "permission denied";
     }
 
-    const deletedExamScheduleTitle =
-      await this.examScheduleService.deleteExamSchedule(
-        userData,
-        Number(examScheduleId)
-      );
+    const targetOrganizer = await this.examScheduleService.deleteExamSchedule(
+      Number(examScheduleId)
+    );
     return {
-      message: `${deletedExamScheduleTitle} 시험일정이 삭제되었습니다`,
+      message: `${targetOrganizer} 시험일정이 삭제되었습니다`,
     };
   }
 }

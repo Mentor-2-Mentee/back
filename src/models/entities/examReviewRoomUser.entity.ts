@@ -52,6 +52,12 @@ export class ExamReviewRoomUser extends Model {
   })
   userPosition: string;
 
+  @Column({
+    allowNull: false,
+    field: "is_participant",
+  })
+  isParticipant: boolean;
+
   @HasMany(() => RawExamQuestion)
   rawExamQuestionList: RawExamQuestion[];
 }

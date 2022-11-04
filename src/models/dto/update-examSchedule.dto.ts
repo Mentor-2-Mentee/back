@@ -1,9 +1,11 @@
 export class UpdateExamScheduleDto {
-  examScheduleId: string;
-  examScheduleTitle: string;
+  id: number;
+  organizer: string;
   examUrl: string;
   examDate: string;
-  examType: string;
-  examDescription: string;
-  imageFiles: string;
+  scheduleType: string;
+  description: string;
+  imageUrl: string[];
+  examStartTime?: string;
+  examEndTime?: string;
 }

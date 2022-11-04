@@ -1,7 +1,10 @@
 export class CreateExamScheduleDto {
-  examScheduleTitle: string;
+  organizer: string;
   examUrl: string;
   examDate: string;
-  examType: string;
-  examDescription: string;
+  scheduleType: string;
+  description: string;
+  imageUrl: string[];
+  examStartTime?: string;
+  examEndTime?: string;
 }

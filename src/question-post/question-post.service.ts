@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { Model, Op, WhereOptions } from "sequelize";
+import { Op, WhereOptions } from "sequelize";
 
 import {
   AppliedTagOptions,
@@ -10,16 +10,12 @@ import {
   User,
   UserRelation,
 } from "src/models";
-import { CreateQuestionPostDto } from "src/models/dto/create-questionPost.dto";
-import { QuestionService } from "src/question/question.service";
 
 @Injectable()
 export class QuestionPostService {
   constructor(
     @InjectModel(QuestionPost)
     private questionPostModel: typeof QuestionPost,
-    @InjectModel(Question)
-    private questionModel: typeof Question,
     @InjectModel(UserRelation)
     private userRelationModel: typeof UserRelation
   ) {}
@@ -131,7 +127,7 @@ export class QuestionPostService {
   async updatePost(
     userId: string,
     { id, title, description }: UpdateQuestionPostDto
-  ): Promise<boolean> {
+  ) {
     const targetPost = await this.questionPostModel.findByPk(id, {
       include: { model: User, where: { id: userId } },
     });

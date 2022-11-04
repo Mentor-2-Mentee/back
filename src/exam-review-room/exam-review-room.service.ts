@@ -335,7 +335,12 @@ export class ExamReviewRoomService {
 
     const examReviewRoomUser = await targetRoom.$get("examReviewRoomUsers", {
       include: [{ model: User }, { model: RawExamQuestion }],
-      attributes: ["enteredAt", "examReviewRoomId", "userPosition"],
+      attributes: [
+        "enteredAt",
+        "examReviewRoomId",
+        "userPosition",
+        "isParticipant",
+      ],
     });
 
     return examReviewRoomUser;
@@ -484,7 +489,8 @@ export class ExamReviewRoomService {
 
   async enterRoom(
     userId: string,
-    enterUserPosition: string,
+    userGrade: string,
+    isParticipant: boolean,
     examReviewRoomId: number
   ) {
     const targetExamReviewRoom = await this.examReviewRoomModel.findByPk(
@@ -506,7 +512,8 @@ export class ExamReviewRoomService {
     const newReviewRoomUser = await this.examReviewRoomUserModel.create({
       examReviewRoomId,
       userId,
-      userPosition: enterUserPosition,
+      userPosition: userGrade,
+      isParticipant: isParticipant,
     });
 
     return [`입장완료`, targetExamReviewRoom.id];
