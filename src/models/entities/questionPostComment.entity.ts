@@ -11,23 +11,25 @@ import {
   HasOne,
   HasMany,
 } from "sequelize-typescript";
+import { QuestionPost } from "./questionPost.entity";
 import { User } from "./user.entity";
 
 @Table({
-  tableName: "PostComment",
+  tableName: "QuestionPostComment",
   timestamps: true,
   createdAt: "createdAt",
   updatedAt: "updatedAt",
 })
-export class PostComment extends Model {
+export class QuestionPostComment extends Model {
   @AutoIncrement
   @Column({
     primaryKey: true,
   })
   id: number;
 
-  @Column({ allowNull: false, field: "post_id" })
-  postId: number;
+  @ForeignKey(() => QuestionPost)
+  @Column({ allowNull: false, field: "question_post_id" })
+  questionPostId: number;
 
   @Column({ allowNull: false, field: "comment_level" })
   commentLevel: number;

@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PostCommentController } from './post-comment.controller';
-import { PostCommentService } from './post-comment.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { PostCommentController } from "./question-post-comment.controller";
+import { PostCommentService } from "./question-post-comment.service";
 
-describe('PostCommentController', () => {
+describe("PostCommentController", () => {
   let controller: PostCommentController;
 
   beforeEach(async () => {
@@ -14,7 +14,7 @@ describe('PostCommentController', () => {
     controller = module.get<PostCommentController>(PostCommentController);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 });

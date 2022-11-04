@@ -1,22 +1,22 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { QuestionPost, User } from "src/models";
-import { PostComment } from "src/models/entities/postComment.entity";
+import { QuestionPostComment } from "src/models/entities/questionPostComment.entity";
 
 @Injectable()
-export class PostCommentService {
+export class QuestionPostCommentService {
   constructor(
-    @InjectModel(PostComment)
-    private postCommentModel: typeof PostComment,
+    @InjectModel(QuestionPostComment)
+    private postCommentModel: typeof QuestionPostComment,
     @InjectModel(QuestionPost)
     private questionPostModel: typeof QuestionPost,
     @InjectModel(User)
     private userModel: typeof User
   ) {}
 
-  async findCommentListByPostId(postId: number) {
+  async findCommentListByPostId(questionPostId: number) {
     const commentList = await this.postCommentModel.findAll({
-      where: { postId },
+      where: { questionPostId },
       order: [
         ["parentCommentId", "ASC"],
         ["id", "ASC"],
@@ -28,14 +28,14 @@ export class PostCommentService {
 
   async createComment(
     userId: string,
-    postId: number,
+    questionPostId: number,
     comment: string,
     commentLevel = 0,
     parentCommentId?: number
   ) {
     const user = await this.userModel.findByPk(userId);
     const savedComment = await this.postCommentModel.create({
-      postId,
+      questionPostId,
       commentLevel,
       parentCommentId,
       comment,

@@ -8,29 +8,20 @@ import {
   Query,
   UseGuards,
   BadRequestException,
-  UseInterceptors,
-  UploadedFiles,
   Put,
   Req,
 } from "@nestjs/common";
 import { ExamScheduleService } from "./exam-schedule.service";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
-import { FilesInterceptor } from "@nestjs/platform-express";
 import {
   AuthorizeUserProfile,
   CreateExamScheduleDto,
   UpdateExamScheduleDto,
 } from "src/models";
-import { UserProfileService } from "src/user-profile/user-profile.service";
-
-const MAX_IMAGE_COUNT = 10;
 
 @Controller("exam-schedule")
 export class ExamScheduleController {
-  constructor(
-    private readonly examScheduleService: ExamScheduleService,
-    private readonly userProfileService: UserProfileService
-  ) {}
+  constructor(private readonly examScheduleService: ExamScheduleService) {}
 
   @Get()
   async getScheduleByDateRange(
@@ -89,7 +80,6 @@ export class ExamScheduleController {
 
   @UseGuards(JwtAuthGuard)
   @Put()
-  @UseInterceptors(FilesInterceptor("image[]", MAX_IMAGE_COUNT))
   async update(
     @Req() { user }: AuthorizeUserProfile,
     @Body() body: UpdateExamScheduleDto

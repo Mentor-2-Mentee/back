@@ -24,7 +24,7 @@ import {
   QuestionPost,
   ExamScheduleRelation,
   UserRelation,
-  PostComment,
+  QuestionPostComment,
   ExamQuestionComment,
   RawExamQuestion,
   ExamReviewRoomUser,
@@ -39,7 +39,7 @@ import { ImagesModule } from "./images/images.module";
 import { QuestionModule } from "./question/question.module";
 import { QuestionPostModule } from "./question-post/question-post.module";
 import { UserProfileModule } from "./user-profile/user-profile.module";
-import { PostCommentModule } from "./post-comment/post-comment.module";
+import { QuestionPostCommentModule } from "./question-post-comment/question-post-comment.module";
 import { PdfModule } from "./pdf/pdf.module";
 import { ExamQuestionCommentModule } from "./exam-question-comment/exam-question-comment.module";
 import { RawExamQuestionModule } from "./raw-exam-question/raw-exam-question.module";
@@ -75,7 +75,7 @@ import { RawExamQuestionModule } from "./raw-exam-question/raw-exam-question.mod
           ExamQuestion,
           Question,
           QuestionPost,
-          PostComment,
+          QuestionPostComment,
           ExamQuestionComment,
           RawExamQuestion,
           ExamReviewRoomUser,
@@ -106,7 +106,7 @@ import { RawExamQuestionModule } from "./raw-exam-question/raw-exam-question.mod
     QuestionModule,
     QuestionPostModule,
     UserProfileModule,
-    PostCommentModule,
+    QuestionPostCommentModule,
     PdfModule,
     ExamQuestionCommentModule,
     RawExamQuestionModule,

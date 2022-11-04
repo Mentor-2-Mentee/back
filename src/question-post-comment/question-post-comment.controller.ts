@@ -10,10 +10,12 @@ import {
 } from "@nestjs/common";
 import { AuthorizeUserProfile, CreatePostCommentDto } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
-import { PostCommentService } from "./post-comment.service";
-@Controller("post-comment")
-export class PostCommentController {
-  constructor(private readonly postCommentService: PostCommentService) {}
+import { QuestionPostCommentService } from "./question-post-comment.service";
+@Controller("question-post-comment")
+export class QuestionPostCommentController {
+  constructor(
+    private readonly postCommentService: QuestionPostCommentService
+  ) {}
 
   @Get()
   async findPostCommentListByPostId(
@@ -38,7 +40,7 @@ export class PostCommentController {
     console.log("comment", body.comment);
     const isCreate = this.postCommentService.createComment(
       user.id,
-      body.postId,
+      body.questionPostId,
       body.comment,
       body.commentLevel,
       body.parentCommentId

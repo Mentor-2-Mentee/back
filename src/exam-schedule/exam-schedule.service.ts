@@ -6,12 +6,8 @@ import {
   ExamSchedule,
   ExamScheduleRelation,
   UpdateExamScheduleDto,
-  User,
 } from "src/models";
 import { Op, WhereOptions } from "sequelize";
-import * as PDFDocument from "pdfkit";
-import configuration from "src/common/config/configuration";
-import { v4 as uuidv4 } from "uuid";
 
 @Injectable()
 export class ExamScheduleService {
@@ -30,7 +26,6 @@ export class ExamScheduleService {
 
   async findExamScheduleByDateRange(startDate: Date, endDate: Date) {
     const searchExamScheduleQuerys: WhereOptions = [];
-
     searchExamScheduleQuerys.push({
       ["examDate"]: {
         [Op.and]: {
@@ -46,9 +41,6 @@ export class ExamScheduleService {
         [Op.and]: searchExamScheduleQuerys,
       },
     });
-
-    console.log("examScheduleList", examScheduleList.length);
-
     return examScheduleList;
   }
 
@@ -59,9 +51,7 @@ export class ExamScheduleService {
   async updateExamSchedule(updateExamScheduleDto: UpdateExamScheduleDto) {
     const updateCount = await this.examScheduleModel.update(
       { ...updateExamScheduleDto },
-      {
-        where: { id: updateExamScheduleDto.id },
-      }
+      { where: { id: updateExamScheduleDto.id } }
     );
     return Boolean(updateCount);
   }

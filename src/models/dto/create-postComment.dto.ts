@@ -1,5 +1,5 @@
 export class CreatePostCommentDto {
-  postId: number;
+  questionPostId: number;
   comment: string;
   commentLevel?: number;
   parentCommentId?: number;

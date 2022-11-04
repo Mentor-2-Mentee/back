@@ -7,6 +7,7 @@ import {
   BelongsTo,
   HasMany,
 } from "sequelize-typescript";
+import { QuestionPostComment } from "./questionPostComment.entity";
 import { Question } from "./question.entity";
 import { User } from "./user.entity";
 import { UserRelation } from "./userRelation.entity";
@@ -51,4 +52,7 @@ export class QuestionPost extends Model {
     onDelete: "CASCADE",
   })
   userRelations?: UserRelation[];
+
+  @HasMany(() => QuestionPostComment)
+  postComment: QuestionPostComment[];
 }
