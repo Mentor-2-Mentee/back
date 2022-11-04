@@ -211,14 +211,18 @@ export class ExamReviewRoomController {
   @UseGuards(JwtAuthGuard)
   @Post("/enter")
   async roomEnter(@Req() { user }: AuthorizeUserProfile, @Body() body: any) {
-    const isEntered = await this.examReviewRoomService.enterRoom(
-      user.id,
-      body.enterUserType,
-      body.examReviewRoomId
-    );
+    console.log("/enter", body);
+    const [message, enterExamReviewRoomId] =
+      await this.examReviewRoomService.enterRoom(
+        user.id,
+        body.enterUserPosition,
+        body.examReviewRoomId
+      );
+
+    console.log("입장처리완료", [message, enterExamReviewRoomId]);
     return {
-      message: "enter",
-      isEntered,
+      message,
+      examReviewRoomId: enterExamReviewRoomId,
     };
   }
 }

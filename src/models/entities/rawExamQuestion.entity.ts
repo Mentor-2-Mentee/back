@@ -39,7 +39,7 @@ export class RawExamQuestion extends Model {
   author: User;
 
   @ForeignKey(() => ExamReviewRoomUser)
-  @Column({ allowNull: false, field: "exam_review_room_user_relation_id" })
+  @Column({ allowNull: false, field: "exam_review_room_user_id" })
   examReviewRoomUserId: string;
 
   @BelongsTo(() => ExamReviewRoomUser)

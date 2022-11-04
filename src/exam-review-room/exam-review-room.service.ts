@@ -35,7 +35,9 @@ export class ExamReviewRoomService {
     @InjectModel(ExamSchedule)
     private examScheduleModel: typeof ExamSchedule,
     @InjectModel(ExamScheduleRelation)
-    private examScheduleRelation: typeof ExamScheduleRelation
+    private examScheduleRelation: typeof ExamScheduleRelation,
+    @InjectModel(ExamReviewRoomUser)
+    private examReviewRoomUserModel: typeof ExamReviewRoomUser
   ) {}
 
   async createExamReviewRoomRequest(
@@ -264,11 +266,15 @@ export class ExamReviewRoomService {
       where: { id: requestId },
     });
 
+    const targetExamSchedule = await this.examScheduleModel.findByPk(
+      targetRequest.examScheduleId
+    );
     const initalQuestionIdList =
-      await this.ExamQuestionService.createBulkQuestion({
-        examReviewRoomId: createdRoom.id,
-        bulkCount: 5,
-      });
+      await this.ExamQuestionService.createBulkQuestion(
+        5,
+        targetExamSchedule.organizer,
+        targetRequest.examType
+      );
 
     await this.examReviewRoomModel.update(
       {
@@ -286,46 +292,24 @@ export class ExamReviewRoomService {
     const examSchedule = await this.examScheduleModel.findByPk(examScheduleId);
     const examReviewRooms = await examSchedule.$get("examReviewRooms");
 
-    const reFormedRooms = examReviewRooms.map(
-      ({
-        id,
-        adminUserId,
-        participantUserId,
-        nonParticipantUserId,
-        examType,
-      }) => {
-        const userExistCheck = (userId: string) => {
-          if (adminUserId.findIndex((adminUser) => adminUser === userId) !== -1)
-            return "adminUser";
-          if (
-            participantUserId.findIndex(
-              (participantUser) => participantUser === userId
-            ) !== -1
-          )
-            return "participantUser";
-          if (
-            nonParticipantUserId.findIndex(
-              (nonParticipantUser) => nonParticipantUser === userId
-            ) !== -1
-          )
-            return "nonParticipantUser";
-          return false;
-        };
-        const totalUserCount =
-          adminUserId.length +
-          participantUserId.length +
-          nonParticipantUserId.length;
+    const reformedRooms = [];
+    for (const examReviewRoom of examReviewRooms) {
+      const existUsers = await examReviewRoom.$get("examReviewRoomUsers");
+      const currentUserIndex = existUsers.findIndex(
+        (existUser) => existUser.userId === userId
+      );
+      reformedRooms.push({
+        id: examReviewRoom.id,
+        examType: examReviewRoom.examType,
+        userPosition:
+          currentUserIndex === -1
+            ? undefined
+            : existUsers[currentUserIndex].userPosition,
+        totalUserCount: existUsers.length,
+      });
+    }
 
-        return {
-          id,
-          examType,
-          userExist: userExistCheck(userId),
-          totalUserCount,
-        };
-      }
-    );
-
-    return reFormedRooms;
+    return reformedRooms;
   }
 
   async findExamReviewRoomHeadData(examReviewRoomId: number) {
@@ -500,48 +484,31 @@ export class ExamReviewRoomService {
 
   async enterRoom(
     userId: string,
-    enterUserType: string,
+    enterUserPosition: string,
     examReviewRoomId: number
   ) {
-    const { adminUserId, participantUserId, nonParticipantUserId } =
-      await this.examReviewRoomModel.findByPk(examReviewRoomId);
-
-    const userExistCheck = (userId: string) => {
-      if (adminUserId.findIndex((adminUser) => adminUser === userId) !== -1)
-        return "adminUser";
-      if (
-        participantUserId.findIndex(
-          (participantUser) => participantUser === userId
-        ) !== -1
-      )
-        return "participantUser";
-      if (
-        nonParticipantUserId.findIndex(
-          (nonParticipantUser) => nonParticipantUser === userId
-        ) !== -1
-      )
-        return "nonParticipantUser";
-      return false;
-    };
-
-    if (userExistCheck(userId)) return false;
-
-    await this.examReviewRoomModel.update(
-      {
-        participantUserId:
-          enterUserType === "participantUser"
-            ? [...participantUserId, userId]
-            : participantUserId,
-        nonParticipantUserId:
-          enterUserType === "nonParticipantUser"
-            ? [...nonParticipantUserId, userId]
-            : nonParticipantUserId,
-      },
-      {
-        where: { id: examReviewRoomId },
-      }
+    const targetExamReviewRoom = await this.examReviewRoomModel.findByPk(
+      examReviewRoomId
     );
 
-    return true;
+    const reviewRoomUsers = await targetExamReviewRoom.$get(
+      "examReviewRoomUsers"
+    );
+
+    const isExist = Boolean(
+      reviewRoomUsers.findIndex(
+        (reviewRoomUser) => reviewRoomUser.userId === userId
+      ) !== -1
+    );
+
+    if (isExist) return ["이미 입장되어있습니다.", targetExamReviewRoom.id];
+
+    const newReviewRoomUser = await this.examReviewRoomUserModel.create({
+      examReviewRoomId,
+      userId,
+      userPosition: enterUserPosition,
+    });
+
+    return [`입장완료`, targetExamReviewRoom.id];
   }
 }

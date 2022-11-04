@@ -23,22 +23,22 @@ export class ExamQuestionController {
   constructor(private readonly examQuestionService: ExamQuestionService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Post("/bulk")
-  async bulkCreateExamQuestion(
+  @Post("/set-question-count")
+  async setExamQuestionCount(
     @Req() { user }: AuthorizeUserProfile,
     @Body() body: any
   ) {
     if (user.userGrade === "user")
       throw new HttpException("Unauthorized user", HttpStatus.UNAUTHORIZED);
 
-    const createdIdList = await this.examQuestionService.createBulkQuestion({
-      examReviewRoomId: body.examReviewRoomId,
-      bulkCount: body.examQuestionCount,
-    });
+    const isCreate = await this.examQuestionService.setExamQuestionCount(
+      body.examReviewRoomId,
+      body.examQuestionCount
+    );
 
     return {
-      message: `${createdIdList.length}개로 조정`,
-      isCreate: true,
+      message: `${body.examQuestionCount}개로 조정`,
+      isCreate,
     };
   }
 

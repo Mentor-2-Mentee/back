@@ -170,108 +170,108 @@ export class LiveContentsGateway {
 
     const targetChannel = `examReviewRoom_question_option-${examReviewRoomId}`;
 
-    const roomData = await this.examReviewRoomService.findExamReviewRoomOne(
-      examReviewRoomId
-    );
+    // const roomData = await this.examReviewRoomService.findExamReviewRoomOne(
+    //   examReviewRoomId
+    // );
 
-    if (deleteExamQuestionId) {
-      await this.examQuestionService.deleteQuestion(deleteExamQuestionId);
+    // if (deleteExamQuestionId) {
+    //   await this.examQuestionService.deleteQuestion(deleteExamQuestionId);
 
-      const targetRoom = await this.examReviewRoomService.findExamReviewRoomOne(
-        examReviewRoomId
-      );
-      const remainedQuestionIdList = targetRoom.examQuestionId.filter(
-        (quesionId) => quesionId !== deleteExamQuestionId
-      );
+    //   const targetRoom = await this.examReviewRoomService.findExamReviewRoomOne(
+    //     examReviewRoomId
+    //   );
+    //   const remainedQuestionIdList = targetRoom.examQuestionId.filter(
+    //     (quesionId) => quesionId !== deleteExamQuestionId
+    //   );
 
-      const updatedRoom =
-        await this.examReviewRoomService.updateExamReviewRoomOne(
-          examReviewRoomId,
-          {
-            examQuestionList: remainedQuestionIdList,
-          }
-        );
+    //   const updatedRoom =
+    //     await this.examReviewRoomService.updateExamReviewRoomOne(
+    //       examReviewRoomId,
+    //       {
+    //         examQuestionList: remainedQuestionIdList,
+    //       }
+    //     );
 
-      const examList =
-        await this.examQuestionService.findExamQuestionListByQuestionId(
-          updatedRoom.examQuestionId
-        );
+    //   const examList =
+    //     await this.examQuestionService.findExamQuestionListByQuestionId(
+    //       updatedRoom.examQuestionId
+    //     );
 
-      const result = {
-        examQuestionList: examList,
-        liveWrittingUser: [],
-      };
+    //   const result = {
+    //     examQuestionList: examList,
+    //     liveWrittingUser: [],
+    //   };
 
-      this.server.emit(targetChannel, result);
-    }
+    //   this.server.emit(targetChannel, result);
+    // }
 
-    if (setQuestionCount) {
-      if (setQuestionCount.currentCount > setQuestionCount.newCount) {
-        const deleteQuestionIdList = roomData.examQuestionId.slice(
-          setQuestionCount.newCount
-        );
-        const remainedQuestionIdList = roomData.examQuestionId.slice(
-          0,
-          setQuestionCount.newCount
-        );
+    // if (setQuestionCount) {
+    //   if (setQuestionCount.currentCount > setQuestionCount.newCount) {
+    //     const deleteQuestionIdList = roomData.examQuestionId.slice(
+    //       setQuestionCount.newCount
+    //     );
+    //     const remainedQuestionIdList = roomData.examQuestionId.slice(
+    //       0,
+    //       setQuestionCount.newCount
+    //     );
 
-        for (const deleteQuestionId of deleteQuestionIdList) {
-          await this.examQuestionService.deleteQuestion(deleteQuestionId);
-        }
-        const updatedRoom =
-          await this.examReviewRoomService.updateExamReviewRoomOne(
-            examReviewRoomId,
-            {
-              examQuestionList: remainedQuestionIdList,
-            }
-          );
+    //     for (const deleteQuestionId of deleteQuestionIdList) {
+    //       await this.examQuestionService.deleteQuestion(deleteQuestionId);
+    //     }
+    //     const updatedRoom =
+    //       await this.examReviewRoomService.updateExamReviewRoomOne(
+    //         examReviewRoomId,
+    //         {
+    //           examQuestionList: remainedQuestionIdList,
+    //         }
+    //       );
 
-        const examList =
-          await this.examQuestionService.findExamQuestionListByQuestionId(
-            updatedRoom.examQuestionId
-          );
+    //     const examList =
+    //       await this.examQuestionService.findExamQuestionListByQuestionId(
+    //         updatedRoom.examQuestionId
+    //       );
 
-        const result = {
-          examQuestionList: examList,
-          liveWrittingUser: [],
-        };
+    //     const result = {
+    //       examQuestionList: examList,
+    //       liveWrittingUser: [],
+    //     };
 
-        this.server.emit(targetChannel, result);
-        return;
-      }
+    //     this.server.emit(targetChannel, result);
+    //     return;
+    //   }
 
-      if (setQuestionCount.currentCount < setQuestionCount.newCount) {
-        const createBulkCount =
-          setQuestionCount.newCount - setQuestionCount.currentCount;
+    //   if (setQuestionCount.currentCount < setQuestionCount.newCount) {
+    //     const createBulkCount =
+    //       setQuestionCount.newCount - setQuestionCount.currentCount;
 
-        if (createBulkCount > 200) throw new Error("too much require!!");
-        const createdNewQuestionIdList =
-          await this.examQuestionService.createBulkQuestion({
-            examReviewRoomId,
-            bulkCount: createBulkCount,
-          });
+    //     if (createBulkCount > 200) throw new Error("too much require!!");
+    //     const createdNewQuestionIdList =
+    //       await this.examQuestionService.createBulkQuestion({
+    //         examReviewRoomId,
+    //         bulkCount: createBulkCount,
+    //       });
 
-        const updatedRoom =
-          await this.examReviewRoomService.updateExamReviewRoomOne(
-            examReviewRoomId,
-            {
-              examQuestionList: createdNewQuestionIdList,
-            }
-          );
+    //     const updatedRoom =
+    //       await this.examReviewRoomService.updateExamReviewRoomOne(
+    //         examReviewRoomId,
+    //         {
+    //           examQuestionList: createdNewQuestionIdList,
+    //         }
+    //       );
 
-        const examList =
-          await this.examQuestionService.findExamQuestionListByQuestionId(
-            updatedRoom.examQuestionId
-          );
+    //     const examList =
+    //       await this.examQuestionService.findExamQuestionListByQuestionId(
+    //         updatedRoom.examQuestionId
+    //       );
 
-        const result = {
-          examQuestionList: examList,
-          liveWrittingUser: [],
-        };
+    //     const result = {
+    //       examQuestionList: examList,
+    //       liveWrittingUser: [],
+    //     };
 
-        this.server.emit(targetChannel, result);
-        return;
-      }
-    }
+    //     this.server.emit(targetChannel, result);
+    //     return;
+    //   }
+    // }
   }
 }

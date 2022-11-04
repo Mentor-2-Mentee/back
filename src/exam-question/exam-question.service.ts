@@ -23,15 +23,11 @@ export class ExamQuestionService {
     private examReviewRoomModel: typeof ExamReviewRoom
   ) {}
 
-  async createBulkQuestion({
-    examReviewRoomId,
-    bulkCount,
-  }: CreateBulkExamQuestionDto) {
-    const targetExamReviewRoom = await this.examReviewRoomModel.findByPk(
-      examReviewRoomId
-    );
-    const relation = await targetExamReviewRoom.$get("ExamScheduleRelation");
-    const parentSchedule = await relation.$get("examSchedule");
+  async createBulkQuestion(
+    bulkCount: number,
+    examOrganizer: string,
+    examType: string
+  ) {
     const basement = [...Array(bulkCount).keys()].map(() => {
       return {
         questionText: null,
@@ -40,8 +36,8 @@ export class ExamQuestionService {
         solution: "",
         answer: "",
         questionType: "MULTIPLE_CHOICE",
-        examOrganizer: parentSchedule.organizer,
-        examType: targetExamReviewRoom.examType,
+        examOrganizer,
+        examType,
       };
     });
 
@@ -51,20 +47,63 @@ export class ExamQuestionService {
     return questionIdList;
   }
 
-  async deleteQuestion(examQuestionId: number) {
-    const searchQuestionOption: WhereOptions = [];
-    searchQuestionOption.push({
-      ["examQuestionId"]: {
-        [Op.and]: {
-          [Op.eq]: examQuestionId,
-        },
-      },
-    });
+  async setExamQuestionCount(
+    examReviewRoomId: number,
+    setQuestionCount: number
+  ) {
+    const targetExamReviewRoom = await this.examReviewRoomModel.findByPk(
+      examReviewRoomId
+    );
 
+    if (
+      targetExamReviewRoom.examQuestionId.length === setQuestionCount ||
+      setQuestionCount < 0
+    )
+      return false;
+    if (targetExamReviewRoom.examQuestionId.length > setQuestionCount) {
+      const deleteQuestionIdList =
+        targetExamReviewRoom.examQuestionId.slice(setQuestionCount);
+      await this.examReviewRoomModel.update(
+        {
+          examQuestionId: targetExamReviewRoom.examQuestionId.slice(
+            0,
+            setQuestionCount
+          ),
+        },
+        { where: { id: examReviewRoomId } }
+      );
+      for (const targetId of deleteQuestionIdList) {
+        await this.deleteQuestion(targetId);
+      }
+      return true;
+    }
+    if (targetExamReviewRoom.examQuestionId.length < setQuestionCount) {
+      const relation = await targetExamReviewRoom.$get("ExamScheduleRelation");
+      const parentSchedule = await relation.$get("examSchedule");
+      const bulkCreateCount =
+        setQuestionCount - targetExamReviewRoom.examQuestionId.length;
+      const createdExamIdList = await this.createBulkQuestion(
+        bulkCreateCount,
+        parentSchedule.organizer,
+        targetExamReviewRoom.examType
+      );
+      await this.examReviewRoomModel.update(
+        {
+          examQuestionId: [
+            ...targetExamReviewRoom.examQuestionId,
+            ...createdExamIdList,
+          ],
+        },
+        { where: { id: examReviewRoomId } }
+      );
+      return true;
+    }
+  }
+
+  async deleteQuestion(examQuestionId: number) {
+    console.log("delete", examQuestionId);
     await this.examQuestionModel.destroy({
-      where: {
-        [Op.and]: searchQuestionOption,
-      },
+      where: { id: examQuestionId },
     });
   }
 
