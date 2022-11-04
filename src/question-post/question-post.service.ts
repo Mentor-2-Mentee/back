@@ -6,6 +6,7 @@ import {
   AppliedTagOptions,
   Question,
   QuestionPost,
+  QuestionPostComment,
   UpdateQuestionPostDto,
   User,
   UserRelation,
@@ -83,12 +84,16 @@ export class QuestionPostService {
       include: [
         { model: Question, where: { [Op.and]: searchTagFilter } },
         { model: User },
+        { model: QuestionPostComment },
       ],
       order: [["id", "DESC"]],
       where: { [Op.and]: searchKeyword },
       offset: (querys.page - 1) * querys.limit,
       limit: querys.limit,
     });
+
+    console.log(result);
+
     return result;
   }
 
