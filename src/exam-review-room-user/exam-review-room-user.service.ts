@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { ExamReviewRoomUser, User } from "src/models";
+import { ExamReviewRoomUser, RawExamQuestion, User } from "src/models";
 
 @Injectable()
 export class ExamReviewRoomUserService {
@@ -8,6 +8,38 @@ export class ExamReviewRoomUserService {
     @InjectModel(ExamReviewRoomUser)
     private examReviewRoomUserModel: typeof ExamReviewRoomUser
   ) {}
+
+  async createNewUser(
+    userId: string,
+    userGrade: string,
+    examReviewRoomId: number,
+    isParticipant: boolean
+  ) {
+    console.log("examReviewRoomId", examReviewRoomId);
+    const isExist = Boolean(
+      await this.examReviewRoomUserModel.findOne({
+        where: { examReviewRoomId, userId },
+      })
+    );
+
+    if (isExist) return false;
+
+    const newUserInfo = await this.examReviewRoomUserModel.create({
+      userId,
+      examReviewRoomId,
+      userPosition: userGrade,
+      isParticipant,
+    });
+
+    return Boolean(newUserInfo);
+  }
+
+  async findAllExamReviewRoomUser(examReviewRoomId: number) {
+    return await this.examReviewRoomUserModel.findAll({
+      where: { examReviewRoomId },
+      include: [{ model: User }, { model: RawExamQuestion }],
+    });
+  }
 
   async updateRoomUserPosition(
     examReviewRoomId: number,

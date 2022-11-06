@@ -1,14 +1,18 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
+  Post,
   Put,
+  Query,
   Req,
   UseGuards,
 } from "@nestjs/common";
 import {
   AuthorizeUserProfile,
+  CreateExamReviewRoomUserDto,
   UpdateExamReviewRoomUserPositionDto,
 } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
@@ -19,6 +23,43 @@ export class ExamReviewRoomUserController {
   constructor(
     private readonly examReviewRoomUserService: ExamReviewRoomUserService
   ) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  async createNewUser(
+    @Req() { user }: AuthorizeUserProfile,
+    @Body() body: CreateExamReviewRoomUserDto
+  ) {
+    const isCreate = await this.examReviewRoomUserService.createNewUser(
+      user.id,
+      user.userGrade,
+      body.examReviewRoomId,
+      body.isParticipant
+    );
+
+    if (!isCreate)
+      throw new HttpException("bad request", HttpStatus.BAD_REQUEST);
+
+    return {
+      message: "입장완료",
+      examReviewRoomId: body.examReviewRoomId,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("/list")
+  async findAllExamReviewRoomUser(
+    @Query("examReviewRoomId") examReviewRoomId: number
+  ) {
+    const userList =
+      await this.examReviewRoomUserService.findAllExamReviewRoomUser(
+        examReviewRoomId
+      );
+    return {
+      message: `${examReviewRoomId} userList`,
+      userList,
+    };
+  }
 
   @UseGuards(JwtAuthGuard)
   @Put("/position")

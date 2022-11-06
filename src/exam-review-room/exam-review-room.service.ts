@@ -318,25 +318,6 @@ export class ExamReviewRoomService {
     return await this.examReviewRoomModel.findByPk(examReviewRoomId);
   }
 
-  async findExamReviewRoomUserList(examReviewRoomId: number) {
-    const targetRoom = await this.examReviewRoomModel.findByPk(
-      examReviewRoomId,
-      { include: { model: ExamReviewRoomUser } }
-    );
-
-    const examReviewRoomUser = await targetRoom.$get("examReviewRoomUsers", {
-      include: [{ model: User }, { model: RawExamQuestion }],
-      attributes: [
-        "enteredAt",
-        "examReviewRoomId",
-        "userPosition",
-        "isParticipant",
-      ],
-    });
-
-    return examReviewRoomUser;
-  }
-
   async updateExamReviewRoomOne(examReviewRoomId: number, updateData?: any) {
     await this.examReviewRoomModel.update(
       {
@@ -476,37 +457,5 @@ export class ExamReviewRoomService {
     });
 
     return pdfBuffer;
-  }
-
-  async enterRoom(
-    userId: string,
-    userGrade: string,
-    isParticipant: boolean,
-    examReviewRoomId: number
-  ) {
-    const targetExamReviewRoom = await this.examReviewRoomModel.findByPk(
-      examReviewRoomId
-    );
-
-    const reviewRoomUsers = await targetExamReviewRoom.$get(
-      "examReviewRoomUsers"
-    );
-
-    const isExist = Boolean(
-      reviewRoomUsers.findIndex(
-        (reviewRoomUser) => reviewRoomUser.userId === userId
-      ) !== -1
-    );
-
-    if (isExist) return ["이미 입장되어있습니다.", targetExamReviewRoom.id];
-
-    const newReviewRoomUser = await this.examReviewRoomUserModel.create({
-      examReviewRoomId,
-      userId,
-      userPosition: userGrade,
-      isParticipant: isParticipant,
-    });
-
-    return [`입장완료`, targetExamReviewRoom.id];
   }
 }

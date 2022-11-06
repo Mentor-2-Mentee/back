@@ -61,20 +61,6 @@ export class ExamReviewRoomController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get("user-list")
-  async findUserInfoById(@Query("examReviewRoomId") examReviewRoomId: number) {
-    const userList =
-      await this.examReviewRoomService.findExamReviewRoomUserList(
-        examReviewRoomId
-      );
-
-    return {
-      message: `${examReviewRoomId} userList`,
-      userList,
-    };
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Post()
   async createExamReviewRoom(
     @Req() { user }: AuthorizeUserProfile,
@@ -180,50 +166,5 @@ export class ExamReviewRoomController {
     });
 
     res.end(buffer);
-  }
-
-  // @Get("/solution-pdf")
-  // async solutionPdf(
-  //   @Query("examScheduleId") examScheduleId: number,
-  //   @Query("examType") examType: string,
-  //   @Res() res: Response
-  // ) {
-  //   const targetRoomData =
-  //     await this.examReviewRoomService.findExamReviewRoomOne(
-  //       examScheduleId,
-  //       examType
-  //     );
-
-  //   const buffer = await this.examReviewRoomService.generateSolutionPDF(
-  //     targetRoomData,
-  //     targetRoomData.examQuestionList
-  //   );
-
-  //   res.set({
-  //     "Content-Type": "application/pdf",
-  //     "Content-Disposition": "attachment; filename=example.pdf",
-  //     "Content-Length": buffer.length,
-  //   });
-
-  //   res.end(buffer);
-  // }
-
-  @UseGuards(JwtAuthGuard)
-  @Post("/enter")
-  async roomEnter(@Req() { user }: AuthorizeUserProfile, @Body() body: any) {
-    console.log("/enter", body);
-    const [message, enterExamReviewRoomId] =
-      await this.examReviewRoomService.enterRoom(
-        user.id,
-        user.userGrade,
-        Boolean(body.isParticipant),
-        body.examReviewRoomId
-      );
-
-    console.log("입장처리완료", [message, enterExamReviewRoomId]);
-    return {
-      message,
-      examReviewRoomId: enterExamReviewRoomId,
-    };
   }
 }
