@@ -46,3 +46,5 @@ export * from "./update-questionPost.dto";
 export * from "./create-postComment.dto";
 
 export * from "./create-examQuestionComment.dto";
+
+export * from "./update-examReviewRoomUserPosition.dto";

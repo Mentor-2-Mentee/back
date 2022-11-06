@@ -1,11 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import {
-  CreateCreateExamReviewRoomRequestDto,
-  CreateExamReviewRoomDto,
-  GetCreateExamReviewRoomRequest,
-  User,
-} from "src/models";
+import { CreateCreateExamReviewRoomRequestDto, User } from "src/models";
 import {
   CreateExamReviewRoomRequest,
   ExamReviewRoom,
@@ -14,15 +9,11 @@ import {
   ExamScheduleRelation,
   RawExamQuestion,
 } from "src/models/entities";
-import { WhereOptions, Op } from "sequelize";
+import { Op } from "sequelize";
 import { ExamQuestionService } from "src/exam-question/exam-question.service";
-import { v4 as uuidv4 } from "uuid";
 import * as PDFDocument from "pdfkit";
 import DateFormatting from "src/common/utils/DateFormatting";
-import configuration from "src/common/config/configuration";
 import { whereAndOptions } from "src/common/utils";
-
-const INITIAL_QUESTION_COUNT = 5;
 
 @Injectable()
 export class ExamReviewRoomService {

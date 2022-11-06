@@ -43,6 +43,7 @@ import { QuestionPostCommentModule } from "./question-post-comment/question-post
 import { PdfModule } from "./pdf/pdf.module";
 import { ExamQuestionCommentModule } from "./exam-question-comment/exam-question-comment.module";
 import { RawExamQuestionModule } from "./raw-exam-question/raw-exam-question.module";
+import { ExamReviewRoomUserModule } from './exam-review-room-user/exam-review-room-user.module';
 
 @Module({
   imports: [
@@ -110,6 +111,7 @@ import { RawExamQuestionModule } from "./raw-exam-question/raw-exam-question.mod
     PdfModule,
     ExamQuestionCommentModule,
     RawExamQuestionModule,
+    ExamReviewRoomUserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

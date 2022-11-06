@@ -53,6 +53,8 @@ export class QuestionPost extends Model {
   })
   userRelations?: UserRelation[];
 
-  @HasMany(() => QuestionPostComment)
+  @HasMany(() => QuestionPostComment, {
+    onDelete: "CASCADE",
+  })
   postComment: QuestionPostComment[];
 }
