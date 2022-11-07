@@ -68,11 +68,14 @@ export class LiveContentsGateway {
       await this.cacheManager.get<MentoringRoomChatSummary | null>(
         chatData.roomId
       );
-    const result = await this.liveChatService.saveChatLog(
-      chatData,
-      currentRoomCacheData
-    );
-    this.server.emit(targetChannel, result);
+    // const result = await this.liveChatService.saveChatLog(
+    //   chatData,
+    //   currentRoomCacheData
+    // );
+    this.server.emit(targetChannel, {
+      latestChatIndex: 0,
+      receivedChatData: chatData,
+    });
   }
 
   /**

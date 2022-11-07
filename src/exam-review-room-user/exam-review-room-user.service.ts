@@ -15,7 +15,6 @@ export class ExamReviewRoomUserService {
     examReviewRoomId: number,
     isParticipant: boolean
   ) {
-    console.log("examReviewRoomId", examReviewRoomId);
     const isExist = Boolean(
       await this.examReviewRoomUserModel.findOne({
         where: { examReviewRoomId, userId },

@@ -76,8 +76,14 @@ export class ExamReviewRoomUserController {
         body.newPosition
       );
 
+    const message =
+      updatedUserInfo.userPosition === "helper"
+        ? `${updatedUserInfo.userProfile.userName} 도우미 지정`
+        : `${updatedUserInfo.userProfile.userName} 도우미 해제`;
+
     return {
-      message: `${updatedUserInfo.userProfile.userName}의 권한이 ${updatedUserInfo.userPosition}로 수정되었습니다`,
+      message,
+      newPosition: updatedUserInfo.userPosition,
     };
   }
 }
