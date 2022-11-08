@@ -292,11 +292,15 @@ export class ExamReviewRoomService {
       reformedRooms.push({
         id: examReviewRoom.id,
         examType: examReviewRoom.examType,
+        totalUserCount: existUsers.length,
+        isParticipant:
+          currentUserIndex === -1
+            ? undefined
+            : existUsers[currentUserIndex].isParticipant,
         userPosition:
           currentUserIndex === -1
             ? undefined
             : existUsers[currentUserIndex].userPosition,
-        totalUserCount: existUsers.length,
       });
     }
 

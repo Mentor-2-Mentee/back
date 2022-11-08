@@ -50,7 +50,9 @@ export class ExamScheduleService {
 
   async updateExamSchedule(updateExamScheduleDto: UpdateExamScheduleDto) {
     const updateCount = await this.examScheduleModel.update(
-      { ...updateExamScheduleDto },
+      {
+        ...updateExamScheduleDto,
+      },
       { where: { id: updateExamScheduleDto.id } }
     );
     return Boolean(updateCount);

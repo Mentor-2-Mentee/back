@@ -6,6 +6,6 @@ export class UpdateExamScheduleDto {
   scheduleType: string;
   description: string;
   imageUrl: string[];
-  examStartTime?: string;
-  examEndTime?: string;
+  examStartTime?: string | null;
+  examEndTime?: string | null;
 }

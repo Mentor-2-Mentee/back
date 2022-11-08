@@ -30,10 +30,10 @@ export class ExamSchedule extends Model {
   @Column({ allowNull: false, field: "exam_date", type: DataType.DATE })
   examDate: Date;
 
-  @Column({ allowNull: true, field: "exam_start_time", type: DataType.TIME })
+  @Column({ allowNull: true, field: "exam_start_time", type: DataType.DATE })
   examStartTime: Date;
 
-  @Column({ allowNull: true, field: "exam_end_time", type: DataType.TIME })
+  @Column({ allowNull: true, field: "exam_end_time", type: DataType.DATE })
   examEndTime: Date;
 
   @Column({ allowNull: true, field: "exam_url" })

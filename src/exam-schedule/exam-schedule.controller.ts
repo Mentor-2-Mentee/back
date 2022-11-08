@@ -52,6 +52,8 @@ export class ExamScheduleController {
     const targetExamSchedule =
       await this.examScheduleService.findExamScheduleById(examScheduleId);
 
+    console.log(targetExamSchedule);
+
     return {
       message: `${examScheduleId} data`,
       examSchedule: targetExamSchedule,
@@ -87,6 +89,8 @@ export class ExamScheduleController {
     if (user.userGrade === "user") {
       return "permission denied";
     }
+
+    console.log("body", body);
 
     const isUpdate = await this.examScheduleService.updateExamSchedule(body);
 
