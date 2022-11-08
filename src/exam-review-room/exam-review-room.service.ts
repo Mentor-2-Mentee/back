@@ -315,6 +315,7 @@ export class ExamReviewRoomService {
     return {
       examOrganizer: targetSchedule.organizer,
       examType: targetRoom.examType,
+      examDate: targetSchedule.examDate,
     };
   }
 
