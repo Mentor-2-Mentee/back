@@ -25,29 +25,17 @@ export class Question extends Model {
   })
   id: number;
 
+  @Column({ allowNull: true })
+  questionText: string;
+
+  @Column({ allowNull: true })
+  solution: string;
+
   @Column({ allowNull: false })
   rootTag: string;
 
   @Column({ allowNull: true, type: DataType.JSON })
   detailTag: string;
-
-  @Column({ allowNull: false })
-  questionType: string;
-
-  @Column({ allowNull: true })
-  questionText: string;
-
-  @Column({ allowNull: true, type: DataType.JSON })
-  answerExample: string;
-
-  @Column({ allowNull: true, type: DataType.JSON })
-  questionImageUrl: string;
-
-  @Column({ allowNull: true })
-  solution: string;
-
-  @Column({ allowNull: true })
-  answer: string;
 
   @HasMany(() => QuestionPost)
   questionPost: QuestionPost;

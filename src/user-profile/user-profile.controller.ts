@@ -59,4 +59,15 @@ export class UserProfileController {
       questionPost,
     };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("/exam-review-room")
+  async getMyExamReviewRoomList(@Request() { user }: AuthorizeUserProfile) {
+    const examReviewRoomList =
+      await this.userProfileService.findAllUserExamReviewRoom(user.id);
+    return {
+      message: "OK",
+      examReviewRoomList,
+    };
+  }
 }

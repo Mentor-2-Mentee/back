@@ -10,21 +10,9 @@ export class QuestionService {
     private questionModel: typeof Question
   ) {}
 
-  async createNewQuestionByText(createQuestionDto: CreateQuestionDto) {
+  async createNewQuestion(createQuestionDto: CreateQuestionDto) {
     if (!createQuestionDto.questionText) return;
 
-    const newQuestion = await this.questionModel.create({
-      ...createQuestionDto,
-    });
-    return newQuestion;
-  }
-
-  async createNewQuestionByImage(createQuestionDto: CreateQuestionDto) {
-    if (
-      !createQuestionDto.questionImageUrl ||
-      createQuestionDto.questionImageUrl.length === 0
-    )
-      return;
     const newQuestion = await this.questionModel.create({
       ...createQuestionDto,
     });

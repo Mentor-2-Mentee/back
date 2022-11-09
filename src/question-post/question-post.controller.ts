@@ -64,12 +64,9 @@ export class QuestionPostController {
     console.log("POST /question", user, body);
 
     console.log("question등록", body.questionForm);
-    const question =
-      body.uploadType === "TEXT"
-        ? await this.questionService.createNewQuestionByText(body.questionForm)
-        : await this.questionService.createNewQuestionByImage(
-            body.questionForm
-          );
+    const question = await this.questionService.createNewQuestion(
+      body.questionForm
+    );
 
     console.log("questionId생성", question.id);
 

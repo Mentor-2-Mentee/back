@@ -1,6 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { QuestionPost, UpdateUserProfileDto, User } from "src/models";
+import {
+  ExamReviewRoom,
+  ExamReviewRoomUser,
+  ExamSchedule,
+  QuestionPost,
+  QuestionPostComment,
+  UpdateUserProfileDto,
+  User,
+} from "src/models";
 
 @Injectable()
 export class UserProfileService {
@@ -19,12 +27,41 @@ export class UserProfileService {
   }
 
   async findUserPostList(userId: string) {
-    const targetUser = await this.userModel.findByPk(userId, {});
-    const userQuesionPostList = await targetUser.$get("questionPosts", {
-      attributes: ["id", "title"],
+    const targetUser = await this.userModel.findByPk(userId, {
+      include: {
+        model: QuestionPost,
+        attributes: ["id", "title"],
+        include: [{ model: QuestionPostComment }],
+      },
     });
-    console.log("userQuesionPostList", userQuesionPostList);
-    return userQuesionPostList;
+    return targetUser.questionPosts;
+  }
+
+  async findAllUserExamReviewRoom(userId: string) {
+    const targetUser = await this.userModel.findByPk(userId, {
+      include: {
+        model: ExamReviewRoomUser,
+        include: [
+          {
+            model: ExamReviewRoom,
+            attributes: ["id", "examType"],
+            include: [{ model: ExamSchedule, attributes: ["organizer"] }],
+          },
+        ],
+      },
+    });
+
+    const examReviewRoomList = targetUser.myReviewRoomRelations.map(
+      (reviewRoomRelation) => {
+        return {
+          id: reviewRoomRelation.examReviewRoom.id,
+          examType: reviewRoomRelation.examReviewRoom.examType,
+          organizer: reviewRoomRelation.examReviewRoom.examSchedule.organizer,
+        };
+      }
+    );
+
+    return examReviewRoomList;
   }
 
   async updateUserProfile(userId: string, { newName }: UpdateUserProfileDto) {
