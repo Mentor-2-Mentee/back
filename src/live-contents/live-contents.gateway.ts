@@ -8,6 +8,7 @@ import { LiveContentsService } from "./live-contents.service";
 import {
   LiveChat,
   MentoringRoomChatSummary,
+  SocketReceiveExamReviewRoomChatDto,
   SocketReceiveExamReviewRoomDto,
   SocketReceiveLiveExamQuestionDto,
   SocketReceiveMentoringRoomLiveCanvasStroke,
@@ -19,6 +20,7 @@ import { CACHE_MANAGER, Inject, Logger } from "@nestjs/common";
 import { Cache } from "cache-manager";
 import { ExamQuestionService } from "src/exam-question/exam-question.service";
 import { ExamReviewRoomService } from "src/exam-review-room/exam-review-room.service";
+import { ExamReviewRoomChatService } from "src/exam-review-room-chat/exam-review-room-chat.service";
 
 @WebSocketGateway(8081, {
   namespace: "/live-contents",
@@ -30,6 +32,7 @@ export class LiveContentsGateway {
     private readonly liveChatService: LiveContentsService,
     private readonly examQuestionService: ExamQuestionService,
     private readonly examReviewRoomService: ExamReviewRoomService,
+    private readonly examReviewRoomChatService: ExamReviewRoomChatService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 
@@ -276,5 +279,17 @@ export class LiveContentsGateway {
     //     return;
     //   }
     // }
+  }
+
+  @SubscribeMessage("examReviewRoom_chat_live")
+  async receiveExamReviewRoomChat(
+    @MessageBody() data: SocketReceiveExamReviewRoomChatDto
+  ) {
+    console.log(data);
+
+    const targetChannel = `examReviewRoom_chat_live-${data.examReviewRoomId}`;
+
+    const savedChat = await this.examReviewRoomChatService.saveChat(data);
+    this.server.emit(targetChannel, savedChat);
   }
 }

@@ -16,3 +16,4 @@ export * from "./questionPostComment.entity";
 export * from "./examQuestionComment.entity";
 export * from "./rawExamQuestion.entity";
 export * from "./examReviewRoomUser.entity";
+export * from "./examReviewRoomChat.entity";

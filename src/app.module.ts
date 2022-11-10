@@ -28,6 +28,7 @@ import {
   ExamQuestionComment,
   RawExamQuestion,
   ExamReviewRoomUser,
+  ExamReviewRoomChat,
 } from "src/models";
 
 import { SequelizeModule } from "@nestjs/sequelize";
@@ -43,7 +44,8 @@ import { QuestionPostCommentModule } from "./question-post-comment/question-post
 import { PdfModule } from "./pdf/pdf.module";
 import { ExamQuestionCommentModule } from "./exam-question-comment/exam-question-comment.module";
 import { RawExamQuestionModule } from "./raw-exam-question/raw-exam-question.module";
-import { ExamReviewRoomUserModule } from './exam-review-room-user/exam-review-room-user.module';
+import { ExamReviewRoomUserModule } from "./exam-review-room-user/exam-review-room-user.module";
+import { ExamReviewRoomChatModule } from "./exam-review-room-chat/exam-review-room-chat.module";
 
 @Module({
   imports: [
@@ -80,6 +82,7 @@ import { ExamReviewRoomUserModule } from './exam-review-room-user/exam-review-ro
           ExamQuestionComment,
           RawExamQuestion,
           ExamReviewRoomUser,
+          ExamReviewRoomChat,
         ],
         logging: Boolean(
           configService.get<string>("LIVE_SERVER_MODE") === "true"
@@ -112,6 +115,7 @@ import { ExamReviewRoomUserModule } from './exam-review-room-user/exam-review-ro
     ExamQuestionCommentModule,
     RawExamQuestionModule,
     ExamReviewRoomUserModule,
+    ExamReviewRoomChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

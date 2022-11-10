@@ -12,6 +12,7 @@ import {
   Index,
 } from "sequelize-typescript";
 import { ExamQuestion } from "./examQuestion.entity";
+import { ExamReviewRoomChat } from "./examReviewRoomChat.entity";
 import { ExamReviewRoomUser } from "./examReviewRoomUser.entity";
 import { ExamSchedule } from "./examSchedule.entity";
 import { ExamScheduleRelation } from "./examScheduleRelation.entity";
@@ -80,4 +81,7 @@ export class ExamReviewRoom extends Model {
 
   @BelongsToMany(() => User, () => ExamReviewRoomUser)
   user: User[];
+
+  @HasMany(() => ExamReviewRoomChat)
+  examReviewRoomChats: ExamReviewRoomChat[];
 }

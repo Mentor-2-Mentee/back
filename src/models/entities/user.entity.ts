@@ -12,6 +12,7 @@ import {
   BelongsToMany,
 } from "sequelize-typescript";
 import { ExamReviewRoom } from "./examReviewRoom.entity";
+import { ExamReviewRoomChat } from "./examReviewRoomChat.entity";
 import { ExamReviewRoomUser } from "./examReviewRoomUser.entity";
 import { QuestionPost } from "./questionPost.entity";
 import { RawExamQuestion } from "./rawExamQuestion.entity";
@@ -84,4 +85,7 @@ export class User extends Model {
 
   @HasMany(() => RawExamQuestion)
   rawExamQuestion: RawExamQuestion;
+
+  @HasMany(() => ExamReviewRoomChat)
+  examReviewRoomChats: ExamReviewRoomChat[];
 }
