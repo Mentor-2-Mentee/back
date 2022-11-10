@@ -50,4 +50,5 @@ export * from "./create-examQuestionComment.dto";
 
 export * from "./create-examReviewRoomUser.dto";
 export * from "./delete-examReviewRoomUser.dto";
+export * from "./update-examReviewRoomUser.dto";
 export * from "./update-examReviewRoomUserPosition.dto";

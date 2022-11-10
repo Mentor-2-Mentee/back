@@ -14,6 +14,7 @@ import {
 import {
   AuthorizeUserProfile,
   CreateExamReviewRoomUserDto,
+  UpdateExamReviewRoomUserDto,
   UpdateExamReviewRoomUserPositionDto,
 } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
@@ -85,6 +86,23 @@ export class ExamReviewRoomUserController {
     return {
       message: `${examReviewRoomId} userList`,
       userList,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  async updateRoomUser(
+    @Req() { user }: AuthorizeUserProfile,
+    @Body() body: UpdateExamReviewRoomUserDto
+  ) {
+    const isUpdate = await this.examReviewRoomUserService.updateRoomUser(
+      user.id,
+      body.examReviewRoomId,
+      body.isParticipant
+    );
+    return {
+      message: "정보 수정 완료",
+      isUpdate,
     };
   }
 

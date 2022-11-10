@@ -45,6 +45,24 @@ export class ExamReviewRoomUserService {
     });
   }
 
+  async updateRoomUser(
+    userId: string,
+    examReviewRoomId: number,
+    isParticipant: boolean
+  ) {
+    const updateCnt = await this.examReviewRoomUserModel.update(
+      { isParticipant },
+      {
+        where: {
+          examReviewRoomId,
+          userId,
+        },
+      }
+    );
+
+    return Boolean(updateCnt);
+  }
+
   async updateRoomUserPosition(
     examReviewRoomId: number,
     targetUserId: string,
