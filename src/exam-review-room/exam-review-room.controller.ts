@@ -78,6 +78,25 @@ export class ExamReviewRoomController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Delete()
+  async deleteExamReviewRoom(
+    @Req() { user }: AuthorizeUserProfile,
+    @Query("examReviewRoomId") examReviewRoomId: string
+  ) {
+    if (user.userGrade === "user")
+      throw new HttpException("Unauthorized user", HttpStatus.UNAUTHORIZED);
+
+    const isDeleted = await this.examReviewRoomService.deleteRoom(
+      Number(examReviewRoomId)
+    );
+
+    return {
+      message: "OK",
+      isDeleted,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post("/create-request")
   async createExamReviewRoomRequest(
     @Req() { user }: AuthorizeUserProfile,
@@ -145,26 +164,5 @@ export class ExamReviewRoomController {
       message: `${examType} 신청 삭제`,
       isDeleted,
     };
-  }
-
-  @Get("/question-pdf")
-  async questionPdf(
-    // @Query("examScheduleId") examScheduleId: number,
-    // @Query("examType") examType: string,
-    @Res() res: Response
-  ) {
-    const buffer = await this.examReviewRoomService
-      .generateQuestionPDF
-      // targetRoomData,
-      // targetRoomData.examQuestionList
-      ();
-
-    res.set({
-      "Content-Type": "application/pdf",
-      "Content-Disposition": "attachment; filename=example.pdf",
-      "Content-Length": buffer.length,
-    });
-
-    res.end(buffer);
   }
 }

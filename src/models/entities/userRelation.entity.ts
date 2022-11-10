@@ -6,7 +6,7 @@ import {
   Model,
   Table,
 } from "sequelize-typescript";
-import { ExamReviewRoom } from "./examReviewRoom.entity";
+// import { ExamReviewRoom } from "./examReviewRoom.entity";
 import { QuestionPost } from "./questionPost.entity";
 import { User } from "./user.entity";
 
@@ -44,14 +44,4 @@ export class UserRelation extends Model {
 
   @BelongsTo(() => QuestionPost)
   questionPost: QuestionPost;
-
-  @ForeignKey(() => ExamReviewRoom)
-  @Column({
-    allowNull: true,
-    field: "exam_review_room_id",
-  })
-  examReviewRoomId: number;
-
-  @BelongsTo(() => ExamReviewRoom)
-  examReviewRoom: ExamReviewRoom;
 }

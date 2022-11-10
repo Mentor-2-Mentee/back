@@ -1,6 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { ExamReviewRoomUser, RawExamQuestion, User } from "src/models";
+import {
+  DeleteExamReviewRoomUserDto,
+  ExamReviewRoomUser,
+  RawExamQuestion,
+  User,
+} from "src/models";
 
 @Injectable()
 export class ExamReviewRoomUserService {
@@ -62,5 +67,21 @@ export class ExamReviewRoomUserService {
         userId: targetUserId,
       },
     });
+  }
+
+  async deleteRoomUser({
+    examReviewRoomId,
+    targetUserId,
+  }: DeleteExamReviewRoomUserDto) {
+    const targetUser = await this.examReviewRoomUserModel.findOne({
+      include: [{ model: User }],
+      where: { examReviewRoomId, userId: targetUserId },
+    });
+
+    await this.examReviewRoomUserModel.destroy({
+      where: { id: targetUser.id },
+    });
+
+    return targetUser;
   }
 }

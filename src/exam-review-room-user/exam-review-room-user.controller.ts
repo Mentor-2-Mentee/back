@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -47,6 +48,31 @@ export class ExamReviewRoomUserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Delete()
+  async deleteCurrentUser(
+    @Req() { user }: AuthorizeUserProfile,
+    @Query("examReviewRoomId") examReviewRoomId: string,
+    @Query("targetUserId") targetUserId: string
+  ) {
+    if (user.userGrade === "user")
+      throw new HttpException("Unauthorized user", HttpStatus.UNAUTHORIZED);
+
+    const deletedUser = await this.examReviewRoomUserService.deleteRoomUser({
+      examReviewRoomId: Number(examReviewRoomId),
+      targetUserId,
+    });
+
+    const message =
+      targetUserId === user.id
+        ? "퇴장했습니다"
+        : `${deletedUser.userProfile.userName}을 내보냈습니다.`;
+
+    return {
+      message,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get("/list")
   async findAllExamReviewRoomUser(
     @Query("examReviewRoomId") examReviewRoomId: number
@@ -55,6 +81,7 @@ export class ExamReviewRoomUserController {
       await this.examReviewRoomUserService.findAllExamReviewRoomUser(
         examReviewRoomId
       );
+
     return {
       message: `${examReviewRoomId} userList`,
       userList,

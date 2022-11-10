@@ -77,9 +77,6 @@ export class User extends Model {
   @BelongsToMany(() => QuestionPost, () => UserRelation)
   questionPosts: QuestionPost[];
 
-  @BelongsToMany(() => ExamReviewRoom, () => UserRelation)
-  examReviewRooms: ExamReviewRoom[];
-
   @HasMany(() => ExamReviewRoomUser)
   myReviewRoomRelations: ExamReviewRoomUser[];
 

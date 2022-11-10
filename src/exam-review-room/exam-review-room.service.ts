@@ -4,6 +4,7 @@ import { CreateCreateExamReviewRoomRequestDto, User } from "src/models";
 import {
   CreateExamReviewRoomRequest,
   ExamReviewRoom,
+  ExamReviewRoomChat,
   ExamReviewRoomUser,
   ExamSchedule,
   ExamScheduleRelation,
@@ -28,7 +29,9 @@ export class ExamReviewRoomService {
     @InjectModel(ExamScheduleRelation)
     private examScheduleRelation: typeof ExamScheduleRelation,
     @InjectModel(ExamReviewRoomUser)
-    private examReviewRoomUserModel: typeof ExamReviewRoomUser
+    private examReviewRoomUserModel: typeof ExamReviewRoomUser,
+    @InjectModel(ExamReviewRoomChat)
+    private examReviewRoomChatModel: typeof ExamReviewRoomChat
   ) {}
 
   async createExamReviewRoomRequest(
@@ -82,6 +85,35 @@ export class ExamReviewRoomService {
       return [isExist, `${examType} ${message}`];
     }
     return [created, `${examType} 신청 완료`];
+  }
+
+  async deleteRoom(examReviewRoomId: number) {
+    const targetExamReviewRoom = await this.examReviewRoomModel.findByPk(
+      examReviewRoomId,
+      {
+        include: [
+          { model: ExamScheduleRelation },
+          { model: ExamReviewRoomChat },
+          { model: ExamReviewRoomUser },
+        ],
+      }
+    );
+
+    await this.examScheduleRelation.destroy({
+      where: { id: targetExamReviewRoom.ExamScheduleRelation.id },
+    });
+
+    await this.examReviewRoomUserModel.destroy({
+      where: {
+        id: targetExamReviewRoom.examReviewRoomUsers.map(
+          (roomUser) => roomUser.id
+        ),
+      },
+    });
+
+    await this.examReviewRoomModel.destroy({
+      where: { id: targetExamReviewRoom.id },
+    });
   }
 
   async enterCreateExamReviewRoom(

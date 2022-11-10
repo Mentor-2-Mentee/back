@@ -5,6 +5,7 @@ import { SequelizeModule } from "@nestjs/sequelize";
 import { CreateExamReviewRoomRequest } from "src/models/entities/createExamReviewRoomRequest.entity";
 import {
   ExamReviewRoom,
+  ExamReviewRoomChat,
   ExamReviewRoomUser,
   ExamSchedule,
   ExamScheduleRelation,
@@ -22,6 +23,7 @@ import { UserProfileModule } from "src/user-profile/user-profile.module";
       ExamSchedule,
       ExamScheduleRelation,
       ExamReviewRoomUser,
+      ExamReviewRoomChat,
     ]),
   ],
   controllers: [ExamReviewRoomController],

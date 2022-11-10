@@ -17,7 +17,6 @@ import { ExamReviewRoomUser } from "./examReviewRoomUser.entity";
 import { ExamSchedule } from "./examSchedule.entity";
 import { ExamScheduleRelation } from "./examScheduleRelation.entity";
 import { User } from "./user.entity";
-import { UserRelation } from "./userRelation.entity";
 @Table({
   tableName: "ExamReviewRoom",
   timestamps: true,
@@ -68,11 +67,6 @@ export class ExamReviewRoom extends Model {
     onDelete: "CASCADE",
   })
   ExamScheduleRelation?: ExamScheduleRelation;
-
-  @HasMany(() => UserRelation, {
-    onDelete: "CASCADE",
-  })
-  userRelations?: UserRelation[];
 
   @HasMany(() => ExamReviewRoomUser, {
     onDelete: "CASCADE",
