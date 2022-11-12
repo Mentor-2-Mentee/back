@@ -28,7 +28,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
     const profileJson = profile._json;
     const kakaoAccount = profileJson.kakao_account;
     const kakaoPayload: GetUserOauthPayloadDto = {
-      userName: kakaoAccount.profile.nickname || this.randomUserId,
+      userName: kakaoAccount?.profile?.nickname || this.randomUserId,
       oauthType: "kakao",
       oauthId: String(profileJson.id),
     };
