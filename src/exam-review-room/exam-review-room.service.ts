@@ -333,6 +333,7 @@ export class ExamReviewRoomService {
           currentUserIndex === -1
             ? undefined
             : existUsers[currentUserIndex].userPosition,
+        isClosed: examReviewRoom.isClosed,
       });
     }
 

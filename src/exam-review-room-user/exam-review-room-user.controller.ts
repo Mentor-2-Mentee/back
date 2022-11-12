@@ -36,7 +36,8 @@ export class ExamReviewRoomUserController {
       user.id,
       user.userGrade,
       body.examReviewRoomId,
-      body.isParticipant
+      body.isParticipant,
+      body.enterCode
     );
 
     if (!isCreate)

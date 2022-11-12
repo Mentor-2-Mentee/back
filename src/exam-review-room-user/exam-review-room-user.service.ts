@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import {
   DeleteExamReviewRoomUserDto,
+  ExamReviewRoom,
   ExamReviewRoomUser,
   RawExamQuestion,
   User,
@@ -11,14 +12,17 @@ import {
 export class ExamReviewRoomUserService {
   constructor(
     @InjectModel(ExamReviewRoomUser)
-    private examReviewRoomUserModel: typeof ExamReviewRoomUser
+    private examReviewRoomUserModel: typeof ExamReviewRoomUser,
+    @InjectModel(ExamReviewRoom)
+    private examReviewRoomModel: typeof ExamReviewRoom
   ) {}
 
   async createNewUser(
     userId: string,
     userGrade: string,
     examReviewRoomId: number,
-    isParticipant: boolean
+    isParticipant: boolean,
+    enterCode?: string
   ) {
     const isExist = Boolean(
       await this.examReviewRoomUserModel.findOne({
@@ -26,7 +30,19 @@ export class ExamReviewRoomUserService {
       })
     );
 
-    if (isExist) return false;
+    if (isExist) return true;
+
+    const targetReviewRoom = await this.examReviewRoomModel.findByPk(
+      examReviewRoomId
+    );
+    console.log("userGrade", userGrade);
+    if (
+      targetReviewRoom.isClosed &&
+      targetReviewRoom.enterCode !== enterCode &&
+      userGrade === "user"
+    ) {
+      return false;
+    }
 
     const newUserInfo = await this.examReviewRoomUserModel.create({
       userId,

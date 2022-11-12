@@ -63,6 +63,18 @@ export class ExamReviewRoom extends Model {
   })
   nonParticipantUserId: string[];
 
+  @Column({
+    allowNull: true,
+    field: "is_closed",
+  })
+  isClosed: boolean;
+
+  @Column({
+    allowNull: true,
+    field: "enter_code",
+  })
+  enterCode: string;
+
   @HasOne(() => ExamScheduleRelation, {
     onDelete: "CASCADE",
   })
