@@ -27,6 +27,25 @@ export class ExamReviewRoomUserController {
   ) {}
 
   @UseGuards(JwtAuthGuard)
+  @Get("/check")
+  async checkAuthorizedUser(
+    @Req() { user }: AuthorizeUserProfile,
+    @Query("examReviewRoomId") examReviewRoomId: string
+  ) {
+    console.log("입장체크", user, examReviewRoomId);
+
+    const isExist = await this.examReviewRoomUserService.checkUserEnterable(
+      user.id,
+      Number(examReviewRoomId)
+    );
+
+    return {
+      message: "OK",
+      isAuthorized: isExist,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createNewUser(
     @Req() { user }: AuthorizeUserProfile,

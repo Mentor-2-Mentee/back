@@ -61,6 +61,23 @@ export class ExamReviewRoomUserService {
     });
   }
 
+  async checkUserEnterable(userId: string, examReviewRoomId: number) {
+    const targetRoom = await this.examReviewRoomModel.findByPk(
+      examReviewRoomId,
+      {
+        include: [{ model: ExamReviewRoomUser }],
+      }
+    );
+
+    const isExist = Boolean(
+      targetRoom.examReviewRoomUsers.findIndex(
+        (currentUser) => currentUser.userId === userId
+      ) !== -1
+    );
+
+    return isExist;
+  }
+
   async updateRoomUser(
     userId: string,
     examReviewRoomId: number,
