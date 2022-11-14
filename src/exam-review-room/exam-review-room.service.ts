@@ -340,6 +340,7 @@ export class ExamReviewRoomService {
             ? undefined
             : existUsers[currentUserIndex].userPosition,
         isRestricted: examReviewRoom.isRestricted,
+        isArchived: examReviewRoom.isArchived,
       });
     }
 
@@ -357,6 +358,7 @@ export class ExamReviewRoomService {
       examDate: targetSchedule.examDate,
       enterCode: targetRoom.enterCode,
       isRestricted: targetRoom.isRestricted,
+      isArchived: targetRoom.isArchived,
     };
   }
 
@@ -381,34 +383,62 @@ export class ExamReviewRoomService {
     examReviewRoomId,
     enterCode,
     isRestricted,
+    isArchived,
   }: UpdateExamReviewRoomDto) {
     const targetRoom = await this.examReviewRoomModel.findByPk(
       examReviewRoomId
     );
 
+    if (!targetRoom.isArchived && !targetRoom.isRestricted && isArchived) {
+      await this.examReviewRoomModel.update(
+        {
+          isRestricted: false,
+          isArchived: true,
+          enterCode: null,
+        },
+        { where: { id: targetRoom.id } }
+      );
+      return "보관모드 활성화";
+    }
+
+    if (targetRoom.isArchived && !targetRoom.isRestricted && !isArchived) {
+      await this.examReviewRoomModel.update(
+        {
+          isRestricted: false,
+          isArchived: false,
+          enterCode: null,
+        },
+        { where: { id: targetRoom.id } }
+      );
+      return "보관모드 비활성화";
+    }
+
     if (
-      targetRoom.isRestricted === false &&
-      isRestricted === true &&
+      !targetRoom.isRestricted &&
+      !targetRoom.isArchived &&
+      isRestricted &&
       enterCode
     ) {
       await this.examReviewRoomModel.update(
         {
           isRestricted: true,
+          isArchived: false,
           enterCode,
         },
         { where: { id: targetRoom.id } }
       );
-      return await this.examReviewRoomModel.findByPk(examReviewRoomId);
+      return `제한모드 활성화(${enterCode})`;
     }
-    if (targetRoom.isRestricted === true && isRestricted === false) {
+    if (targetRoom.isRestricted && !targetRoom.isArchived && !isRestricted) {
       await this.examReviewRoomModel.update(
         {
           isRestricted: false,
+          isArchived: false,
           enterCode: null,
         },
         { where: { id: targetRoom.id } }
       );
-      return await this.examReviewRoomModel.findByPk(examReviewRoomId);
+      return "제한모드 비활성화";
     }
 
     return false;

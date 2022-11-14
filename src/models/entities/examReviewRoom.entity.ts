@@ -75,6 +75,12 @@ export class ExamReviewRoom extends Model {
   })
   enterCode: string;
 
+  @Column({
+    allowNull: true,
+    field: "is_archived",
+  })
+  isArchived: boolean;
+
   @HasOne(() => ExamScheduleRelation, {
     onDelete: "CASCADE",
   })

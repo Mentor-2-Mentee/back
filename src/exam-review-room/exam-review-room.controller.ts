@@ -85,24 +85,11 @@ export class ExamReviewRoomController {
     @Body() body: UpdateExamReviewRoomDto
   ) {
     console.log("body", body);
-    const updateResult =
+    const updateMessage =
       await this.examReviewRoomService.updateReviewRoomSetting(body);
 
-    if (body.isRestricted && body.enterCode)
-      return {
-        message: `입장코드가 ${body.enterCode}로 설정되었습니다.`,
-        updateResult,
-      };
-
-    if (!body.isRestricted)
-      return {
-        message: `입장제한이 해제되었습니다.`,
-        updateResult,
-      };
-
     return {
-      message: "설정반영 완료",
-      updateResult,
+      message: updateMessage,
     };
   }
 
