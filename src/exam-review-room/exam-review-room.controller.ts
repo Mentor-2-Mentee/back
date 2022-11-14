@@ -16,6 +16,7 @@ import {
   AuthorizeUserProfile,
   CreateCreateExamReviewRoomRequestDto,
   CreateExamReviewRoomDto,
+  UpdateExamReviewRoomDto,
 } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { ExamReviewRoomService } from "./exam-review-room.service";
@@ -74,6 +75,33 @@ export class ExamReviewRoomController {
     return {
       message: `${createdRoom.examType} 리뷰방 생성완료`,
       isCreated: true,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  async updateReviewRoomSetting(
+    @Req() { user }: AuthorizeUserProfile,
+    @Body() body: UpdateExamReviewRoomDto
+  ) {
+    const updateResult =
+      await this.examReviewRoomService.updateReviewRoomSetting(body);
+
+    if (body.isRestricted && body.enterCode)
+      return {
+        message: `입장코드가 ${body.enterCode}로 설정되었습니다.`,
+        updateResult,
+      };
+
+    if (!body.isRestricted)
+      return {
+        message: `입장제한이 해제되었습니다.`,
+        updateResult,
+      };
+
+    return {
+      message: "설정반영 완료",
+      updateResult,
     };
   }
 

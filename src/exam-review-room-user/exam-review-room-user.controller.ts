@@ -39,6 +39,11 @@ export class ExamReviewRoomUserController {
       Number(examReviewRoomId)
     );
 
+    console.log("response", {
+      message: "OK",
+      isAuthorized: isExist,
+    });
+
     return {
       message: "OK",
       isAuthorized: isExist,
@@ -51,6 +56,7 @@ export class ExamReviewRoomUserController {
     @Req() { user }: AuthorizeUserProfile,
     @Body() body: CreateExamReviewRoomUserDto
   ) {
+    console.log(`${user.userName} | ${body.examReviewRoomId}에 신규입장`);
     const isCreate = await this.examReviewRoomUserService.createNewUser(
       user.id,
       user.userGrade,
@@ -75,7 +81,7 @@ export class ExamReviewRoomUserController {
     @Query("examReviewRoomId") examReviewRoomId: string,
     @Query("targetUserId") targetUserId: string
   ) {
-    if (user.userGrade === "user")
+    if (targetUserId !== user.id && user.userGrade === "user")
       throw new HttpException("Unauthorized user", HttpStatus.UNAUTHORIZED);
 
     const deletedUser = await this.examReviewRoomUserService.deleteRoomUser({

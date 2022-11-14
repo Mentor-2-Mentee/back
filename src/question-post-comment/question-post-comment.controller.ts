@@ -37,7 +37,6 @@ export class QuestionPostCommentController {
     @Req() { user }: AuthorizeUserProfile,
     @Body() body: CreatePostCommentDto
   ) {
-    console.log("comment", body.comment);
     const isCreate = this.postCommentService.createComment(
       user.id,
       body.questionPostId,
@@ -58,7 +57,6 @@ export class QuestionPostCommentController {
     @Req() { user }: AuthorizeUserProfile,
     @Query("commentId") commentId: number
   ) {
-    console.log("delete comment id", commentId);
     const isDelete = await this.postCommentService.deleteComment(
       user.id,
       commentId

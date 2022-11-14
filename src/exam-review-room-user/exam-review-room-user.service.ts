@@ -35,12 +35,22 @@ export class ExamReviewRoomUserService {
     const targetReviewRoom = await this.examReviewRoomModel.findByPk(
       examReviewRoomId
     );
-    console.log("userGrade", userGrade);
+
+    if (userGrade === "master" || userGrade === "admin") {
+      const newAdminUser = await this.examReviewRoomUserModel.create({
+        userId,
+        examReviewRoomId,
+        userPosition: userGrade,
+        isParticipant,
+      });
+      return Boolean(newAdminUser);
+    }
+
     if (
-      targetReviewRoom.isClosed &&
-      targetReviewRoom.enterCode !== enterCode &&
-      userGrade === "user"
+      targetReviewRoom.isRestricted &&
+      targetReviewRoom.enterCode !== enterCode
     ) {
+      console.log("일반유저가 제한방 입장시 입력코드 틀림");
       return false;
     }
 
@@ -50,6 +60,7 @@ export class ExamReviewRoomUserService {
       userPosition: userGrade,
       isParticipant,
     });
+    console.log("created new Room user", newUserInfo.id);
 
     return Boolean(newUserInfo);
   }
@@ -74,6 +85,7 @@ export class ExamReviewRoomUserService {
         (currentUser) => currentUser.userId === userId
       ) !== -1
     );
+    console.log("isExist", isExist);
 
     return isExist;
   }

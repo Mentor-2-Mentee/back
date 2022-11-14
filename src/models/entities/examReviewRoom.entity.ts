@@ -65,9 +65,9 @@ export class ExamReviewRoom extends Model {
 
   @Column({
     allowNull: true,
-    field: "is_closed",
+    field: "is_restricted",
   })
-  isClosed: boolean;
+  isRestricted: boolean;
 
   @Column({
     allowNull: true,

@@ -23,7 +23,6 @@ export class RawExamQuestionController {
     @Req() { user }: AuthorizeUserProfile,
     @Body() body: any
   ) {
-    console.log("raw exam question", body);
     const isSaved = await this.rawExamQuestionService.saveRawExamQuestion(
       user.id,
       body.examQuestionId,
@@ -42,8 +41,6 @@ export class RawExamQuestionController {
     @Req() { user }: AuthorizeUserProfile,
     @Body() body: any
   ) {
-    console.log("raw exam question", body);
-
     return {
       body,
     };

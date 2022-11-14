@@ -8,7 +8,6 @@ export class PdfController {
 
   @Get()
   async puppeteerTest(@Res() res: Response) {
-    console.log("pdf출력 요청");
     const buffer = await this.pdfService.puppeteerTest();
 
     res.set({

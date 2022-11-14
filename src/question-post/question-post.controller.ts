@@ -24,8 +24,6 @@ export class QuestionPostController {
       limit: Number(limit),
       filter: JSON.parse(filter),
     };
-    console.log("querys", querys);
-    console.log("querys fileter", querys.filter.childFilterTags);
     const result = await this.questionPostService.findQuestionPostList(querys);
     return {
       message: "OK",
@@ -63,12 +61,9 @@ export class QuestionPostController {
   ) {
     console.log("POST /question", user, body);
 
-    console.log("question등록", body.questionForm);
     const question = await this.questionService.createNewQuestion(
       body.questionForm
     );
-
-    console.log("questionId생성", question.id);
 
     const questionPost = await this.questionPostService.createQuestionPost(
       user.id,

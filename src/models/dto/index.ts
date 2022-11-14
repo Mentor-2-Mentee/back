@@ -30,6 +30,7 @@ export * from "./get-createExamReviewRoomRequest.dto";
 export * from "../types/AuthorizeUserProfile";
 
 export * from "./create-examReviewRoom.dto";
+export * from "./update-examReviewRoom.dto";
 
 export * from "./create-bulkExamQuestion.dto";
 

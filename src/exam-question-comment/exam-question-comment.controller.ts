@@ -59,7 +59,6 @@ export class ExamQuestionCommentController {
     @Req() { user }: AuthorizeUserProfile,
     @Query("commentId") commentId: string
   ) {
-    console.log("delete comment id", commentId);
     const isDelete = await this.examQuestionCommentService.deleteComment(
       user.id,
       Number(commentId)

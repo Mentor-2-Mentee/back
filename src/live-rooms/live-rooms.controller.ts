@@ -35,8 +35,6 @@ export class LiveRoomsController {
     @Body() body: CreateLiveRoomDto,
     @UploadedFiles() files: Express.Multer.File[]
   ) {
-    console.log("새 질의응답방 생성자", request.user);
-
     const userData = await this.userProfileService.findUserProfileById(
       request.user.id
     );
@@ -60,7 +58,6 @@ export class LiveRoomsController {
     @Query("limit") limit: string,
     @Query("filter") filter: string
   ) {
-    console.log("/GET live-rooms", page, limit, filter);
     const querys: GetLiveRoomDto = {
       page: Number(page),
       limit: Number(limit),

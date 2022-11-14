@@ -22,12 +22,6 @@ export class LiveRoomsService {
     createLiveRoomDto: CreateLiveRoomDto,
     imageFiles: Express.Multer.File[]
   ): Promise<number> {
-    console.log(
-      userData,
-      createLiveRoomDto.mentoringRoomTitle,
-      JSON.parse(createLiveRoomDto.appliedTagOptions),
-      createLiveRoomDto.mentoringRoomDescription
-    );
     const imagesPath = [];
 
     imageFiles.map((imageFile) => {
@@ -87,7 +81,7 @@ export class LiveRoomsService {
       );
     }
 
-    if (filter.childFilterTags !== []) {
+    if (filter.childFilterTags.length !== 0) {
       filter.childFilterTags.map((childFilterTag) => {
         searchFilterQuerys.push(
           generateLiveRoomWhereOption(
@@ -99,7 +93,7 @@ export class LiveRoomsService {
       });
     }
 
-    if (filter.filterKeywords !== []) {
+    if (filter.filterKeywords.length !== 0) {
       filter.filterKeywords.map((filterKeyword) => {
         searchFilterQuerys.push(
           generateLiveRoomWhereOption(

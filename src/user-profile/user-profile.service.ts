@@ -82,8 +82,6 @@ export class UserProfileService {
       };
     }
     if (newName.match(/\s/g)) {
-      console.log("공백발견");
-
       return {
         message: "공백문자는 사용할 수 없습니다.",
         canUse: false,

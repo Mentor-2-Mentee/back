@@ -59,7 +59,6 @@ export class QuestionPostService {
 
     if (querys.filter.childFilterTags.length !== 0) {
       querys.filter.childFilterTags.map((childTag) => {
-        console.log(childTag.tagName);
         searchTagFilter.push({
           [Op.and]: {
             ["detailTag"]: childTag.tagName,
@@ -91,8 +90,6 @@ export class QuestionPostService {
       offset: (querys.page - 1) * querys.limit,
       limit: querys.limit,
     });
-
-    console.log(result);
 
     return result;
   }
