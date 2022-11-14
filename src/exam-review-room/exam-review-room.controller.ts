@@ -84,6 +84,7 @@ export class ExamReviewRoomController {
     @Req() { user }: AuthorizeUserProfile,
     @Body() body: UpdateExamReviewRoomDto
   ) {
+    console.log("body", body);
     const updateResult =
       await this.examReviewRoomService.updateReviewRoomSetting(body);
 
@@ -150,8 +151,6 @@ export class ExamReviewRoomController {
     @Query("examScheduleId") examScheduleId: number,
     @Query("userId") userId: string
   ) {
-    console.log("userId", userId);
-
     const requestList = await this.examReviewRoomService.getRequestList(
       examScheduleId,
       userId

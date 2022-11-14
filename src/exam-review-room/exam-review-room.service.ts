@@ -356,6 +356,7 @@ export class ExamReviewRoomService {
       examType: targetRoom.examType,
       examDate: targetSchedule.examDate,
       enterCode: targetRoom.enterCode,
+      isRestricted: targetRoom.isRestricted,
     };
   }
 
@@ -385,7 +386,11 @@ export class ExamReviewRoomService {
       examReviewRoomId
     );
 
-    if (isRestricted !== undefined && enterCode) {
+    if (
+      targetRoom.isRestricted === false &&
+      isRestricted === true &&
+      enterCode
+    ) {
       await this.examReviewRoomModel.update(
         {
           isRestricted: true,

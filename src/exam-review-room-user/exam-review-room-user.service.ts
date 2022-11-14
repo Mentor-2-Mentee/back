@@ -50,7 +50,6 @@ export class ExamReviewRoomUserService {
       targetReviewRoom.isRestricted &&
       targetReviewRoom.enterCode !== enterCode
     ) {
-      console.log("일반유저가 제한방 입장시 입력코드 틀림");
       return false;
     }
 
@@ -85,7 +84,6 @@ export class ExamReviewRoomUserService {
         (currentUser) => currentUser.userId === userId
       ) !== -1
     );
-    console.log("isExist", isExist);
 
     return isExist;
   }
