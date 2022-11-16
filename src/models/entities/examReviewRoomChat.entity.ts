@@ -36,8 +36,11 @@ export class ExamReviewRoomChat extends Model {
   authorId: string;
 
   @BelongsTo(() => User)
-  authorInfo: User;
+  author: User;
 
-  @Column({ allowNull: false, field: "chat" })
-  chat: string;
+  @Column({ allowNull: false, field: "text" })
+  text: string;
+
+  @Column({ allowNull: true, field: "image_url" })
+  imageUrl: string;
 }

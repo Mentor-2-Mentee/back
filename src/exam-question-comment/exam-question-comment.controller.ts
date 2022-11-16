@@ -11,6 +11,7 @@ import {
 import { AuthorizeUserProfile, CreateExamQuestionCommentDto } from "src/models";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
 import { ExamQuestionCommentService } from "./exam-question-comment.service";
+import { Request } from "express";
 
 @Controller("exam-question-comment")
 export class ExamQuestionCommentController {
@@ -38,7 +39,6 @@ export class ExamQuestionCommentController {
     @Req() { user }: AuthorizeUserProfile,
     @Body() body: CreateExamQuestionCommentDto
   ) {
-    console.log("examComment", body.comment);
     const isCreate = this.examQuestionCommentService.createComment(
       user.id,
       body.examQuestionId,

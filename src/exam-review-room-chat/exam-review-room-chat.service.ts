@@ -1,10 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
+import { Op, WhereOptions } from "sequelize";
 import { BelongsTo, ForeignKey, HasMany } from "sequelize-typescript";
 import {
   ExamReviewRoom,
   ExamReviewRoomChat,
   SocketReceiveExamReviewRoomChatDto,
+  User,
 } from "src/models";
 
 @Injectable()
@@ -18,24 +20,52 @@ export class ExamReviewRoomChatService {
 
   async saveChat({
     examReviewRoomId,
-    authorId,
-    chat,
+    text,
+    userId,
+    imageUrl,
   }: SocketReceiveExamReviewRoomChatDto) {
     const savedChat = await this.examReviewRoomChatModel.create({
       examReviewRoomId,
-      authorId,
-      chat,
+      authorId: userId,
+      text,
+      imageUrl,
     });
 
-    return savedChat;
+    return await this.examReviewRoomChatModel.findByPk(savedChat.id, {
+      include: [{ model: User }],
+    });
   }
 
-  async findChatList(examReviewRoomId: number) {
+  async findChatList(
+    examReviewRoomId: number,
+    oldestChatId: number,
+    limit: number
+  ) {
+    const whereOptions: WhereOptions = [];
+    whereOptions.push({
+      [Op.and]: {
+        ["id"]: {
+          [Op.lt]: oldestChatId === -1 ? 99999999999 : oldestChatId,
+        },
+      },
+    });
     const { examReviewRoomChats } = await this.examReviewRoomModel.findByPk(
       examReviewRoomId,
-      { include: [{ model: ExamReviewRoomChat }] }
+      {
+        include: [
+          {
+            model: ExamReviewRoomChat,
+            where: {
+              [Op.and]: whereOptions,
+            },
+            include: [{ model: User }],
+            order: [["id", "DESC"]],
+            limit,
+          },
+        ],
+      }
     );
 
-    return examReviewRoomChats;
+    return examReviewRoomChats.reverse();
   }
 }

@@ -1,5 +1,6 @@
 export class SocketReceiveExamReviewRoomChatDto {
   examReviewRoomId: number;
-  authorId: string;
-  chat: string;
+  text: string;
+  userId: string;
+  imageUrl?: string;
 }
