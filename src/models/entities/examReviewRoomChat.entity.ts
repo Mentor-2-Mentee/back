@@ -2,6 +2,7 @@ import {
   AutoIncrement,
   BelongsTo,
   Column,
+  DataType,
   ForeignKey,
   HasOne,
   Model,
@@ -41,6 +42,6 @@ export class ExamReviewRoomChat extends Model {
   @Column({ allowNull: false, field: "text" })
   text: string;
 
-  @Column({ allowNull: true, field: "image_url" })
-  imageUrl: string;
+  @Column({ allowNull: true, field: "image_url_list", type: DataType.JSON })
+  imageUrlList: string[];
 }

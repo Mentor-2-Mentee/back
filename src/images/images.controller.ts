@@ -29,6 +29,7 @@ export class ImagesController {
       return savedPath;
     });
 
+    console.log("이미지 저장", imageUrl);
     return {
       message: "image upload success",
       url: imageUrl,

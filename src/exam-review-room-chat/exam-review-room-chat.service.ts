@@ -22,13 +22,13 @@ export class ExamReviewRoomChatService {
     examReviewRoomId,
     text,
     userId,
-    imageUrl,
+    imageUrlList,
   }: SocketReceiveExamReviewRoomChatDto) {
     const savedChat = await this.examReviewRoomChatModel.create({
       examReviewRoomId,
       authorId: userId,
       text,
-      imageUrl,
+      imageUrlList,
     });
 
     return await this.examReviewRoomChatModel.findByPk(savedChat.id, {
