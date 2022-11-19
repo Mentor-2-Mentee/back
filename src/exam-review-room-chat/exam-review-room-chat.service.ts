@@ -66,6 +66,6 @@ export class ExamReviewRoomChatService {
       }
     );
 
-    return examReviewRoomChats.reverse();
+    return examReviewRoomChats;
   }
 }

@@ -290,6 +290,7 @@ export class LiveContentsGateway {
     const targetChannel = `examReviewRoom_chat_live-${data.examReviewRoomId}`;
 
     const savedChat = await this.examReviewRoomChatService.saveChat(data);
+
     this.server.emit(targetChannel, savedChat);
   }
 }
