@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { User } from "src/models";
+import { User, UserTokenValidateResultType } from "src/models";
 import configuration from "../common/config/configuration";
 import { GetUserOauthPayloadDto } from "src/models/dto";
 import { InjectModel } from "@nestjs/sequelize";
@@ -31,6 +31,16 @@ export class OauthService {
         userGrade: "user",
       },
     });
+  }
+
+  validateToken(tokenCode: string) {
+    let userData: UserTokenValidateResultType | undefined;
+    try {
+      userData = this.jwtService.verify(tokenCode);
+    } catch (error) {
+      userData = undefined;
+    }
+    return userData;
   }
 
   async createToken({ id, userName, userGrade }: User) {

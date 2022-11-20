@@ -14,6 +14,7 @@ import {
 import { ExamReviewRoom } from "./examReviewRoom.entity";
 import { ExamReviewRoomChat } from "./examReviewRoomChat.entity";
 import { ExamReviewRoomUser } from "./examReviewRoomUser.entity";
+import { Inquery } from "./inquery.entity";
 import { QuestionPost } from "./questionPost.entity";
 import { RawExamQuestion } from "./rawExamQuestion.entity";
 import { UserRelation } from "./userRelation.entity";
@@ -85,4 +86,7 @@ export class User extends Model {
 
   @HasMany(() => ExamReviewRoomChat)
   examReviewRoomChats: ExamReviewRoomChat[];
+
+  @HasMany(() => Inquery)
+  Inquerys: Inquery[];
 }

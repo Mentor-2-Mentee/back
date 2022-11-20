@@ -46,6 +46,8 @@ import { ExamQuestionCommentModule } from "./exam-question-comment/exam-question
 import { RawExamQuestionModule } from "./raw-exam-question/raw-exam-question.module";
 import { ExamReviewRoomUserModule } from "./exam-review-room-user/exam-review-room-user.module";
 import { ExamReviewRoomChatModule } from "./exam-review-room-chat/exam-review-room-chat.module";
+import { InqueryModule } from "./inquery/inquery.module";
+import { Inquery } from "./models/entities/inquery.entity";
 
 @Module({
   imports: [
@@ -83,6 +85,7 @@ import { ExamReviewRoomChatModule } from "./exam-review-room-chat/exam-review-ro
           RawExamQuestion,
           ExamReviewRoomUser,
           ExamReviewRoomChat,
+          Inquery,
         ],
         logging: Boolean(
           configService.get<string>("LIVE_SERVER_MODE") === "true"
@@ -116,6 +119,7 @@ import { ExamReviewRoomChatModule } from "./exam-review-room-chat/exam-review-ro
     RawExamQuestionModule,
     ExamReviewRoomUserModule,
     ExamReviewRoomChatModule,
+    InqueryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
