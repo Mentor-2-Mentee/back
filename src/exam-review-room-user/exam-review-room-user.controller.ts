@@ -32,14 +32,15 @@ export class ExamReviewRoomUserController {
     @Req() { user }: AuthorizeUserProfile,
     @Query("examReviewRoomId") examReviewRoomId: string
   ) {
-    const isExist = await this.examReviewRoomUserService.checkUserEnterable(
-      user.id,
-      Number(examReviewRoomId)
-    );
+    const userPosition =
+      await this.examReviewRoomUserService.checkUserEnterable(
+        user.id,
+        Number(examReviewRoomId)
+      );
 
     return {
       message: "OK",
-      isAuthorized: isExist,
+      userPosition,
     };
   }
 

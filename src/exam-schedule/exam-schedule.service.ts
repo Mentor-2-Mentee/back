@@ -17,8 +17,18 @@ export class ExamScheduleService {
   ) {}
 
   async createExamSchedule(createExamScheduleDto: CreateExamScheduleDto) {
+    console.log("createExamScheduleDto");
+
     const savedExamSchedule = await this.examScheduleModel.create({
       ...createExamScheduleDto,
+      examStartTime: isNaN(
+        new Date(createExamScheduleDto.examStartTime).getTime()
+      )
+        ? null
+        : createExamScheduleDto.examStartTime,
+      examEndTime: isNaN(new Date(createExamScheduleDto.examEndTime).getTime())
+        ? null
+        : createExamScheduleDto.examEndTime,
     });
 
     return savedExamSchedule;

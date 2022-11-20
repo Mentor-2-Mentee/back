@@ -79,13 +79,18 @@ export class ExamReviewRoomUserService {
       }
     );
 
-    const isExist = Boolean(
-      targetRoom.examReviewRoomUsers.findIndex(
-        (currentUser) => currentUser.userId === userId
-      ) !== -1
+    // const isExist = Boolean(
+    //   targetRoom.examReviewRoomUsers.findIndex(
+    //     (currentUser) => currentUser.userId === userId
+    //   ) !== -1
+    // );
+
+    const existUser = targetRoom.examReviewRoomUsers.find(
+      (currentUser) => currentUser.userId === userId
     );
 
-    return isExist;
+    if (!existUser) return false;
+    return existUser.userPosition;
   }
 
   async updateRoomUser(
