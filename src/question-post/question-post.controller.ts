@@ -1,14 +1,17 @@
 import { Delete, Put, Query } from "@nestjs/common";
 import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
+import { Request } from "express";
 import { AuthorizeUserProfile, UpdateQuestionPostDto } from "src/models";
 import { CreateQuestionPostDto } from "src/models/dto/create-questionPost.dto";
 import { JwtAuthGuard } from "src/oauth/jwt/jwt-auth.guard";
+import { OauthService } from "src/oauth/oauth.service";
 import { QuestionService } from "src/question/question.service";
 import { QuestionPostService } from "./question-post.service";
 
 @Controller("question-post")
 export class QuestionPostController {
   constructor(
+    private readonly oauthService: OauthService,
     private readonly questionPostService: QuestionPostService,
     private readonly questionService: QuestionService
   ) {}
@@ -57,19 +60,35 @@ export class QuestionPostController {
   @Post()
   async createNewQuestionPost(
     @Req() { user }: AuthorizeUserProfile,
+    @Req() req: Request,
     @Body() body: CreateQuestionPostDto
   ) {
-    console.log("POST /question", user, body);
+    const ip = String(
+      req.headers["x-forwarded-for"] || req.socket.remoteAddress
+    );
+    console.log("POST /question", ip, body, user);
 
     const question = await this.questionService.createNewQuestion(
       body.questionForm
     );
 
+    if (!user) {
+      const questionPost =
+        await this.questionPostService.createQuestionPostByGuest(
+          question.id,
+          body,
+          ip
+        );
+      return {
+        message: "등록성공",
+        questionPostId: questionPost.id,
+      };
+    }
+
     const questionPost = await this.questionPostService.createQuestionPost(
       user.id,
       question.id,
-      body.title,
-      body.description
+      body
     );
 
     return {

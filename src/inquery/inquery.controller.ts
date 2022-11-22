@@ -34,7 +34,7 @@ export class InqueryController {
     const inquery = await this.inqueryService.findInqueryListOne(
       Number(inqueryId),
       password,
-      userData.id
+      userData?.id
     );
 
     if (inquery === false)
@@ -62,9 +62,6 @@ export class InqueryController {
       inqueryList,
     };
   }
-
-  @Post("/validate")
-  async privateInqueryValidate() {}
 
   @Post()
   async createNewInquery(@Req() req: Request, @Body() body: CreateInqueryDto) {

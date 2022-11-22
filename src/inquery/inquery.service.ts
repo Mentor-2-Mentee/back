@@ -25,13 +25,13 @@ export class InqueryService {
 
     if (targetInquery.isPrivate) {
       if (
-        targetInquery.instantPassword !== null &&
-        targetInquery.instantPassword !== password
+        targetInquery.guestPassword !== null &&
+        targetInquery.guestPassword !== password
       )
         return false;
 
       if (
-        targetInquery.instantPassword === null &&
+        targetInquery.guestPassword === null &&
         targetInquery.authorId !== userId
       )
         return false;
@@ -46,7 +46,7 @@ export class InqueryService {
       order: [["id", "DESC"]],
       offset: (page - 1) * limit,
       limit,
-      attributes: ["id", "title", "createdAt", "instantName", "isPrivate"],
+      attributes: ["id", "title", "createdAt", "guestName", "isPrivate"],
     });
   }
 
@@ -54,8 +54,8 @@ export class InqueryService {
     {
       title,
       description,
-      instantName,
-      instantPassword,
+      guestName,
+      guestPassword,
       isPrivate,
       targetInqueryId,
     }: CreateInqueryDto,
@@ -67,11 +67,11 @@ export class InqueryService {
       title,
       description,
       authorId: userData?.id || null,
-      instantName:
+      guestName:
         userData !== undefined
           ? null
-          : `${instantName}(${spiltedIp[0]}.${spiltedIp[1]})`,
-      instantPassword: userData !== undefined ? null : instantPassword,
+          : `${guestName}(${spiltedIp[0]}.${spiltedIp[1]})`,
+      guestPassword: userData !== undefined ? null : guestPassword,
       isPrivate,
       targetInqueryId,
     });

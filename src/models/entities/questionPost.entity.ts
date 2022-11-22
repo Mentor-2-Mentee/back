@@ -6,12 +6,25 @@ import {
   ForeignKey,
   BelongsTo,
   HasMany,
+  DefaultScope,
 } from "sequelize-typescript";
 import { QuestionPostComment } from "./questionPostComment.entity";
 import { Question } from "./question.entity";
 import { User } from "./user.entity";
 import { UserRelation } from "./userRelation.entity";
 
+@DefaultScope(() => ({
+  attributes: [
+    "id",
+    "questionId",
+    "authorId",
+    "guestName",
+    "title",
+    "description",
+    "viewCount",
+    "createdAt",
+  ],
+}))
 @Table({
   tableName: "QuestionPost",
   timestamps: true,
@@ -33,11 +46,17 @@ export class QuestionPost extends Model {
   question: Question;
 
   @ForeignKey(() => User)
-  @Column({ allowNull: false, field: "author_id" })
+  @Column({ allowNull: true, field: "author_id" })
   authorId: string;
 
   @BelongsTo(() => User)
   author: User;
+
+  @Column({ allowNull: false, field: "guest_name" })
+  guestName: string;
+
+  @Column({ allowNull: false, field: "guest_password" })
+  guestPassword: string;
 
   @Column({ allowNull: false, field: "title" })
   title: string;

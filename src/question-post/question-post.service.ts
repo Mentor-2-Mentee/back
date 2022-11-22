@@ -4,6 +4,7 @@ import { Op, WhereOptions } from "sequelize";
 
 import {
   AppliedTagOptions,
+  CreateQuestionPostDto,
   Question,
   QuestionPost,
   QuestionPostComment,
@@ -21,15 +22,29 @@ export class QuestionPostService {
     private userRelationModel: typeof UserRelation
   ) {}
 
+  async createQuestionPostByGuest(
+    questionId: number,
+    { title, description, guestName, guestPassword }: CreateQuestionPostDto,
+    ip: string
+  ) {
+    const spiltedIp = ip.split(".");
+    return await this.questionPostModel.create({
+      questionId,
+      title,
+      description,
+      guestName: `${guestName}(${spiltedIp[0]}.${spiltedIp[1]})`,
+      guestPassword,
+    });
+  }
+
   async createQuestionPost(
     userId: string,
     questionId: number,
-    title: string,
-    description: string
+    { title, description }: CreateQuestionPostDto
   ) {
     const newQuestionPost = await this.questionPostModel.create({
       questionId,
-      authorId: userId,
+      authorId: userId || null,
       title,
       description,
     });

@@ -17,9 +17,13 @@ export class UserProfileController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findUserProfileOne(@Request() { user }: AuthorizeUserProfile) {
+  async findUserProfileOne(
+    // @Request() { user }: AuthorizeUserProfile
+    @Request() req: any
+  ) {
+    console.log(req, req.user);
     const userProfile = await this.userProfileService.findUserProfileById(
-      user.id
+      req.user.id
     );
     return {
       message: "OK",

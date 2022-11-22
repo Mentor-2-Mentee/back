@@ -1,8 +1,8 @@
 export class CreateInqueryDto {
   title: string;
   description: string;
-  instantName?: string;
-  instantPassword?: string;
+  guestName?: string;
+  guestPassword?: string;
   isPrivate: boolean;
   targetInqueryId?: number;
 }

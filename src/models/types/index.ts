@@ -6,3 +6,4 @@ export * from "./QuestionType";
 export * from "./ScheduleType";
 export * from "./QuestionUpload.type";
 export * from "./UserTokenValidateResult.type";
+export * from "./GuestInfo.type";

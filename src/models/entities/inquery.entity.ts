@@ -34,11 +34,11 @@ export class Inquery extends Model {
   @BelongsTo(() => User)
   author: User;
 
-  @Column({ allowNull: true, field: "instant_name" })
-  instantName: string;
+  @Column({ allowNull: true, field: "guest_name" })
+  guestName: string;
 
-  @Column({ allowNull: true, field: "instant_password" })
-  instantPassword: string;
+  @Column({ allowNull: true, field: "guest_password" })
+  guestPassword: string;
 
   @Column({ allowNull: true, field: "is_private" })
   isPrivate: boolean;
