@@ -52,10 +52,10 @@ export class QuestionPost extends Model {
   @BelongsTo(() => User)
   author: User;
 
-  @Column({ allowNull: false, field: "guest_name" })
+  @Column({ allowNull: true, field: "guest_name" })
   guestName: string;
 
-  @Column({ allowNull: false, field: "guest_password" })
+  @Column({ allowNull: true, field: "guest_password" })
   guestPassword: string;
 
   @Column({ allowNull: false, field: "title" })

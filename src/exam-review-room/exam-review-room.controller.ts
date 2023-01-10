@@ -84,7 +84,6 @@ export class ExamReviewRoomController {
     @Req() { user }: AuthorizeUserProfile,
     @Body() body: UpdateExamReviewRoomDto
   ) {
-    console.log("body", body);
     const updateMessage =
       await this.examReviewRoomService.updateReviewRoomSetting(body);
 

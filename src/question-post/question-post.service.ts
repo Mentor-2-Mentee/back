@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Op, WhereOptions } from "sequelize";
+import { SHA256 } from "crypto-js";
 
 import {
   AppliedTagOptions,
@@ -27,16 +28,16 @@ export class QuestionPostService {
     { title, description, guestName, guestPassword }: CreateQuestionPostDto,
     ip: string
   ) {
+    const hashedPassword = SHA256(guestPassword).toString();
     const spiltedIp = ip.split(".");
     return await this.questionPostModel.create({
       questionId,
       title,
       description,
       guestName: `${guestName}(${spiltedIp[0]}.${spiltedIp[1]})`,
-      guestPassword,
+      guestPassword: hashedPassword,
     });
   }
-
   async createQuestionPost(
     userId: string,
     questionId: number,
@@ -129,6 +130,7 @@ export class QuestionPostService {
       updatedAt: targetPost.updatedAt,
       question,
       author,
+      guestName: targetPost.guestName,
       title: targetPost.title,
       description: targetPost.description,
       viewCount: targetPost.viewCount,

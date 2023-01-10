@@ -20,7 +20,6 @@ export class InqueryService {
     password?: string,
     userId?: string
   ) {
-    console.log(inqueryId, password, userId);
     const targetInquery = await this.inqueryModel.findByPk(inqueryId);
 
     if (targetInquery.isPrivate) {

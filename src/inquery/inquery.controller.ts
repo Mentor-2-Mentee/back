@@ -65,6 +65,7 @@ export class InqueryController {
 
   @Post()
   async createNewInquery(@Req() req: Request, @Body() body: CreateInqueryDto) {
+    console.log(req.headers.cookie);
     const ip = String(
       req.headers["x-forwarded-for"] || req.socket.remoteAddress
     );

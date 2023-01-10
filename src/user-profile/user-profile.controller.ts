@@ -21,7 +21,6 @@ export class UserProfileController {
     // @Request() { user }: AuthorizeUserProfile
     @Request() req: any
   ) {
-    console.log(req, req.user);
     const userProfile = await this.userProfileService.findUserProfileById(
       req.user.id
     );
